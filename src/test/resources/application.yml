@@ -1,0 +1,40 @@
+server:
+  port: ${DINO_CONTAINER_PORT:10050}
+  servlet:
+    context-path: /
+  error:
+    include-stacktrace: never
+
+spring:
+  application:
+    name: dinosaurs-service
+  jackson:
+    serialization:
+      indent_output: true
+      WRITE_DATES_AS_TIMESTAMPS: false
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/dinodb}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  flyway:
+    enabled: false
+
+role:
+  hierarchy: |
+    ROLE_ADMIN > ROLE_MODERATOR
+    ROLE_MODERATOR > ROLE_REGULAR
+
+endpoints:
+  health:
+    id: healthcheck
+    enabled: true
