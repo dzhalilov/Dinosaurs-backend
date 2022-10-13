@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_auth")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,14 +20,14 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "user_id", nullable = false, unique = true)
+  @Column(name = "id", nullable = false, unique = true)
   UUID id;
 
+  @Column(name = "email", nullable = false, unique = true)
   String email;
 
-  String password;
-
-  String firstName;
+  @Column(name = "hashed_password", nullable = false)
+  String hashedPassword;
 
   Authority role;
 
