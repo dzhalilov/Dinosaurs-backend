@@ -33,14 +33,14 @@ public class UserInfo {
   @Column(name = "surname", nullable = false)
   String surname;
 
-  @Column(name = "registered_at_msk_datetime", nullable = false)
-  LocalDateTime registeredAtMskDatetime;
+  @Column(name = "registered_at_datetime", nullable = false)
+  LocalDateTime registeredAtDatetime;
 
   @Column(name = "is_confirmed_user", nullable = false)
   boolean isConfirmedUser;
 
-  @Column(name = "archived_at_msk_datetime", nullable = true)
-  LocalDateTime archivedAtMskDatetime;
+  @Column(name = "archived_at_datetime", nullable = true)
+  LocalDateTime archivedAtDatetime;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "ui_user_id", updatable = false)

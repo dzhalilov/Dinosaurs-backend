@@ -43,11 +43,11 @@ public class Course {
   @Column(name = "short_description", nullable = false)
   String shortDescription;
 
-  @Column(name = "start_msk_datetime", nullable = false)
-  LocalDateTime startMskDatetime;
+  @Column(name = "start_datetime", nullable = false)
+  LocalDateTime startDatetime;
 
-  @Column(name = "end_msk_datetime", nullable = false)
-  LocalDateTime endMskDatetime;
+  @Column(name = "end_datetime", nullable = false)
+  LocalDateTime endDatetime;
 
   @Column(name = "internal_rating", nullable = false)
   int internalRating;
