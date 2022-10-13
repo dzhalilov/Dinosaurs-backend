@@ -1,6 +1,5 @@
 package com.rmr.dinosaurs.core.model;
 
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,38 +7,30 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
-@Table(name = "user_auth")
+@Table(name = "course_and_tag")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class CourseAndTag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  UUID id;
+  int id;
 
-  @Column(name = "email", nullable = false, unique = true)
-  String email;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cat_tag_id", updatable = false)
+  Tag tag;
 
-  @Column(name = "hashed_password", nullable = false)
-  String hashedPassword;
-
-  Authority role;
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "ui_user_id")
-  @EqualsAndHashCode.Exclude
-  @ToString.Exclude
-  UserInfo info;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cat_course_id", updatable = false)
+  Course course;
 
 }

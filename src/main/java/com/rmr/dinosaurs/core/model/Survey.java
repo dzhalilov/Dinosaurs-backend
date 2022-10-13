@@ -1,6 +1,6 @@
 package com.rmr.dinosaurs.core.model;
 
-import java.util.UUID;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,29 +17,30 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "user_auth")
+@Table(name = "survey")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Survey {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  UUID id;
+  int id;
 
-  @Column(name = "email", nullable = false, unique = true)
-  String email;
+  @Column(name = "title", nullable = false)
+  String title;
 
-  @Column(name = "hashed_password", nullable = false)
-  String hashedPassword;
+  @Column(name = "short_description", nullable = false)
+  String shortDescription;
 
-  Authority role;
+  @Column(name = "description", nullable = false)
+  String description;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "ui_user_id")
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sq_survey_id")
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
-  UserInfo info;
+  Set<SurveyQuestion> questions;
 
 }

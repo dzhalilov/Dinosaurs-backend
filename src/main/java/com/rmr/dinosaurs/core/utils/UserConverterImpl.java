@@ -12,7 +12,6 @@ public class UserConverterImpl implements UserConverter {
     return UserDto.builder()
         .id(user.getId())
         .email(user.getEmail())
-        .firstName(user.getFirstName())
         .role(user.getRole())
         .build();
   }
