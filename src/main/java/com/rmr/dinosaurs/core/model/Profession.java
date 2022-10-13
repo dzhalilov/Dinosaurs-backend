@@ -46,4 +46,10 @@ public class Profession {
   @ToString.Exclude
   Set<SurveyQuestionAnswer> answers;
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cap_profession_id")
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
+  Set<CourseAndProfession> courseAndProfessionRefs;
+
 }

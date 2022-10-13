@@ -66,6 +66,12 @@ public class Course {
   CourseProvider provider;
 
   @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cap_course_id")
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
+  Set<CourseAndProfession> courseAndProfessionRefs;
+
+  @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "cat_course_id")
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
