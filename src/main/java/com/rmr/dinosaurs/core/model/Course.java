@@ -9,10 +9,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "course")
@@ -59,5 +62,11 @@ public class Course {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "c_course_provider_id", updatable = false)
   CourseProvider provider;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "ci_course_id")
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
+  CourseInfo info;
 
 }
