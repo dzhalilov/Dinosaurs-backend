@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.core.model;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -62,6 +64,12 @@ public class Course {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "c_course_provider_id", updatable = false)
   CourseProvider provider;
+
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "cat_course_id")
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
+  Set<CourseAndTag> courseAndTagRefs;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "ci_course_id")
