@@ -41,6 +41,12 @@ public class Profession {
   String description;
 
   @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "ui_profession_id")
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
+  Set<UserInfo> userInfos;
+
+  @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "sqa_profession_id")
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
