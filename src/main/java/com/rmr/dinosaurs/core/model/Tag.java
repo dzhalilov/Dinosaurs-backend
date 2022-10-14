@@ -26,7 +26,7 @@ public class Tag {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
   @Column(name = "value", nullable = false, unique = true)
   String value;

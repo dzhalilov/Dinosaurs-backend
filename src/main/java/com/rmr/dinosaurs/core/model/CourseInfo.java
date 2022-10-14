@@ -23,7 +23,7 @@ public class CourseInfo {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
   @Column(name = "description", nullable = false)
   String description;

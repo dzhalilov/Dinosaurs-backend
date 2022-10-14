@@ -23,7 +23,7 @@ public class CourseAndTag {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cat_tag_id", updatable = false)

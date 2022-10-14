@@ -26,7 +26,7 @@ public class Profession {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
   @Column(name = "name", nullable = false, unique = true)
   String name;

@@ -29,7 +29,7 @@ public class Course {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
   @Column(name = "title", nullable = false)
   String title;
@@ -43,23 +43,23 @@ public class Course {
   @Column(name = "short_description", nullable = false)
   String shortDescription;
 
-  @Column(name = "start_datetime", nullable = false)
-  LocalDateTime startDatetime;
+  @Column(name = "start_date", nullable = false)
+  LocalDateTime startDate;
 
-  @Column(name = "end_datetime", nullable = false)
-  LocalDateTime endDatetime;
+  @Column(name = "end_date", nullable = false)
+  LocalDateTime endDate;
 
   @Column(name = "internal_rating", nullable = false)
-  int internalRating;
+  Integer internalRating;
 
   @Column(name = "is_indefinite", nullable = false)
-  boolean isIndefinite;
+  Boolean isIndefinite;
 
-  @Column(name = "is_for_advanced_students", nullable = false)
-  boolean isForAdvancedStudents;
+  @Column(name = "is_advanced", nullable = false)
+  Boolean isAdvanced;
 
   @Column(name = "is_archived", nullable = false)
-  boolean isArchived;
+  Boolean isArchived;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "c_course_provider_id", updatable = false)

@@ -1,6 +1,5 @@
 package com.rmr.dinosaurs.core.model;
 
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,13 +25,13 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  UUID id;
+  Long id;
 
   @Column(name = "email", nullable = false, unique = true)
   String email;
 
-  @Column(name = "hashed_password", nullable = false)
-  String hashedPassword;
+  @Column(name = "password", nullable = false)
+  String password;
 
   Authority role;
 
@@ -40,6 +39,6 @@ public class User {
   @JoinColumn(name = "ui_user_id")
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
-  UserInfo info;
+  UserInfo userInfo;
 
 }
