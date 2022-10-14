@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.configuration.containers;
+package configuration.containers;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -6,7 +6,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
   public static final String IMAGE_VERSION = "postgres:14.5-alpine";
   public static final String DB_NAME = "dinodb-test";
-  public static PostgresTestContainer container;
+  protected static PostgresTestContainer container;
 
   public PostgresTestContainer() {
     super(IMAGE_VERSION);
@@ -34,6 +34,7 @@ public class PostgresTestContainer extends PostgreSQLContainer<PostgresTestConta
 
   @Override
   public void stop() {
+    // skip
   }
 
 }
