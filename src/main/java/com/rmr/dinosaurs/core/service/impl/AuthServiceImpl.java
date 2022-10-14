@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
     userInfo.setName(signupRequest.name());
     userInfo.setSurname(signupRequest.surname());
     userInfo.setRegisteredAt(LocalDateTime.now());
-    userInfo.setIsConfirmed(true);
+    userInfo.setIsConfirmedUser(true);
     userInfo.setUser(savedUser);
     userInfoRepository.save(userInfo);
     return jwtTokenService
