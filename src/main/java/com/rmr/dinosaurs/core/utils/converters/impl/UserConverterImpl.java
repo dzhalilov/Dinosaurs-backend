@@ -1,7 +1,8 @@
-package com.rmr.dinosaurs.core.utils;
+package com.rmr.dinosaurs.core.utils.converters.impl;
 
 import com.rmr.dinosaurs.core.model.User;
 import com.rmr.dinosaurs.core.model.dto.UserDto;
+import com.rmr.dinosaurs.core.utils.converters.UserConverter;
 import org.springframework.stereotype.Component;
 
 @Component
