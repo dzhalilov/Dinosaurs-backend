@@ -7,12 +7,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfiguration {
+
   @Bean
   public OpenAPI customOpenApi() {
     return new OpenAPI()
-            .info(new Info()
-                    .title("Example Swagger API")
-                    .version("0.0.1")
-            );
+        .info(new Info()
+            .title("IT Dinosaurs Swagger API")
+            .description("Spring Boot RESTful Web Application")
+            .version("1.0")
+        );
   }
 }
