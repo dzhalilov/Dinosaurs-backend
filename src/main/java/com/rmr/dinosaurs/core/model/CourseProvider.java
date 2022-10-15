@@ -31,7 +31,7 @@ public class CourseProvider {
   @Column(name = "name", nullable = false)
   String name;
 
-  @Column(name = "url", nullable = false)
+  @Column(name = "url", nullable = false, unique = true)
   String url;
 
   @Column(name = "cover_url", nullable = false)
