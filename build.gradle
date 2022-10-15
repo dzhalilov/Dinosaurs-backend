@@ -38,9 +38,11 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'io.swagger.core.v3:swagger-annotations:2.2.3'
 	implementation "org.springdoc:springdoc-openapi-ui:1.6.11"
+	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
