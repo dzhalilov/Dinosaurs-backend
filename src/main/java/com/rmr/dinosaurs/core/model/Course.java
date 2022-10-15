@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,6 +41,9 @@ public class Course {
 
   @Column(name = "short_description", nullable = false)
   String shortDescription;
+
+  @Column(name = "description", nullable = false)
+  String description;
 
   @Column(name = "starts_at", nullable = false)
   LocalDateTime startsAt;
@@ -76,11 +78,5 @@ public class Course {
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
   Set<CourseAndTag> courseAndTagRefs;
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "ci_course_id")
-  @EqualsAndHashCode.Exclude
-  @ToString.Exclude
-  CourseInfo info;
 
 }
