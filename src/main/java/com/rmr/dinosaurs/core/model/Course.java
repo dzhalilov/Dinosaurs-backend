@@ -43,11 +43,11 @@ public class Course {
   @Column(name = "short_description", nullable = false)
   String shortDescription;
 
-  @Column(name = "start_datetime", nullable = false)
-  LocalDateTime startDatetime;
+  @Column(name = "starts_at", nullable = false)
+  LocalDateTime startsAt;
 
-  @Column(name = "end_datetime", nullable = false)
-  LocalDateTime endDatetime;
+  @Column(name = "ends_at", nullable = false)
+  LocalDateTime endsAt;
 
   @Column(name = "internal_rating", nullable = false)
   int internalRating;
@@ -55,8 +55,8 @@ public class Course {
   @Column(name = "is_indefinite", nullable = false)
   boolean isIndefinite;
 
-  @Column(name = "is_for_advanced_students", nullable = false)
-  boolean isForAdvancedStudents;
+  @Column(name = "is_advanced", nullable = false)
+  boolean isAdvanced;
 
   @Column(name = "is_archived", nullable = false)
   boolean isArchived;
