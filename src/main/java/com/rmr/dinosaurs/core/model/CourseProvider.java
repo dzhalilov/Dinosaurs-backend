@@ -28,19 +28,19 @@ public class CourseProvider {
   @Column(name = "id", nullable = false, unique = true)
   int id;
 
-  @Column(name = "name", nullable = false)
+  @Column(name = "name")
   String name;
 
   @Column(name = "url", nullable = false, unique = true)
   String url;
 
-  @Column(name = "cover_url", nullable = false)
+  @Column(name = "cover_url")
   String coverUrl;
 
-  @Column(name = "short_description", nullable = false)
+  @Column(name = "short_description")
   String shortDescription;
 
-  @Column(name = "description", nullable = false)
+  @Column(name = "description")
   String description;
 
   @OneToMany(fetch = FetchType.LAZY)
