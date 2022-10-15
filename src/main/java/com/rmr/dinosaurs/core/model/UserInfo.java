@@ -37,7 +37,7 @@ public class UserInfo {
   LocalDateTime registeredAtDatetime;
 
   @Column(name = "is_confirmed_user", nullable = false)
-  boolean isConfirmedUser;
+  Boolean isConfirmedUser;
 
   @Column(name = "archived_at_datetime", nullable = true)
   LocalDateTime archivedAtDatetime;

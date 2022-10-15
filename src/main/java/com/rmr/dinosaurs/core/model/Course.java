@@ -52,16 +52,16 @@ public class Course {
   LocalDateTime endsAt;
 
   @Column(name = "internal_rating", nullable = false)
-  int internalRating;
+  Integer internalRating;
 
   @Column(name = "is_indefinite", nullable = false)
-  boolean isIndefinite;
+  Boolean isIndefinite;
 
   @Column(name = "is_advanced", nullable = false)
-  boolean isAdvanced;
+  Boolean isAdvanced;
 
   @Column(name = "is_archived", nullable = false)
-  boolean isArchived;
+  Boolean isArchived;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "c_course_provider_id", updatable = false)
