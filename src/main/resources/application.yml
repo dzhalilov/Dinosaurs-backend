@@ -38,3 +38,9 @@ endpoints:
   health:
     id: healthcheck
     enabled: true
+
+services:
+  course:
+    default-internal-rating: 100
+    default-is-indefinite: true
+    default-is-archived: false
