@@ -41,10 +41,8 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   public CourseDto addCourse(CreatingCourseDto dto) {
-    Course course = mapper.toEntity(dto);
-
     CourseProvider provider = findCourseProviderOrSaveNewAndFlush(dto.getProviderUrl());
-    course = saveNewCourseAndFlush(course, provider);
+    Course course = saveNewCourseAndFlush(mapper.toEntity(dto), provider);
 
     Profession profession = findProfessionOrSaveNewAndFlush(dto.getProfession());
     saveNewCapRef(course, profession);
@@ -61,8 +59,7 @@ public class CourseServiceImpl implements CourseService {
     course.setIsIndefinite(props.getDefaultIsIndefinite());
     course.setIsArchived(props.getDefaultIsArchived());
 
-    course = courseRepo.saveAndFlush(course);
-    return course;
+    return courseRepo.saveAndFlush(course);
   }
 
   private CourseProvider findCourseProviderOrSaveNewAndFlush(String providerUrl) {
@@ -71,9 +68,9 @@ public class CourseServiceImpl implements CourseService {
 
     CourseProvider provider;
     if (optFoundProvider.isEmpty()) {
-      provider = new CourseProvider();
-      provider.setUrl(providerUrl);
-      provider = providerRepo.saveAndFlush(provider);
+      CourseProvider newProvider = new CourseProvider();
+      newProvider.setUrl(providerUrl);
+      provider = providerRepo.saveAndFlush(newProvider);
     } else {
       provider = optFoundProvider.get();
     }
@@ -87,9 +84,9 @@ public class CourseServiceImpl implements CourseService {
 
     Profession profession;
     if (optFoundProfession.isEmpty()) {
-      profession = new Profession();
-      profession.setName(professionName);
-      profession = professionRepo.saveAndFlush(profession);
+      Profession newProfession = new Profession();
+      newProfession.setName(professionName);
+      profession = professionRepo.saveAndFlush(newProfession);
     } else {
       profession = optFoundProfession.get();
     }
@@ -104,10 +101,10 @@ public class CourseServiceImpl implements CourseService {
       return;
     }
 
-    CourseAndProfession capRef = new CourseAndProfession();
-    capRef.setCourse(course);
-    capRef.setProfession(profession);
-    capRefRepo.save(capRef);
+    CourseAndProfession newCapRef = new CourseAndProfession();
+    newCapRef.setCourse(course);
+    newCapRef.setProfession(profession);
+    capRefRepo.save(newCapRef);
   }
 
   private void saveNewTagsAndSaveNewCatRefs(Course course, String[] tagValues) {
