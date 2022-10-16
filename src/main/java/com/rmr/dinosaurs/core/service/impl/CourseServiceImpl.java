@@ -41,7 +41,10 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   public CourseDto addCourse(CreatingCourseDto dto) {
-    Course course = saveNewCourseAndFlush(dto);
+    Course course = mapper.toEntity(dto);
+
+    CourseProvider provider = findCourseProviderOrSaveNewAndFlush(dto.getProviderUrl());
+    course = saveNewCourseAndFlush(course, provider);
 
     Profession profession = findProfessionOrSaveNewAndFlush(dto.getProfession());
     saveNewCapRef(course, profession);
@@ -51,10 +54,7 @@ public class CourseServiceImpl implements CourseService {
     return mapper.toDto(course);
   }
 
-  private Course saveNewCourseAndFlush(CreatingCourseDto dto) {
-    Course course = mapper.toEntity(dto);
-
-    CourseProvider provider = findCourseProviderOrSaveNewAndFlush(dto.getProviderUrl());
+  private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
     course.setProvider(provider);
 
     course.setInternalRating(props.getDefaultInternalRating());
