@@ -31,13 +31,13 @@ public class Profession {
   @Column(name = "name", nullable = false, unique = true)
   String name;
 
-  @Column(name = "cover_url")
+  @Column(name = "cover_url", nullable = true)
   String coverUrl;
 
-  @Column(name = "short_description")
+  @Column(name = "short_description", nullable = true)
   String shortDescription;
 
-  @Column(name = "description")
+  @Column(name = "description", nullable = true)
   String description;
 
   @OneToMany(fetch = FetchType.LAZY)
