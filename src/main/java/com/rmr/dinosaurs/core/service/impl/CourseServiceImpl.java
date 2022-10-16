@@ -98,15 +98,16 @@ public class CourseServiceImpl implements CourseService {
   }
 
   private void saveNewCapRef(Course course, Profession profession) {
-    boolean doesExists = capRefRepo
+    boolean doesExist = capRefRepo
         .existsByCourse_IdAndProfession_Id(course.getId(), profession.getId());
-
-    if (!doesExists) {
-      CourseAndProfession capRef = new CourseAndProfession();
-      capRef.setCourse(course);
-      capRef.setProfession(profession);
-      capRefRepo.save(capRef);
+    if (doesExist) {
+      return;
     }
+
+    CourseAndProfession capRef = new CourseAndProfession();
+    capRef.setCourse(course);
+    capRef.setProfession(profession);
+    capRefRepo.save(capRef);
   }
 
   private void saveNewTagsAndSaveNewCatRefs(Course course, String[] tagValues) {
