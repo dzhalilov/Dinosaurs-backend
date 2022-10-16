@@ -1,10 +1,13 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import com.rmr.dinosaurs.core.model.Course;
+import com.rmr.dinosaurs.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.dto.CourseDto;
 import com.rmr.dinosaurs.core.model.dto.CreatingCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
+import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import java.util.Optional;
@@ -19,6 +22,7 @@ public class CourseServiceImpl implements CourseService {
 
   private final CourseProviderRepository providerRepo;
   private final ProfessionRepository professionRepo;
+  private final CourseAndProfessionRepository capRefRepo;
 
   @Override
   public CourseDto addCourse(CreatingCourseDto course) {
@@ -55,6 +59,18 @@ public class CourseServiceImpl implements CourseService {
     }
 
     return profession;
+  }
+
+  private void saveNewCapRef(Course course, Profession profession) {
+    boolean doesExists = capRefRepo
+        .existsByCourse_IdAndProfession_Id(course.getId(), profession.getId());
+
+    if (!doesExists) {
+      CourseAndProfession capRef = new CourseAndProfession();
+      capRef.setCourse(course);
+      capRef.setProfession(profession);
+      capRefRepo.save(capRef);
+    }
   }
 
 }
