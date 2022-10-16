@@ -40,8 +40,15 @@ public class CourseServiceImpl implements CourseService {
   private final CourseAndTagRepository catRefRepo;
 
   @Override
-  public CourseDto addCourse(CreatingCourseDto course) {
-    return null;
+  public CourseDto addCourse(CreatingCourseDto dto) {
+    Course course = saveNewCourseAndFlush(dto);
+
+    Profession profession = findProfessionOrSaveNewAndFlush(dto.getProfession());
+    saveNewCapRef(course, profession);
+
+    saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
+
+    return mapper.toDto(course);
   }
 
   private Course saveNewCourseAndFlush(CreatingCourseDto dto) {
