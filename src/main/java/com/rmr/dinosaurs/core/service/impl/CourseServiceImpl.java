@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import com.rmr.dinosaurs.core.configuration.properties.CourseServiceProperties;
 import com.rmr.dinosaurs.core.model.Course;
 import com.rmr.dinosaurs.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.core.model.CourseAndTag;
@@ -9,9 +10,11 @@ import com.rmr.dinosaurs.core.model.Tag;
 import com.rmr.dinosaurs.core.model.dto.CourseDto;
 import com.rmr.dinosaurs.core.model.dto.CreatingCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
+import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndTagRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
+import com.rmr.dinosaurs.infrastucture.database.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.TagRepository;
 import java.util.ArrayList;
@@ -26,6 +29,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
+  private final CourseServiceProperties props;
+  private final CourseEntityDtoMapper mapper;
+
+  private final CourseRepository courseRepo;
   private final CourseProviderRepository providerRepo;
   private final ProfessionRepository professionRepo;
   private final TagRepository tagRepo;
@@ -35,6 +42,20 @@ public class CourseServiceImpl implements CourseService {
   @Override
   public CourseDto addCourse(CreatingCourseDto course) {
     return null;
+  }
+
+  private Course saveNewCourseAndFlush(CreatingCourseDto dto) {
+    Course course = mapper.toEntity(dto);
+
+    CourseProvider provider = findCourseProviderOrSaveNewAndFlush(dto.getProviderUrl());
+    course.setProvider(provider);
+
+    course.setInternalRating(props.getDefaultInternalRating());
+    course.setIsIndefinite(props.getDefaultIsIndefinite());
+    course.setIsArchived(props.getDefaultIsArchived());
+
+    course = courseRepo.saveAndFlush(course);
+    return course;
   }
 
   private CourseProvider findCourseProviderOrSaveNewAndFlush(String providerUrl) {
