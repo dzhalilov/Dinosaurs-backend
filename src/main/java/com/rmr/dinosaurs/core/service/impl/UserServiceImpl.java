@@ -6,7 +6,6 @@ import com.rmr.dinosaurs.core.service.UserService;
 import com.rmr.dinosaurs.core.utils.UserConverter;
 import com.rmr.dinosaurs.infrastucture.database.UserRepository;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserDto getUserById(UUID id) {
+  public UserDto getUserById(Long id) {
     User user = userRepository.findById(id).orElseThrow(
         () -> new RuntimeException("No user found by provided id")
     );
@@ -41,7 +40,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserDto deleteUserById(UUID id) {
+  public UserDto deleteUserById(Long id) {
     return null;
   }
 

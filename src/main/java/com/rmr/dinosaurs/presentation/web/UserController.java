@@ -5,7 +5,6 @@ import com.rmr.dinosaurs.core.security.pemission.AdminPermission;
 import com.rmr.dinosaurs.core.security.pemission.ModeratorPermission;
 import com.rmr.dinosaurs.core.service.UserService;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +25,7 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  UserDto getUserById(@PathVariable UUID id) {
+  UserDto getUserById(@PathVariable Long id) {
     return userService.getUserById(id);
   }
 
@@ -38,7 +37,7 @@ public class UserController {
 
   @DeleteMapping("/{id}")
   @AdminPermission
-  UserDto deleteUser(@PathVariable UUID id) {
+  UserDto deleteUser(@PathVariable Long id) {
     return userService.deleteUserById(id);
   }
 
