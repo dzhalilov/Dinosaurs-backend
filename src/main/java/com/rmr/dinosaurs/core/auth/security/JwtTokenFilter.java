@@ -1,5 +1,8 @@
 package com.rmr.dinosaurs.core.auth.security;
 
+import static com.rmr.dinosaurs.core.exception.errorcode.AuthErrorCode.INVALID_TOKEN_PROVIDED;
+
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import java.util.List;
@@ -41,7 +44,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       String token = resolveToken(request);
       if (Objects.nonNull(token)) {
         if (Strings.isEmpty(token) || !jwtTokenProvider.isTokenValid(token)) {
-          throw new RuntimeException("Invalid token");
+          throw new ServiceException(INVALID_TOKEN_PROVIDED);
         }
 
         DinoAuthentication auth = jwtTokenService

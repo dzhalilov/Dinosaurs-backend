@@ -7,7 +7,6 @@ import com.rmr.dinosaurs.core.service.UserService;
 import com.rmr.dinosaurs.core.utils.converters.UserConverter;
 import com.rmr.dinosaurs.infrastucture.database.UserRepository;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;

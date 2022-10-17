@@ -1,11 +1,14 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import static com.rmr.dinosaurs.core.exception.errorcode.AuthErrorCode.INCORRECT_CREDENTIALS;
+import static com.rmr.dinosaurs.core.exception.errorcode.UserErrorCode.USER_ALREADY_EXISTS;
 import static com.rmr.dinosaurs.core.model.Authority.ROLE_REGULAR;
 
 import com.rmr.dinosaurs.core.auth.security.DinoAuthentication;
 import com.rmr.dinosaurs.core.auth.security.DinoPrincipal;
 import com.rmr.dinosaurs.core.auth.security.JwtToken;
 import com.rmr.dinosaurs.core.auth.security.JwtTokenService;
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.LoginRequest;
 import com.rmr.dinosaurs.core.model.SignupRequest;
 import com.rmr.dinosaurs.core.model.User;
@@ -51,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
   public JwtToken signup(@NotNull SignupRequest signupRequest) {
     if (userRepository.findByEmailIgnoreCase(signupRequest.email()).isPresent()) {
       log.info("User {} trying to sign up, but already exists.", signupRequest.email());
-      throw new RuntimeException("User with such email already exists");
+      throw new ServiceException(USER_ALREADY_EXISTS);
     }
     var user = new User();
     user.setEmail(signupRequest.email().toLowerCase());
@@ -74,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
       String userPassword) {
     if (!passwordEncoder.matches(loginRequest.password(), userPassword)) {
       log.info("User {} provided incorrect password", loginRequest.email());
-      throw new RuntimeException("Incorrect password provided");
+      throw new ServiceException(INCORRECT_CREDENTIALS);
     }
   }
 
