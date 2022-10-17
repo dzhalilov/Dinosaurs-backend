@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.core.security.pemission;
+package com.rmr.dinosaurs.core.auth.security.permission;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-@PreAuthorize("hasRole('MODERATOR')")
+@PreAuthorize("hasRole('ADMIN')")
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ModeratorPermission {
+public @interface AdminPermission {
 
 }

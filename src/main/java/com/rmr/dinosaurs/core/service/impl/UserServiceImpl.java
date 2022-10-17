@@ -1,13 +1,16 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import com.rmr.dinosaurs.core.auth.security.DinoPrincipal;
 import com.rmr.dinosaurs.core.model.User;
 import com.rmr.dinosaurs.core.model.dto.UserDto;
 import com.rmr.dinosaurs.core.service.UserService;
-import com.rmr.dinosaurs.core.utils.UserConverter;
+import com.rmr.dinosaurs.core.utils.converters.UserConverter;
 import com.rmr.dinosaurs.infrastucture.database.UserRepository;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,14 +23,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDto getMyProfile() {
-    return null;
+    return getUserById(getCurrentUserPrincipal().getId());
   }
 
   @Override
   public UserDto getUserById(Long id) {
-    User user = userRepository.findById(id).orElseThrow(
-        () -> new RuntimeException("No user found by provided id")
-    );
+    var user = getUserFromRepositoryById(id);
     return userConverter.toUserDto(user);
   }
 
@@ -42,6 +43,24 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDto deleteUserById(Long id) {
     return null;
+  }
+
+  @Override
+  public UserDto setUserModerator(Long id, Boolean isModerator) {
+    return null;
+  }
+
+  private User getUserFromRepositoryById(Long id) {
+    return userRepository.findById(id).orElseThrow(
+        () -> new RuntimeException("No user found by provided id")
+    );
+  }
+
+  private DinoPrincipal getCurrentUserPrincipal() {
+    return (DinoPrincipal) SecurityContextHolder
+        .getContext()
+        .getAuthentication()
+        .getPrincipal();
   }
 
 }

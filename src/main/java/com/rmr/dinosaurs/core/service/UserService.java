@@ -13,4 +13,6 @@ public interface UserService {
 
   UserDto deleteUserById(Long id);
 
+  UserDto setUserModerator(Long id, Boolean isModerator);
+
 }

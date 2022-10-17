@@ -1,21 +1,17 @@
-package com.rmr.dinosaurs.core.model.dto;
+package com.rmr.dinosaurs.core.auth.security;
 
 import com.rmr.dinosaurs.core.model.Authority;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class DinoAuthenticationDto {
 
-  Long id;
-
-  String email;
-
-  Authority role;
+  private Long id;
+  private String email;
+  private Authority role;
 
 }

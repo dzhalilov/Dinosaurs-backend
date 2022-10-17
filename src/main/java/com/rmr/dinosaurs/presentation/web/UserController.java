@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.presentation.web;
 
+import com.rmr.dinosaurs.core.auth.security.permission.AdminPermission;
+import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
 import com.rmr.dinosaurs.core.model.dto.UserDto;
-import com.rmr.dinosaurs.core.security.pemission.AdminPermission;
-import com.rmr.dinosaurs.core.security.pemission.ModeratorPermission;
 import com.rmr.dinosaurs.core.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

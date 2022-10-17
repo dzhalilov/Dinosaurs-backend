@@ -30,8 +30,8 @@ public class User {
   @Column(name = "email", nullable = false, unique = true)
   String email;
 
-  @Column(name = "hashed_password", nullable = false)
-  String hashedPassword;
+  @Column(name = "password", nullable = false)
+  String password;
 
   Authority role;
 
@@ -39,6 +39,6 @@ public class User {
   @JoinColumn(name = "ui_user_id")
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
-  UserInfo info;
+  UserInfo userInfo;
 
 }

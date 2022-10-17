@@ -8,8 +8,6 @@ server:
 spring:
   application:
     name: dinosaurs-service
-  main:
-    banner-mode: off
   jackson:
     serialization:
       indent_output: true
@@ -18,7 +16,7 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/dinodb}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:password}
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa:
     hibernate:
       ddl-auto: update

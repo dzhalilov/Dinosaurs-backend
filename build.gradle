@@ -12,13 +12,8 @@ version = 'SNAPSHOT-1.0'
 sourceCompatibility = '17'
 targetCompatibility = '17'
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -27,27 +22,9 @@ jar {
 }
 
 ext {
-	set('testcontainersVersion', "1.17.4")
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'io.swagger.core.v3:swagger-annotations:2.2.3'
-	implementation "org.springdoc:springdoc-openapi-ui:1.6.11"
-	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:postgresql'
+	set('testcontainersVersion', "1.17.5")
+	jjwtVersion = '0.11.5'
+	junitBomVersion = '5.9.0'
 }
 
 dependencyManagement {
@@ -56,8 +33,79 @@ dependencyManagement {
 	}
 }
 
-tasks.named('test') {
+sourceSets {
+	integrationTest {
+		java.srcDir "src/integrationTest/java"
+		compileClasspath += main.output + test.output
+		runtimeClasspath += main.output + test.output
+
+//		resources.srcDir "src/integrationTest/resources"
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	integrationTestImplementation.extendsFrom implementation, testImplementation
+	integrationTestCompileOnly.extendsFrom compileOnly
+	integrationTestAnnotationProcessor.extendsFrom annotationProcessor
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.3'
+	implementation "org.springdoc:springdoc-openapi-ui:1.6.11"
+	implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
+	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+
+	compileOnly 'org.projectlombok:lombok'
+
+	runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
+	runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
+	runtimeOnly 'org.postgresql:postgresql'
+
+	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	testImplementation(platform("org.junit:junit-bom:$junitBomVersion"))
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	integrationTestImplementation 'org.springframework.security:spring-security-test'
+	integrationTestImplementation 'org.testcontainers:junit-jupiter'
+	integrationTestImplementation 'org.testcontainers:postgresql'
+}
+
+
+task integrationTest(type: Test) {
+	description = 'Running the integration tests'
+	group = 'verification'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	testLogging {
+		exceptionFormat = 'full'
+	}
+}
+
+test {
 	useJUnitPlatform()
+}
+
+//integrationTest {
+//	useJUnitPlatform()
+//}
+
+clean.doFirst {
+	delete "${rootDir}\\out"
+	println "delete ${rootDir}\\out"
 }
 
 checkstyle {
@@ -70,14 +118,15 @@ checkstyle {
 
 jacoco {
 	toolVersion = '0.8.8'
+	reportsDirectory = layout.buildDirectory.dir('jacocoReports')
 }
 
 jacocoTestReport {
 	group = 'Reporting'
 	reports {
-		xml.enabled true
-		csv.enabled false
-		html.destination file("${buildDir}/jacocoHtml")
+		xml.required = true
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir('jacocoReports')
 	}
 }
 

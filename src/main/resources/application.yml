@@ -13,16 +13,17 @@ spring:
       indent_output: true
       WRITE_DATES_AS_TIMESTAMPS: false
   datasource:
-    driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/dinodb}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
       dialect: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -33,6 +34,10 @@ role:
   hierarchy: |
     ROLE_ADMIN > ROLE_MODERATOR
     ROLE_MODERATOR > ROLE_REGULAR
+
+jwt:
+  ttl: 86400
+  secretKey: k+r/JkFxq9lO+iqf3zY+/Wgr2bu31LoiUwIb26amlB9/VAsFEyK7vi7ubzP1RJQn
 
 endpoints:
   health:
