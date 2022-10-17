@@ -1,6 +1,5 @@
 package com.rmr.dinosaurs.core.model;
 
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,7 +25,7 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  UUID id;
+  Long id;
 
   @Column(name = "email", nullable = false, unique = true)
   String email;

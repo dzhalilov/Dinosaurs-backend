@@ -26,21 +26,21 @@ public class CourseProvider {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
-  @Column(name = "name", nullable = false)
+  @Column(name = "name", nullable = true)
   String name;
 
-  @Column(name = "url", nullable = false)
+  @Column(name = "url", nullable = false, unique = true)
   String url;
 
-  @Column(name = "cover_url", nullable = false)
+  @Column(name = "cover_url", nullable = true)
   String coverUrl;
 
-  @Column(name = "short_description", nullable = false)
+  @Column(name = "short_description", nullable = true)
   String shortDescription;
 
-  @Column(name = "description", nullable = false)
+  @Column(name = "description", nullable = true)
   String description;
 
   @OneToMany(fetch = FetchType.LAZY)

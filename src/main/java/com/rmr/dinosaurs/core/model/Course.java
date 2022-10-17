@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +28,7 @@ public class Course {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
   @Column(name = "title", nullable = false)
   String title;
@@ -40,26 +39,29 @@ public class Course {
   @Column(name = "cover_url", nullable = false)
   String coverUrl;
 
-  @Column(name = "short_description", nullable = false)
+  @Column(name = "short_description")
   String shortDescription;
 
-  @Column(name = "start_datetime", nullable = false)
-  LocalDateTime startDatetime;
+  @Column(name = "description", nullable = false)
+  String description;
 
-  @Column(name = "end_datetime", nullable = false)
-  LocalDateTime endDatetime;
+  @Column(name = "starts_at", nullable = false)
+  LocalDateTime startsAt;
+
+  @Column(name = "ends_at", nullable = false)
+  LocalDateTime endsAt;
 
   @Column(name = "internal_rating", nullable = false)
-  int internalRating;
+  Integer internalRating;
 
   @Column(name = "is_indefinite", nullable = false)
-  boolean isIndefinite;
+  Boolean isIndefinite;
 
-  @Column(name = "is_for_advanced_students", nullable = false)
-  boolean isForAdvancedStudents;
+  @Column(name = "is_advanced", nullable = false)
+  Boolean isAdvanced;
 
   @Column(name = "is_archived", nullable = false)
-  boolean isArchived;
+  Boolean isArchived;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "c_course_provider_id", updatable = false)
@@ -76,11 +78,5 @@ public class Course {
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
   Set<CourseAndTag> courseAndTagRefs;
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "ci_course_id")
-  @EqualsAndHashCode.Exclude
-  @ToString.Exclude
-  CourseInfo info;
 
 }

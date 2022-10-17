@@ -25,7 +25,7 @@ public class UserInfo {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
   @Column(name = "name", nullable = false)
   String name;
@@ -37,7 +37,7 @@ public class UserInfo {
   LocalDateTime registeredAtDatetime;
 
   @Column(name = "is_confirmed_user", nullable = false)
-  boolean isConfirmedUser;
+  Boolean isConfirmedUser;
 
   @Column(name = "archived_at_datetime", nullable = true)
   LocalDateTime archivedAtDatetime;

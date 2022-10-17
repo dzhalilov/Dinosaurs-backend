@@ -23,7 +23,7 @@ public class CourseAndProfession {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, unique = true)
-  int id;
+  Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cap_course_id", updatable = false)
