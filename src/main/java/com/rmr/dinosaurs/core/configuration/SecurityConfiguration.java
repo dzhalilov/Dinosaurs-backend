@@ -38,6 +38,7 @@ public class SecurityConfiguration {
         .formLogin().disable()
         .logout().disable()
 
+		.cors().disable()
         .csrf().disable()
         .httpBasic().disable()
         .build();
