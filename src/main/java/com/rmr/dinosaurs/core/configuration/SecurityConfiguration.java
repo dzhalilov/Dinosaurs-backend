@@ -3,7 +3,7 @@ package com.rmr.dinosaurs.core.configuration;
 import com.rmr.dinosaurs.core.auth.security.JwtTokenFilter;
 import com.rmr.dinosaurs.core.auth.security.JwtTokenProvider;
 import com.rmr.dinosaurs.core.auth.security.JwtTokenService;
-import java.util.List;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -39,12 +39,9 @@ public class SecurityConfiguration {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         .and()
-        .formLogin().disable()
-        .logout().disable()
 
-        .cors().disable()
+        .cors().and()
         .csrf().disable()
-        .httpBasic().disable()
         .build();
   }
 
@@ -61,9 +58,10 @@ public class SecurityConfiguration {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedOriginPattern(CorsConfiguration.ALL);
-    configuration.setAllowedMethods(List.of(CorsConfiguration.ALL));
-    configuration.setAllowedHeaders(List.of(CorsConfiguration.ALL));
+    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+    configuration.setAllowedMethods(Collections.singletonList(("*")));
+    configuration.setAllowedHeaders(Collections.singletonList(("*")));
+    configuration.setAllowCredentials(true);
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
