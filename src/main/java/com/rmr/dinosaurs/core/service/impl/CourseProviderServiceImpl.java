@@ -38,4 +38,21 @@ public class CourseProviderServiceImpl implements CourseProviderService {
     return mapper.toDto(foundProvider);
   }
 
+  @Override
+  public CourseProviderDto updateProviderById(long id, CourseProviderDto dto) {
+    Optional<CourseProvider> optFoundProvider = providerRepo.findById(id);
+    if (optFoundProvider.isEmpty()) {
+      throw new CourseProviderNotFoundException();
+    }
+
+    CourseProvider foundProvider = optFoundProvider.get();
+    foundProvider.setName(dto.getName());
+    foundProvider.setUrl(dto.getUrl());
+    foundProvider.setDescription(dto.getDescription());
+    foundProvider.setCoverUrl(dto.getCoverUrl());
+
+    CourseProvider updatedProvider = providerRepo.saveAndFlush(foundProvider);
+    return mapper.toDto(updatedProvider);
+  }
+
 }

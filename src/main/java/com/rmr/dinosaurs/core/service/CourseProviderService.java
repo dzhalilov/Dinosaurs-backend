@@ -8,4 +8,6 @@ public interface CourseProviderService {
 
   CourseProviderDto getProviderById(long id);
 
+  CourseProviderDto updateProviderById(long id, CourseProviderDto dto);
+
 }
