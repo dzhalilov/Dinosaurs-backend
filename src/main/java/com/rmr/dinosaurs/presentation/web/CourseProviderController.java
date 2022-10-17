@@ -26,4 +26,12 @@ public class CourseProviderController {
         .body(createdProvider);
   }
 
+  @GetMapping(path = "/{id}")
+  public ResponseEntity<CourseProviderDto> getProviderById(@PathVariable long id) {
+    CourseProviderDto provider = providerService.getProviderById(id);
+    return ResponseEntity
+        .ok()
+        .body(provider);
+  }
+
 }

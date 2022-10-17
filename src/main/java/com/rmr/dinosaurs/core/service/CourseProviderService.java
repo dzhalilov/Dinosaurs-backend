@@ -6,4 +6,6 @@ public interface CourseProviderService {
 
   CourseProviderDto createProvider(CourseProviderDto provider);
 
+  CourseProviderDto getProviderById(long id);
+
 }
