@@ -60,7 +60,7 @@ public class CourseProviderController {
 
   @GetMapping
   public ResponseEntity<CourseProviderPageDto>
-  getProfessionPage(@RequestParam(name = "page") int pageNum) {
+      getProviderPage(@RequestParam(name = "page") int pageNum) {
 
     CourseProviderPageDto provider = providerService.getProviderPage(pageNum);
     return ResponseEntity
