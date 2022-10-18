@@ -1,13 +1,12 @@
 package com.rmr.dinosaurs.presentation.web;
 
-import com.rmr.dinosaurs.core.model.Course;
+import com.rmr.dinosaurs.core.model.dto.CoursePageDto;
 import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,9 +49,8 @@ public class CourseController {
   }
 
   @GetMapping
-  public ResponseEntity<Page<Course>>
-  getCoursePage(@RequestParam(name = "page") int pageNum) {
-    Page<Course> coursePage = courseService.getCoursePage(pageNum);
+  public ResponseEntity<CoursePageDto> getCoursePage(@RequestParam(name = "page") int pageNum) {
+    CoursePageDto coursePage = courseService.getCoursePage(pageNum);
     return ResponseEntity
         .ok()
         .body(coursePage);

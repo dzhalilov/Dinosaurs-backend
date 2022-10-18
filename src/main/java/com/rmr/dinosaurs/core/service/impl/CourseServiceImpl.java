@@ -7,6 +7,7 @@ import com.rmr.dinosaurs.core.model.CourseAndTag;
 import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Tag;
+import com.rmr.dinosaurs.core.model.dto.CoursePageDto;
 import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
@@ -88,17 +89,26 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
-  public Page<Course> getCoursePage(int pageNum) {
+  @Transactional
+  public CoursePageDto getCoursePage(int pageNum) {
     --pageNum;
     if (pageNum < 0) {
       throw new NegativePageNumberException();
     }
-
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());
 
-    return courseRepo
+    Page<Course> page = courseRepo
         .findByIsArchivedFalseOrderByStartsAtAsc(pageable);
+
+    CoursePageDto coursePageDto = new CoursePageDto();
+    coursePageDto.setTotalElements(page.getTotalElements());
+    coursePageDto.setTotalPages(page.getTotalPages());
+    coursePageDto.setPageSize(page.getSize());
+    coursePageDto.setPageNumber(page.getNumber() + 1);
+    coursePageDto.setContent(page.getContent());
+
+    return coursePageDto;
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {

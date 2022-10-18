@@ -1,10 +1,9 @@
 package com.rmr.dinosaurs.core.service;
 
-import com.rmr.dinosaurs.core.model.Course;
+import com.rmr.dinosaurs.core.model.dto.CoursePageDto;
 import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import java.util.List;
-import org.springframework.data.domain.Page;
 
 public interface CourseService {
 
@@ -14,6 +13,6 @@ public interface CourseService {
 
   List<ReadCourseDto> getAllCourses();
 
-  Page<Course> getCoursePage(int pageNum);
+  CoursePageDto getCoursePage(int pageNum);
 
 }
