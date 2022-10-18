@@ -3,6 +3,7 @@ package com.rmr.dinosaurs.presentation.web;
 import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
 import com.rmr.dinosaurs.core.service.ProfessionService;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,14 @@ public class ProfessionController {
     return ResponseEntity
         .ok()
         .body(profession);
+  }
+
+  @GetMapping
+  public ResponseEntity<List<ProfessionDto>> getAllProfessions() {
+    List<ProfessionDto> professions = professionService.getAllProfessions();
+    return ResponseEntity
+        .ok()
+        .body(professions);
   }
 
 }
