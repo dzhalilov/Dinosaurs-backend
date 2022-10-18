@@ -78,6 +78,27 @@ public class CourseServiceImpl implements CourseService {
     return readCourseDto;
   }
 
+  @Override
+  @Transactional
+  public List<ReadCourseDto> getAllCourses() {
+    List<Course> courses = courseRepo.findAll();
+
+    List<ReadCourseDto> dtoList = new ArrayList<>(courses.size());
+    for (Course c : courses) {
+      Profession p = c.getCourseAndProfessionRefs()
+          .iterator().next()
+          .getProfession();
+
+      ReadCourseDto readCourseDto = mapper.toReadCourseDto(c);
+      readCourseDto.setProfessionId(p.getId());
+      readCourseDto.setProfessionName(p.getName());
+
+      dtoList.add(readCourseDto);
+    }
+
+    return dtoList;
+  }
+
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
     course.setProvider(provider);
 

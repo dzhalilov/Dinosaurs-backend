@@ -4,6 +4,7 @@ import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,14 @@ public class CourseController {
     return ResponseEntity
         .ok()
         .body(course);
+  }
+
+  @GetMapping
+  public ResponseEntity<List<ReadCourseDto>> getAllProviders() {
+    List<ReadCourseDto> courses = courseService.getAllCourses();
+    return ResponseEntity
+        .ok()
+        .body(courses);
   }
 
 }
