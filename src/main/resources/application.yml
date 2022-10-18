@@ -50,3 +50,5 @@ services:
     default-is-indefinite: true
     default-is-archived: false
     default-page-size: 10
+  profession:
+    default-page-size: 10
