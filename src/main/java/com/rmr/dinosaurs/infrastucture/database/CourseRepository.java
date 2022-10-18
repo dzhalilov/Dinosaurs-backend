@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
-  Page<Course> findByOrderByStartsAtAsc(Pageable pageable);
+  Page<Course> findByIsArchivedFalseOrderByStartsAtAsc(Pageable pageable);
 
 }

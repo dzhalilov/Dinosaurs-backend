@@ -114,7 +114,7 @@ public class CourseServiceImpl implements CourseService {
         pageNum, props.getDefaultPageSize());
 
     return courseRepo
-        .findAll(pageable);
+        .findByIsArchivedFalseOrderByStartsAtAsc(pageable);
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
