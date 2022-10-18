@@ -3,6 +3,7 @@ package com.rmr.dinosaurs.presentation.web;
 import com.rmr.dinosaurs.core.model.dto.CourseProviderDto;
 import com.rmr.dinosaurs.core.service.CourseProviderService;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,14 @@ public class CourseProviderController {
     return ResponseEntity
         .ok()
         .body(provider);
+  }
+
+  @GetMapping
+  public ResponseEntity<List<CourseProviderDto>> getAllProviders() {
+    List<CourseProviderDto> providers = providerService.getAllProviders();
+    return ResponseEntity
+        .ok()
+        .body(providers);
   }
 
 }
