@@ -37,7 +37,7 @@ public class Profession {
   @Column(name = "short_description", nullable = true)
   String shortDescription;
 
-  @Column(name = "description", nullable = true)
+  @Column(name = "description", nullable = true, length = 4096)
   String description;
 
   @OneToMany(fetch = FetchType.LAZY)

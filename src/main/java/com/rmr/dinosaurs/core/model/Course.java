@@ -39,10 +39,10 @@ public class Course {
   @Column(name = "cover_url", nullable = false)
   String coverUrl;
 
-  @Column(name = "short_description")
+  @Column(name = "short_description", nullable = true)
   String shortDescription;
 
-  @Column(name = "description", nullable = false)
+  @Column(name = "description", nullable = false, length = 4096)
   String description;
 
   @Column(name = "starts_at", nullable = false)
