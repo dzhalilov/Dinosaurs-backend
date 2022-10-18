@@ -8,17 +8,32 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseDto {
+public class ReadCourseDto {
 
   Long id;
+
   String title;
+
   String url;
+
   String coverUrl;
+
   String description;
+
   LocalDateTime startsAt;
+
   LocalDateTime endsAt;
+
   Boolean isAdvanced;
+
+  Long providerId;
+
+  String providerName;
+
   String providerUrl;
+
+  Long professionId;
+
   String professionName;
 
 }

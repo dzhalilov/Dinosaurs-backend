@@ -8,7 +8,9 @@ import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Tag;
 import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
+import com.rmr.dinosaurs.core.service.exceptions.CourseNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
@@ -54,10 +56,26 @@ public class CourseServiceImpl implements CourseService {
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
-    CreateCourseDto createdCourse = mapper.toDto(course);
+    CreateCourseDto createdCourse = mapper.toCreateCourseDto(course);
     createdCourse.setProfessionId(dto.getProfessionId());
     createdCourse.setTags(dto.getTags());
     return createdCourse;
+  }
+
+  @Override
+  @Transactional
+  public ReadCourseDto getCourseById(long id) {
+    Course course = courseRepo.findById(id)
+        .orElseThrow(CourseNotFoundException::new);
+
+    Profession courseProfession = course.getCourseAndProfessionRefs()
+        .iterator().next()
+        .getProfession();
+
+    ReadCourseDto readCourseDto = mapper.toReadCourseDto(course);
+    readCourseDto.setProfessionId(courseProfession.getId());
+    readCourseDto.setProfessionName(courseProfession.getName());
+    return readCourseDto;
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {

@@ -2,6 +2,7 @@ package com.rmr.dinosaurs.core.utils.mapper;
 
 import com.rmr.dinosaurs.core.model.Course;
 import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -19,6 +20,13 @@ public interface CourseEntityDtoMapper {
   Course toEntity(CreateCourseDto dto);
 
   @Mapping(target = "providerId", source = "provider.id")
-  CreateCourseDto toDto(Course entity);
+  CreateCourseDto toCreateCourseDto(Course entity);
+
+  @Mapping(target = "providerId", source = "provider.id")
+  @Mapping(target = "providerName", source = "provider.name")
+  @Mapping(target = "providerUrl", source = "provider.url")
+  @Mapping(target = "professionId", ignore = true)
+  @Mapping(target = "professionName", ignore = true)
+  ReadCourseDto toReadCourseDto(Course entity);
 
 }

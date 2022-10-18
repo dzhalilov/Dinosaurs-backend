@@ -1,10 +1,13 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,14 @@ public class CourseController {
     return ResponseEntity
         .created(createdCourseUri)
         .body(createdCourse);
+  }
+
+  @GetMapping(path = "/{id}")
+  public ResponseEntity<ReadCourseDto> getCourseById(@PathVariable long id) {
+    ReadCourseDto course = courseService.getCourseById(id);
+    return ResponseEntity
+        .ok()
+        .body(course);
   }
 
 }
