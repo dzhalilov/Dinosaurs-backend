@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.core.service;
 
 import com.rmr.dinosaurs.core.model.dto.CourseProviderDto;
+import com.rmr.dinosaurs.core.model.dto.CourseProviderPageDto;
 import java.util.List;
 
 public interface CourseProviderService {
@@ -12,5 +13,7 @@ public interface CourseProviderService {
   CourseProviderDto updateProviderById(long id, CourseProviderDto dto);
 
   List<CourseProviderDto> getAllProviders();
+
+  CourseProviderPageDto getProviderPage(int pageNum);
 
 }

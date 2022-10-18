@@ -2,6 +2,7 @@ package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
+import com.rmr.dinosaurs.core.model.dto.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,12 +40,20 @@ public class CourseController {
         .body(course);
   }
 
-  @GetMapping
+  @GetMapping(path = "/all")
   public ResponseEntity<List<ReadCourseDto>> getAllProviders() {
     List<ReadCourseDto> courses = courseService.getAllCourses();
     return ResponseEntity
         .ok()
         .body(courses);
+  }
+
+  @GetMapping
+  public ResponseEntity<ReadCoursePageDto> getCoursePage(@RequestParam(name = "page") int pageNum) {
+    ReadCoursePageDto coursePage = courseService.getCoursePage(pageNum);
+    return ResponseEntity
+        .ok()
+        .body(coursePage);
   }
 
 }

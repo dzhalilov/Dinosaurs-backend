@@ -5,13 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "services.course")
+@ConfigurationProperties(prefix = "services.provider")
 @Data
-public class CourseServiceProperties {
-
-  private Integer defaultInternalRating;
-  private Boolean defaultIsIndefinite;
-  private Boolean defaultIsArchived;
+public class CourseProviderServiceProperties {
 
   private Integer defaultPageSize;
 
