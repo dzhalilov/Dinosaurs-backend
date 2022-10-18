@@ -28,6 +28,7 @@ public interface CourseEntityDtoMapper {
   @Mapping(target = "providerCoverUrl", source = "provider.coverUrl")
   @Mapping(target = "professionId", ignore = true)
   @Mapping(target = "professionName", ignore = true)
+  @Mapping(target = "tags", ignore = true)
   ReadCourseDto toReadCourseDto(Course entity);
 
 }

@@ -172,9 +172,14 @@ public class CourseServiceImpl implements CourseService {
         .iterator().next()
         .getProfession();
 
+    List<String> tags = course.getCourseAndTagRefs().stream()
+        .map(cat -> cat.getTag().getValue())
+        .toList();
+
     ReadCourseDto readCourseDto = mapper.toReadCourseDto(course);
     readCourseDto.setProfessionId(courseProfession.getId());
     readCourseDto.setProfessionName(courseProfession.getName());
+    readCourseDto.setTags(tags);
 
     return readCourseDto;
   }
