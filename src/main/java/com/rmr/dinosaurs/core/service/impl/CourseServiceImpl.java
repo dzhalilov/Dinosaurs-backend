@@ -71,15 +71,7 @@ public class CourseServiceImpl implements CourseService {
   public ReadCourseDto getCourseById(long id) {
     Course course = courseRepo.findById(id)
         .orElseThrow(CourseNotFoundException::new);
-
-    Profession courseProfession = course.getCourseAndProfessionRefs()
-        .iterator().next()
-        .getProfession();
-
-    ReadCourseDto readCourseDto = mapper.toReadCourseDto(course);
-    readCourseDto.setProfessionId(courseProfession.getId());
-    readCourseDto.setProfessionName(courseProfession.getName());
-    return readCourseDto;
+    return toReadCourseDto(course);
   }
 
   @Override
@@ -87,20 +79,12 @@ public class CourseServiceImpl implements CourseService {
   public List<ReadCourseDto> getAllCourses() {
     List<Course> courses = courseRepo.findAll();
 
-    List<ReadCourseDto> dtoList = new ArrayList<>(courses.size());
+    List<ReadCourseDto> readCourses = new ArrayList<>(courses.size());
     for (Course c : courses) {
-      Profession p = c.getCourseAndProfessionRefs()
-          .iterator().next()
-          .getProfession();
-
-      ReadCourseDto readCourseDto = mapper.toReadCourseDto(c);
-      readCourseDto.setProfessionId(p.getId());
-      readCourseDto.setProfessionName(p.getName());
-
-      dtoList.add(readCourseDto);
+      readCourses.add(toReadCourseDto(c));
     }
 
-    return dtoList;
+    return readCourses;
   }
 
   @Override
@@ -176,6 +160,18 @@ public class CourseServiceImpl implements CourseService {
     }
 
     catRefRepo.saveAll(catRefs);
+  }
+
+  private ReadCourseDto toReadCourseDto(Course course) {
+    Profession courseProfession = course.getCourseAndProfessionRefs()
+        .iterator().next()
+        .getProfession();
+
+    ReadCourseDto readCourseDto = mapper.toReadCourseDto(course);
+    readCourseDto.setProfessionId(courseProfession.getId());
+    readCourseDto.setProfessionName(courseProfession.getName());
+
+    return readCourseDto;
   }
 
 }
