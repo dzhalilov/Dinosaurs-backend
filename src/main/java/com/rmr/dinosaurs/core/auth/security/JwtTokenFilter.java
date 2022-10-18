@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -31,7 +32,28 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       new AntPathRequestMatcher("/swagger-ui/**"),
       new AntPathRequestMatcher("/swagger-resources/**"),
       new AntPathRequestMatcher("/v3/api-docs/**"),
-      new AntPathRequestMatcher("/actuator/**")
+      new AntPathRequestMatcher("/actuator/**"),
+
+      new AntPathRequestMatcher("/api/v1/providers"),
+      new AntPathRequestMatcher("/api/v1/providers/**"),
+      new AntPathRequestMatcher("/api/v1/professions"),
+      new AntPathRequestMatcher("/api/v1/professions/**"),
+      new AntPathRequestMatcher("/api/v1/courses"),
+      new AntPathRequestMatcher("/api/v1/courses/**"),
+
+      new AntPathRequestMatcher("/api/v1/providers", HttpMethod.POST.name()),
+      new AntPathRequestMatcher("/api/v1/providers/**", HttpMethod.POST.name()),
+      new AntPathRequestMatcher("/api/v1/professions", HttpMethod.POST.name()),
+      new AntPathRequestMatcher("/api/v1/professions/**", HttpMethod.POST.name()),
+      new AntPathRequestMatcher("/api/v1/courses", HttpMethod.POST.name()),
+      new AntPathRequestMatcher("/api/v1/courses/**", HttpMethod.POST.name()),
+
+      new AntPathRequestMatcher("/api/v1/providers", HttpMethod.PUT.name()),
+      new AntPathRequestMatcher("/api/v1/providers/**", HttpMethod.PUT.name()),
+      new AntPathRequestMatcher("/api/v1/professions", HttpMethod.PUT.name()),
+      new AntPathRequestMatcher("/api/v1/professions/**", HttpMethod.PUT.name()),
+      new AntPathRequestMatcher("/api/v1/courses", HttpMethod.PUT.name()),
+      new AntPathRequestMatcher("/api/v1/courses/**", HttpMethod.PUT.name())
   );
 
   private final JwtTokenProvider jwtTokenProvider;
