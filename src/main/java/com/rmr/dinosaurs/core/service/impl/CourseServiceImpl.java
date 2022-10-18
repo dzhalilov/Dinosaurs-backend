@@ -7,9 +7,12 @@ import com.rmr.dinosaurs.core.model.CourseAndTag;
 import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Tag;
-import com.rmr.dinosaurs.core.model.dto.CourseDto;
-import com.rmr.dinosaurs.core.model.dto.CreatingCourseDto;
+import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
+import com.rmr.dinosaurs.core.service.exceptions.CourseNotFoundException;
+import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
+import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndTagRepository;
@@ -42,16 +45,58 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CourseDto addCourse(CreatingCourseDto dto) {
-    CourseProvider provider = findCourseProviderOrSaveNewAndFlush(dto.getProviderUrl());
+  public CreateCourseDto createCourse(CreateCourseDto dto) {
+    CourseProvider provider = providerRepo.findById(dto.getProviderId())
+        .orElseThrow(CourseProviderNotFoundException::new);
     Course course = saveNewCourseAndFlush(mapper.toEntity(dto), provider);
 
-    Profession profession = findProfessionOrSaveNewAndFlush(dto.getProfession());
+    Profession profession = professionRepo.findById(dto.getProfessionId())
+        .orElseThrow(ProfessionNotFoundException::new);
     saveNewCapRef(course, profession);
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
-    return mapper.toDto(course);
+    CreateCourseDto createdCourse = mapper.toCreateCourseDto(course);
+    createdCourse.setProfessionId(dto.getProfessionId());
+    createdCourse.setTags(dto.getTags());
+    return createdCourse;
+  }
+
+  @Override
+  @Transactional
+  public ReadCourseDto getCourseById(long id) {
+    Course course = courseRepo.findById(id)
+        .orElseThrow(CourseNotFoundException::new);
+
+    Profession courseProfession = course.getCourseAndProfessionRefs()
+        .iterator().next()
+        .getProfession();
+
+    ReadCourseDto readCourseDto = mapper.toReadCourseDto(course);
+    readCourseDto.setProfessionId(courseProfession.getId());
+    readCourseDto.setProfessionName(courseProfession.getName());
+    return readCourseDto;
+  }
+
+  @Override
+  @Transactional
+  public List<ReadCourseDto> getAllCourses() {
+    List<Course> courses = courseRepo.findAll();
+
+    List<ReadCourseDto> dtoList = new ArrayList<>(courses.size());
+    for (Course c : courses) {
+      Profession p = c.getCourseAndProfessionRefs()
+          .iterator().next()
+          .getProfession();
+
+      ReadCourseDto readCourseDto = mapper.toReadCourseDto(c);
+      readCourseDto.setProfessionId(p.getId());
+      readCourseDto.setProfessionName(p.getName());
+
+      dtoList.add(readCourseDto);
+    }
+
+    return dtoList;
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
@@ -62,38 +107,6 @@ public class CourseServiceImpl implements CourseService {
     course.setIsArchived(props.getDefaultIsArchived());
 
     return courseRepo.saveAndFlush(course);
-  }
-
-  private CourseProvider findCourseProviderOrSaveNewAndFlush(String providerUrl) {
-    Optional<CourseProvider> optFoundProvider = providerRepo
-        .findByUrl(providerUrl);
-
-    CourseProvider provider;
-    if (optFoundProvider.isEmpty()) {
-      CourseProvider newProvider = new CourseProvider();
-      newProvider.setUrl(providerUrl);
-      provider = providerRepo.saveAndFlush(newProvider);
-    } else {
-      provider = optFoundProvider.get();
-    }
-
-    return provider;
-  }
-
-  private Profession findProfessionOrSaveNewAndFlush(String professionName) {
-    Optional<Profession> optFoundProfession = professionRepo
-        .findByName(professionName);
-
-    Profession profession;
-    if (optFoundProfession.isEmpty()) {
-      Profession newProfession = new Profession();
-      newProfession.setName(professionName);
-      profession = professionRepo.saveAndFlush(newProfession);
-    } else {
-      profession = optFoundProfession.get();
-    }
-
-    return profession;
   }
 
   private void saveNewCapRef(Course course, Profession profession) {
