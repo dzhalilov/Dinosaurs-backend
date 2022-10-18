@@ -77,6 +77,37 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
+  public CourseDto updateCourseById(long id, CourseDto dto) {
+    CourseProvider provider = providerRepo.findById(dto.getProviderId())
+        .orElseThrow(CourseProviderNotFoundException::new);
+    Course course = courseRepo.findById(id)
+        .orElseThrow(CourseNotFoundException::new);
+    course.setProvider(provider);
+    course.setTitle(dto.getTitle());
+    course.setUrl(dto.getUrl());
+    course.setCoverUrl(dto.getCoverUrl());
+    course.setDescription(dto.getDescription());
+    course.setStartsAt(dto.getStartsAt());
+    course.setEndsAt(dto.getEndsAt());
+    course.setIsAdvanced(dto.getIsAdvanced());
+    Course updatedCourse = courseRepo.saveAndFlush(course);
+
+    Profession profession = professionRepo.findById(dto.getProfessionId())
+        .orElseThrow(ProfessionNotFoundException::new);
+    capRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
+    saveNewCapRef(updatedCourse, profession);
+
+    catRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
+    saveNewTagsAndSaveNewCatRefs(updatedCourse, dto.getTags());
+
+    CourseDto updatedDto = mapper.toDto(updatedCourse);
+    updatedDto.setProfessionId(dto.getProfessionId());
+    updatedDto.setTags(dto.getTags());
+    return updatedDto;
+  }
+
+  @Override
+  @Transactional
   public List<ReadCourseDto> getAllCourses() {
     return courseRepo.findAll()
         .stream().map(this::toReadCourseDto).toList();

@@ -10,4 +10,6 @@ public interface CourseAndProfessionRepository
 
   boolean existsByCourse_IdAndProfession_Id(Long courseId, Long professionId);
 
+  void deleteAllByCourse_Id(Long courseId);
+
 }

@@ -11,6 +11,8 @@ public interface CourseService {
 
   ReadCourseDto getCourseById(long id);
 
+  CourseDto updateCourseById(long id, CourseDto dto);
+
   List<ReadCourseDto> getAllCourses();
 
   ReadCoursePageDto getCoursePage(int pageNum);

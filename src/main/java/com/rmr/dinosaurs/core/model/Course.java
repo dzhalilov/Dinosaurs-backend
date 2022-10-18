@@ -64,7 +64,7 @@ public class Course {
   Boolean isArchived;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "c_course_provider_id", updatable = false)
+  @JoinColumn(name = "c_course_provider_id", updatable = true)
   CourseProvider provider;
 
   @OneToMany(fetch = FetchType.LAZY)
