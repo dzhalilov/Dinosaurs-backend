@@ -6,7 +6,6 @@ import com.rmr.dinosaurs.core.service.CourseProviderService;
 import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseProviderEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,29 +28,22 @@ public class CourseProviderServiceImpl implements CourseProviderService {
 
   @Override
   public CourseProviderDto getProviderById(long id) {
-    Optional<CourseProvider> optFoundProvider = providerRepo.findById(id);
-    if (optFoundProvider.isEmpty()) {
-      throw new CourseProviderNotFoundException();
-    }
-
-    CourseProvider foundProvider = optFoundProvider.get();
-    return mapper.toDto(foundProvider);
+    CourseProvider provider = providerRepo.findById(id)
+        .orElseThrow(CourseProviderNotFoundException::new);
+    return mapper.toDto(provider);
   }
 
   @Override
   public CourseProviderDto updateProviderById(long id, CourseProviderDto dto) {
-    Optional<CourseProvider> optFoundProvider = providerRepo.findById(id);
-    if (optFoundProvider.isEmpty()) {
-      throw new CourseProviderNotFoundException();
-    }
+    CourseProvider provider = providerRepo.findById(id)
+        .orElseThrow(CourseProviderNotFoundException::new);
 
-    CourseProvider foundProvider = optFoundProvider.get();
-    foundProvider.setName(dto.getName());
-    foundProvider.setUrl(dto.getUrl());
-    foundProvider.setDescription(dto.getDescription());
-    foundProvider.setCoverUrl(dto.getCoverUrl());
+    provider.setName(dto.getName());
+    provider.setUrl(dto.getUrl());
+    provider.setDescription(dto.getDescription());
+    provider.setCoverUrl(dto.getCoverUrl());
 
-    CourseProvider updatedProvider = providerRepo.saveAndFlush(foundProvider);
+    CourseProvider updatedProvider = providerRepo.saveAndFlush(provider);
     return mapper.toDto(updatedProvider);
   }
 

@@ -6,7 +6,6 @@ import com.rmr.dinosaurs.core.service.ProfessionService;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,28 +28,21 @@ public class ProfessionServiceImpl implements ProfessionService {
 
   @Override
   public ProfessionDto getProfessionById(long id) {
-    Optional<Profession> optFoundProfession = professionRepo.findById(id);
-    if (optFoundProfession.isEmpty()) {
-      throw new ProfessionNotFoundException();
-    }
-
-    Profession foundProfession = optFoundProfession.get();
-    return mapper.toDto(foundProfession);
+    Profession profession = professionRepo.findById(id)
+        .orElseThrow(ProfessionNotFoundException::new);
+    return mapper.toDto(profession);
   }
 
   @Override
   public ProfessionDto updateProfessionById(long id, ProfessionDto dto) {
-    Optional<Profession> optFoundProfession = professionRepo.findById(id);
-    if (optFoundProfession.isEmpty()) {
-      throw new ProfessionNotFoundException();
-    }
+    Profession profession = professionRepo.findById(id)
+        .orElseThrow(ProfessionNotFoundException::new);
 
-    Profession foundProfession = optFoundProfession.get();
-    foundProfession.setName(dto.getName());
-    foundProfession.setDescription(dto.getDescription());
-    foundProfession.setCoverUrl(dto.getCoverUrl());
+    profession.setName(dto.getName());
+    profession.setDescription(dto.getDescription());
+    profession.setCoverUrl(dto.getCoverUrl());
 
-    Profession updatedProfession = professionRepo.saveAndFlush(foundProfession);
+    Profession updatedProfession = professionRepo.saveAndFlush(profession);
     return mapper.toDto(updatedProfession);
   }
 
