@@ -48,7 +48,7 @@ public class ProfessionController {
         .body(profession);
   }
 
-  @GetMapping
+  @GetMapping(path = "/all")
   public ResponseEntity<List<ProfessionDto>> getAllProfessions() {
     List<ProfessionDto> professions = professionService.getAllProfessions();
     return ResponseEntity

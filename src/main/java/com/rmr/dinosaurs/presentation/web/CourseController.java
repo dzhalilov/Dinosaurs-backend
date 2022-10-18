@@ -38,7 +38,7 @@ public class CourseController {
         .body(course);
   }
 
-  @GetMapping
+  @GetMapping(path = "/all")
   public ResponseEntity<List<ReadCourseDto>> getAllProviders() {
     List<ReadCourseDto> courses = courseService.getAllCourses();
     return ResponseEntity
