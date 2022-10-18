@@ -9,7 +9,6 @@ import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,14 +56,8 @@ public class ProfessionServiceImpl implements ProfessionService {
 
   @Override
   public List<ProfessionDto> getAllProfessions() {
-    List<Profession> professions = professionRepo.findAll();
-
-    List<ProfessionDto> dtoList = new ArrayList<>(professions.size());
-    for (Profession p : professions) {
-      dtoList.add(mapper.toDto(p));
-    }
-
-    return dtoList;
+    return professionRepo.findAll()
+        .stream().map(mapper::toDto).toList();
   }
 
   @Override

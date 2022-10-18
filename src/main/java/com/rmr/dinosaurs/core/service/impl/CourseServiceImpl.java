@@ -78,14 +78,8 @@ public class CourseServiceImpl implements CourseService {
   @Override
   @Transactional
   public List<ReadCourseDto> getAllCourses() {
-    List<Course> courses = courseRepo.findAll();
-
-    List<ReadCourseDto> readCourses = new ArrayList<>(courses.size());
-    for (Course c : courses) {
-      readCourses.add(toReadCourseDto(c));
-    }
-
-    return readCourses;
+    return courseRepo.findAll()
+        .stream().map(this::toReadCourseDto).toList();
   }
 
   @Override

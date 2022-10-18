@@ -9,7 +9,6 @@ import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException
 import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseProviderEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,14 +57,8 @@ public class CourseProviderServiceImpl implements CourseProviderService {
 
   @Override
   public List<CourseProviderDto> getAllProviders() {
-    List<CourseProvider> providers = providerRepo.findAll();
-
-    List<CourseProviderDto> dtoList = new ArrayList<>(providers.size());
-    for (CourseProvider p : providers) {
-      dtoList.add(mapper.toDto(p));
-    }
-
-    return dtoList;
+    return providerRepo.findAll()
+        .stream().map(mapper::toDto).toList();
   }
 
   @Override
