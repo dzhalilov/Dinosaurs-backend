@@ -52,3 +52,5 @@ services:
     default-page-size: 10
   profession:
     default-page-size: 10
+  provider:
+    default-page-size: 10
