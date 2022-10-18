@@ -7,7 +7,7 @@ import com.rmr.dinosaurs.core.model.CourseAndTag;
 import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Tag;
-import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.CourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
@@ -50,7 +50,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CreateCourseDto createCourse(CreateCourseDto dto) {
+  public CourseDto createCourse(CourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(CourseProviderNotFoundException::new);
     Course course = saveNewCourseAndFlush(mapper.toEntity(dto), provider);
@@ -61,7 +61,7 @@ public class CourseServiceImpl implements CourseService {
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
-    CreateCourseDto createdCourse = mapper.toCreateCourseDto(course);
+    CourseDto createdCourse = mapper.toDto(course);
     createdCourse.setProfessionId(dto.getProfessionId());
     createdCourse.setTags(dto.getTags());
     return createdCourse;
