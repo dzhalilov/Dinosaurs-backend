@@ -39,10 +39,10 @@ public class Course {
   @Column(name = "cover_url", nullable = false)
   String coverUrl;
 
-  @Column(name = "short_description")
+  @Column(name = "short_description", nullable = true)
   String shortDescription;
 
-  @Column(name = "description", nullable = false)
+  @Column(name = "description", nullable = false, length = 4096)
   String description;
 
   @Column(name = "starts_at", nullable = false)
@@ -64,7 +64,7 @@ public class Course {
   Boolean isArchived;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "c_course_provider_id", updatable = false)
+  @JoinColumn(name = "c_course_provider_id", updatable = true)
   CourseProvider provider;
 
   @OneToMany(fetch = FetchType.LAZY)

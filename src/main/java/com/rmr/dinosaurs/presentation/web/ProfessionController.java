@@ -60,7 +60,7 @@ public class ProfessionController {
 
   @GetMapping
   public ResponseEntity<ProfessionPageDto>
-  getProfessionPage(@RequestParam(name = "page") int pageNum) {
+      getProfessionPage(@RequestParam(name = "page") int pageNum) {
 
     ProfessionPageDto professionPage = professionService.getProfessionPage(pageNum);
     return ResponseEntity
