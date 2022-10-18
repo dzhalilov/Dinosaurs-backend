@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.presentation.web;
 
-import com.rmr.dinosaurs.core.model.dto.CoursePageDto;
 import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
+import com.rmr.dinosaurs.core.model.dto.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
 import java.util.List;
@@ -49,8 +49,8 @@ public class CourseController {
   }
 
   @GetMapping
-  public ResponseEntity<CoursePageDto> getCoursePage(@RequestParam(name = "page") int pageNum) {
-    CoursePageDto coursePage = courseService.getCoursePage(pageNum);
+  public ResponseEntity<ReadCoursePageDto> getCoursePage(@RequestParam(name = "page") int pageNum) {
+    ReadCoursePageDto coursePage = courseService.getCoursePage(pageNum);
     return ResponseEntity
         .ok()
         .body(coursePage);
