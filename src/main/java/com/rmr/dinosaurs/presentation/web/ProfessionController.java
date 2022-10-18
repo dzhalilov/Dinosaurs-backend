@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionPageDto;
 import com.rmr.dinosaurs.core.service.ProfessionService;
 import java.net.URI;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,12 +50,22 @@ public class ProfessionController {
         .body(profession);
   }
 
-  @GetMapping
+  @GetMapping(path = "/all")
   public ResponseEntity<List<ProfessionDto>> getAllProfessions() {
     List<ProfessionDto> professions = professionService.getAllProfessions();
     return ResponseEntity
         .ok()
         .body(professions);
+  }
+
+  @GetMapping
+  public ResponseEntity<ProfessionPageDto>
+      getProfessionPage(@RequestParam(name = "page") int pageNum) {
+
+    ProfessionPageDto professionPage = professionService.getProfessionPage(pageNum);
+    return ResponseEntity
+        .ok()
+        .body(professionPage);
   }
 
 }

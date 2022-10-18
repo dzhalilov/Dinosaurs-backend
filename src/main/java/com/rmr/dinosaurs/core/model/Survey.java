@@ -34,7 +34,7 @@ public class Survey {
   @Column(name = "short_description", nullable = false)
   String shortDescription;
 
-  @Column(name = "description", nullable = false)
+  @Column(name = "description", nullable = false, length = 4096)
   String description;
 
   @OneToMany(fetch = FetchType.LAZY)

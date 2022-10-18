@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.model.dto.CourseProviderDto;
+import com.rmr.dinosaurs.core.model.dto.CourseProviderPageDto;
 import com.rmr.dinosaurs.core.service.CourseProviderService;
 import java.net.URI;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,12 +50,22 @@ public class CourseProviderController {
         .body(provider);
   }
 
-  @GetMapping
+  @GetMapping(path = "/all")
   public ResponseEntity<List<CourseProviderDto>> getAllProviders() {
     List<CourseProviderDto> providers = providerService.getAllProviders();
     return ResponseEntity
         .ok()
         .body(providers);
+  }
+
+  @GetMapping
+  public ResponseEntity<CourseProviderPageDto>
+      getProviderPage(@RequestParam(name = "page") int pageNum) {
+
+    CourseProviderPageDto provider = providerService.getProviderPage(pageNum);
+    return ResponseEntity
+        .ok()
+        .body(provider);
   }
 
 }

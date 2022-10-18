@@ -31,7 +31,7 @@ public class CourseProvider {
   @Column(name = "name", nullable = false)
   String name;
 
-  @Column(name = "url", nullable = false, unique = true)
+  @Column(name = "url", nullable = false)
   String url;
 
   @Column(name = "cover_url", nullable = false)
@@ -40,7 +40,7 @@ public class CourseProvider {
   @Column(name = "short_description", nullable = true)
   String shortDescription;
 
-  @Column(name = "description", nullable = false)
+  @Column(name = "description", nullable = false, length = 4096)
   String description;
 
   @OneToMany(fetch = FetchType.LAZY)
