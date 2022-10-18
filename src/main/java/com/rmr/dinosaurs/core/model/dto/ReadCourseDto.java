@@ -32,6 +32,8 @@ public class ReadCourseDto {
 
   String providerUrl;
 
+  String providerCoverUrl;
+
   Long professionId;
 
   String professionName;
