@@ -1,8 +1,7 @@
 package com.rmr.dinosaurs.core.utils.mapper;
 
 import com.rmr.dinosaurs.core.model.Course;
-import com.rmr.dinosaurs.core.model.dto.CourseDto;
-import com.rmr.dinosaurs.core.model.dto.CreatingCourseDto;
+import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,10 +16,9 @@ public interface CourseEntityDtoMapper {
   @Mapping(target = "provider", ignore = true)
   @Mapping(target = "courseAndProfessionRefs", ignore = true)
   @Mapping(target = "courseAndTagRefs", ignore = true)
-  Course toEntity(CreatingCourseDto dto);
+  Course toEntity(CreateCourseDto dto);
 
-  @Mapping(target = "providerUrl", ignore = true)
-  @Mapping(target = "professionName", ignore = true)
-  CourseDto toDto(Course entity);
+  @Mapping(target = "providerId", source = "provider.id")
+  CreateCourseDto toDto(Course entity);
 
 }

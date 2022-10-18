@@ -1,10 +1,9 @@
 package com.rmr.dinosaurs.core.service;
 
-import com.rmr.dinosaurs.core.model.dto.CourseDto;
-import com.rmr.dinosaurs.core.model.dto.CreatingCourseDto;
+import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 
 public interface CourseService {
 
-  CourseDto addCourse(CreatingCourseDto course);
+  CreateCourseDto createCourse(CreateCourseDto course);
 
 }

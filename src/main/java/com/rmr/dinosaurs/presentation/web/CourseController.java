@@ -1,7 +1,6 @@
 package com.rmr.dinosaurs.presentation.web;
 
-import com.rmr.dinosaurs.core.model.dto.CourseDto;
-import com.rmr.dinosaurs.core.model.dto.CreatingCourseDto;
+import com.rmr.dinosaurs.core.model.dto.CreateCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +18,12 @@ public class CourseController {
   private final CourseService courseService;
 
   @PostMapping
-  public ResponseEntity addCourse(@RequestBody CreatingCourseDto course) {
-    CourseDto createdCourse = courseService.addCourse(course);
-
-    String createdUri = "/api/v1/courses/" + createdCourse.getId();
-    return ResponseEntity.created(URI.create(createdUri)).build();
+  public ResponseEntity<CreateCourseDto> createCourse(@RequestBody CreateCourseDto course) {
+    CreateCourseDto createdCourse = courseService.createCourse(course);
+    URI createdCourseUri = URI.create("/api/v1/courses/" + createdCourse.getId());
+    return ResponseEntity
+        .created(createdCourseUri)
+        .body(createdCourse);
   }
 
 }
