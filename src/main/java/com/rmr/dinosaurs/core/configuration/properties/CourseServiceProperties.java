@@ -13,4 +13,6 @@ public class CourseServiceProperties {
   private Boolean defaultIsIndefinite;
   private Boolean defaultIsArchived;
 
+  private Integer defaultPageSize;
+
 }

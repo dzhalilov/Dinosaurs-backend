@@ -49,3 +49,4 @@ services:
     default-internal-rating: 100
     default-is-indefinite: true
     default-is-archived: false
+    default-page-size: 10

@@ -12,6 +12,7 @@ import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import com.rmr.dinosaurs.core.service.exceptions.CourseNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
+import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
@@ -25,6 +26,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,6 +101,20 @@ public class CourseServiceImpl implements CourseService {
     }
 
     return dtoList;
+  }
+
+  @Override
+  public Page<Course> getCoursePage(int pageNum) {
+    --pageNum;
+    if (pageNum < 0) {
+      throw new NegativePageNumberException();
+    }
+
+    Pageable pageable = PageRequest.of(
+        pageNum, props.getDefaultPageSize());
+
+    return courseRepo
+        .findAll(pageable);
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
