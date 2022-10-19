@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.rmr.dinosaurs.core.auth.security.JwtToken;
+import com.rmr.dinosaurs.core.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.core.model.LoginRequest;
 import com.rmr.dinosaurs.core.model.SignupRequest;
 import com.rmr.dinosaurs.core.service.AuthService;
@@ -54,7 +54,7 @@ class AuthMvcTest {
   void shouldLogin() throws Exception {
     // given
     var loginRequest = new LoginRequest("super@email.com", "p4sSwoRd");
-    var jwtToken = new JwtToken("ttttttttto.ke.n");
+    var jwtToken = new JwtTokenPair("ttttttttto.ke.n", "mokkk.eee.n");
     var loginRequestAsString = objectMapper.writeValueAsString(loginRequest);
     given(authServiceMock.login(loginRequest))
         .willReturn(jwtToken);
@@ -83,7 +83,7 @@ class AuthMvcTest {
         "My",
         "Name"
     );
-    var jwtToken = new JwtToken("ttttttttto.ke.n");
+    var jwtToken = new JwtTokenPair("ttttttttto.ke.n", "mokkk.eee.n");
     var signupRequestAsString = objectMapper.writeValueAsString(signupRequest);
     given(authServiceMock.signup(signupRequest))
         .willReturn(jwtToken);
