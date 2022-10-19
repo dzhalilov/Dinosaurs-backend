@@ -1,7 +1,9 @@
 package com.rmr.dinosaurs.presentation.web;
 
+import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
+import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,14 @@ public class SurveyController {
     return ResponseEntity
         .ok()
         .body(survey);
+  }
+
+  @PostMapping("/result")
+  public ResponseEntity<ProfessionDto> resultSurvey(@RequestBody SurveyResponseDto response) {
+    ProfessionDto result = surveyService.resultSurvey(response);
+    return ResponseEntity
+        .ok()
+        .body(result);
   }
 
 }
