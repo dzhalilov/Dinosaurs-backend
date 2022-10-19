@@ -19,16 +19,18 @@ public interface CourseEntityDtoMapper {
   @Mapping(target = "courseAndTagRefs", ignore = true)
   Course toEntity(CreateUpdateCourseDto dto);
 
+  @Mapping(target = "professionId", ignore = true)
+  @Mapping(target = "tags", ignore = true)
   @Mapping(target = "providerId", source = "provider.id")
   CreateUpdateCourseDto toDto(Course entity);
 
+  @Mapping(target = "professionId", ignore = true)
+  @Mapping(target = "professionName", ignore = true)
+  @Mapping(target = "tags", ignore = true)
   @Mapping(target = "providerId", source = "provider.id")
   @Mapping(target = "providerName", source = "provider.name")
   @Mapping(target = "providerUrl", source = "provider.url")
   @Mapping(target = "providerCoverUrl", source = "provider.coverUrl")
-  @Mapping(target = "professionId", ignore = true)
-  @Mapping(target = "professionName", ignore = true)
-  @Mapping(target = "tags", ignore = true)
   ReadCourseDto toReadCourseDto(Course entity);
 
 }
