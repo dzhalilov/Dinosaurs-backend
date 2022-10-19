@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.core.model.dto;
+package com.rmr.dinosaurs.core.model.dto.course;
 
 import java.time.LocalDateTime;
 import java.util.List;

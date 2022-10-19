@@ -1,7 +1,7 @@
 package com.rmr.dinosaurs.presentation.web;
 
-import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.ProfessionPageDto;
+import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.profession.ProfessionPageDto;
 import com.rmr.dinosaurs.core.service.ProfessionService;
 import java.net.URI;
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.core.utils.mapper;
 
 import com.rmr.dinosaurs.core.model.Course;
-import com.rmr.dinosaurs.core.model.dto.CourseDto;
-import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,18 +17,20 @@ public interface CourseEntityDtoMapper {
   @Mapping(target = "provider", ignore = true)
   @Mapping(target = "courseAndProfessionRefs", ignore = true)
   @Mapping(target = "courseAndTagRefs", ignore = true)
-  Course toEntity(CourseDto dto);
+  Course toEntity(CreateUpdateCourseDto dto);
 
+  @Mapping(target = "professionId", ignore = true)
+  @Mapping(target = "tags", ignore = true)
   @Mapping(target = "providerId", source = "provider.id")
-  CourseDto toDto(Course entity);
+  CreateUpdateCourseDto toDto(Course entity);
 
+  @Mapping(target = "professionId", ignore = true)
+  @Mapping(target = "professionName", ignore = true)
+  @Mapping(target = "tags", ignore = true)
   @Mapping(target = "providerId", source = "provider.id")
   @Mapping(target = "providerName", source = "provider.name")
   @Mapping(target = "providerUrl", source = "provider.url")
   @Mapping(target = "providerCoverUrl", source = "provider.coverUrl")
-  @Mapping(target = "professionId", ignore = true)
-  @Mapping(target = "professionName", ignore = true)
-  @Mapping(target = "tags", ignore = true)
   ReadCourseDto toReadCourseDto(Course entity);
 
 }

@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.core.model.dto;
+package com.rmr.dinosaurs.core.model.dto.provider;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfessionPageDto {
+public class CourseProviderPageDto {
 
   Long totalElements;
 
@@ -18,6 +18,6 @@ public class ProfessionPageDto {
 
   Integer pageNumber;
 
-  List<ProfessionDto> content;
+  List<CourseProviderDto> content;
 
 }
