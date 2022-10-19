@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.rmr.dinosaurs.DinosaursApplication;
-import com.rmr.dinosaurs.core.auth.security.JwtToken;
+import com.rmr.dinosaurs.core.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.core.model.Authority;
 import com.rmr.dinosaurs.core.model.LoginRequest;
 import com.rmr.dinosaurs.core.model.SignupRequest;
@@ -98,7 +98,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
         uriBuilder.toUriString(),
         HttpMethod.POST,
         requestEntity,
-        JwtToken.class
+        JwtTokenPair.class
     );
 
     // then
@@ -129,7 +129,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
         uriBuilder.toUriString(),
         HttpMethod.POST,
         requestEntity,
-        JwtToken.class
+        JwtTokenPair.class
     );
 
     // then
@@ -161,7 +161,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
         uriBuilder.toUriString(),
         HttpMethod.POST,
         requestEntity,
-        JwtToken.class
+        JwtTokenPair.class
     );
 
     // then
@@ -188,7 +188,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
         uriBuilder.toUriString(),
         HttpMethod.POST,
         requestEntity,
-        JwtToken.class
+        JwtTokenPair.class
     );
 
     // then
