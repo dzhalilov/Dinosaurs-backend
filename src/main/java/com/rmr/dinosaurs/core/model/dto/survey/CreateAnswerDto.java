@@ -1,6 +1,5 @@
 package com.rmr.dinosaurs.core.model.dto.survey;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,12 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionDto {
+public class CreateAnswerDto {
 
-  Long questionId;
+  Long answerId;
 
-  String question;
+  String text;
 
-  List<AnswerDto> answers;
+  Long professionId;
 
 }

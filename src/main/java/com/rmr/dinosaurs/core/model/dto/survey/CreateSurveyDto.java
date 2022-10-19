@@ -16,6 +16,6 @@ public class CreateSurveyDto {
 
   String description;
 
-  List<QuestionDto> survey;
+  List<CreateQuestionDto> survey;
 
 }

@@ -4,9 +4,9 @@ import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Survey;
 import com.rmr.dinosaurs.core.model.SurveyQuestion;
 import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
-import com.rmr.dinosaurs.core.model.dto.survey.AnswerDto;
+import com.rmr.dinosaurs.core.model.dto.survey.CreateAnswerDto;
+import com.rmr.dinosaurs.core.model.dto.survey.CreateQuestionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
-import com.rmr.dinosaurs.core.model.dto.survey.QuestionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadAnswerDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadQuestionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
@@ -67,16 +67,16 @@ public class SurveyServiceImpl implements SurveyService {
   }
 
   private void saveAndFlushSurveyQuestionsAndTheirsAnswers(
-      Survey survey, List<QuestionDto> qdtoList) {
+      Survey survey, List<CreateQuestionDto> qdtoList) {
 
     Map<Long, Profession> professionCache = new HashMap<>();
-    for (QuestionDto qdto : qdtoList) {
+    for (CreateQuestionDto qdto : qdtoList) {
       SurveyQuestion savedQuestion = saveAndFlushSurveyQuestion(survey, qdto);
       saveAndFlushSurveyQuestionAnswers(savedQuestion, qdto.getAnswers(), professionCache);
     }
   }
 
-  private SurveyQuestion saveAndFlushSurveyQuestion(Survey survey, QuestionDto qdto) {
+  private SurveyQuestion saveAndFlushSurveyQuestion(Survey survey, CreateQuestionDto qdto) {
     SurveyQuestion q = mapper.toSurveyQuestion(qdto);
     q.setSurvey(survey);
     SurveyQuestion savedQuestion = questionRepo.saveAndFlush(q);
@@ -86,10 +86,10 @@ public class SurveyServiceImpl implements SurveyService {
 
   private void saveAndFlushSurveyQuestionAnswers(
       SurveyQuestion question,
-      List<AnswerDto> adtoList,
+      List<CreateAnswerDto> adtoList,
       Map<Long, Profession> professionCache) {
 
-    for (AnswerDto adto : adtoList) {
+    for (CreateAnswerDto adto : adtoList) {
       Long professionId = adto.getProfessionId();
       Profession profession = cacheProfessionOrGet(professionId, professionCache);
       saveAndFlushSurveyQuestionAnswer(question, profession, adto);
@@ -113,7 +113,7 @@ public class SurveyServiceImpl implements SurveyService {
 
   private void saveAndFlushSurveyQuestionAnswer(
       SurveyQuestion question, Profession profession,
-      AnswerDto adto) {
+      CreateAnswerDto adto) {
 
     SurveyQuestionAnswer a = mapper.toSurveyQuestionAnswer(adto);
     a.setQuestion(question);

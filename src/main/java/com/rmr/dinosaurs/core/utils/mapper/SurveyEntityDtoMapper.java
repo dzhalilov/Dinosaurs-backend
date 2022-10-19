@@ -3,9 +3,9 @@ package com.rmr.dinosaurs.core.utils.mapper;
 import com.rmr.dinosaurs.core.model.Survey;
 import com.rmr.dinosaurs.core.model.SurveyQuestion;
 import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
-import com.rmr.dinosaurs.core.model.dto.survey.AnswerDto;
+import com.rmr.dinosaurs.core.model.dto.survey.CreateAnswerDto;
+import com.rmr.dinosaurs.core.model.dto.survey.CreateQuestionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
-import com.rmr.dinosaurs.core.model.dto.survey.QuestionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadAnswerDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadQuestionDto;
 import org.mapstruct.Mapper;
@@ -23,12 +23,12 @@ public interface SurveyEntityDtoMapper {
   @Mapping(target = "survey", ignore = true)
   @Mapping(target = "answers", ignore = true)
   @Mapping(target = "text", source = "question")
-  SurveyQuestion toSurveyQuestion(QuestionDto dto);
+  SurveyQuestion toSurveyQuestion(CreateQuestionDto dto);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "question", ignore = true)
   @Mapping(target = "profession", ignore = true)
-  SurveyQuestionAnswer toSurveyQuestionAnswer(AnswerDto dto);
+  SurveyQuestionAnswer toSurveyQuestionAnswer(CreateAnswerDto dto);
 
   @Mapping(target = "answerId", source = "id")
   ReadAnswerDto toReadAnswerDto(SurveyQuestionAnswer entity);
