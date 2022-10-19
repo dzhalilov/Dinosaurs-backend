@@ -96,8 +96,8 @@ public class SurveyServiceImpl implements SurveyService {
     }
   }
 
-  private Profession cacheProfessionOrGet
-      (Long professionId, Map<Long, Profession> professionCache) {
+  private Profession cacheProfessionOrGet(
+      Long professionId, Map<Long, Profession> professionCache) {
 
     Profession profession;
     if (!professionCache.containsKey(professionId)) {
