@@ -32,7 +32,7 @@ public class CourseProviderController {
         .body(createdProvider);
   }
 
-  @GetMapping(path = "/{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<CourseProviderDto> getProviderById(@PathVariable long id) {
     CourseProviderDto provider = providerService.getProviderById(id);
     return ResponseEntity
@@ -40,7 +40,7 @@ public class CourseProviderController {
         .body(provider);
   }
 
-  @PutMapping(path = "/{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<CourseProviderDto> updateProviderById(
       @PathVariable long id, @RequestBody CourseProviderDto dto) {
 
@@ -50,7 +50,7 @@ public class CourseProviderController {
         .body(provider);
   }
 
-  @GetMapping(path = "/all")
+  @GetMapping("/all")
   public ResponseEntity<List<CourseProviderDto>> getAllProviders() {
     List<CourseProviderDto> providers = providerService.getAllProviders();
     return ResponseEntity
