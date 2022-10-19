@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 
 public interface JwtTokenProvider {
 
-  JwtToken generateJwtTokenPair(DinoAuthentication dinoAuthentication);
+  JwtTokenPair generateJwtTokenPair(DinoAuthentication dinoAuthentication);
 
   boolean isTokenValid(String token);
 

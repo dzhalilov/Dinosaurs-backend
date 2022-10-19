@@ -8,9 +8,12 @@ import lombok.NonNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class JwtToken {
+public class JwtTokenPair {
 
   @NonNull
   private String accessToken;
+
+  @NonNull
+  private String refreshToken;
 
 }
