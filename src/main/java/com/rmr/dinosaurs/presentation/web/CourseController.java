@@ -35,7 +35,7 @@ public class CourseController {
         .body(createdCourse);
   }
 
-  @GetMapping(path = "/{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<ReadCourseDto> getCourseById(@PathVariable long id) {
     ReadCourseDto course = courseService.getCourseById(id);
     return ResponseEntity
@@ -43,7 +43,7 @@ public class CourseController {
         .body(course);
   }
 
-  @PutMapping(path = "/{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<CreateUpdateCourseDto> updateCourseById(
       @PathVariable long id, @RequestBody CreateUpdateCourseDto dto) {
 
@@ -53,7 +53,7 @@ public class CourseController {
         .body(course);
   }
 
-  @GetMapping(path = "/all")
+  @GetMapping("/all")
   public ResponseEntity<List<ReadCourseDto>> getAllCourses() {
     List<ReadCourseDto> courses = courseService.getAllCourses();
     return ResponseEntity

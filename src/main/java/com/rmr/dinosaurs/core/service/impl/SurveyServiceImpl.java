@@ -4,12 +4,15 @@ import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Survey;
 import com.rmr.dinosaurs.core.model.SurveyQuestion;
 import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
+import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateAnswerDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateQuestionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadAnswerDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadQuestionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
+import com.rmr.dinosaurs.core.model.dto.survey.SurveyQuestionResponseDto;
+import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.SurveyNotFoundException;
@@ -59,6 +62,45 @@ public class SurveyServiceImpl implements SurveyService {
     return toReadSurveyDto(s);
   }
 
+  @Override
+  @Transactional
+  public ProfessionDto resultSurvey(SurveyResponseDto response) {
+    List<Long> answerIds = response.getSurvey().stream()
+        .map(SurveyQuestionResponseDto::getAnswerId)
+        .toList();
+    List<SurveyQuestionAnswer> answers = answerRepo.findAllById(answerIds);
+
+    Map<Profession, Integer> professionRepetitionsMap = new HashMap<>();
+    for (SurveyQuestionAnswer sqa : answers) {
+      Profession profession = sqa.getProfession();
+      if (!professionRepetitionsMap.containsKey(profession)) {
+        professionRepetitionsMap.put(profession, 1);
+      } else {
+        professionRepetitionsMap.put(
+            profession,
+            professionRepetitionsMap.get(profession) + 1);
+      }
+    }
+
+    Map.Entry<Profession, Integer> maxRepetitionEntry = professionRepetitionsMap
+        .entrySet().stream()
+        .max(Map.Entry.comparingByValue()).orElse(null);
+
+    ProfessionDto result;
+    if (maxRepetitionEntry == null) {
+      result = null;
+    } else {
+      Profession resultProfession = maxRepetitionEntry.getKey();
+      result = new ProfessionDto();
+      result.setId(resultProfession.getId());
+      result.setName(resultProfession.getName());
+      result.setDescription(resultProfession.getDescription());
+      result.setCoverUrl(resultProfession.getCoverUrl());
+    }
+
+    return result;
+  }
+
   private Survey saveAndFlushSurvey(CreateSurveyDto dto) {
     Survey s = mapper.toSurvey(dto);
     Survey savedSurvey = surveyRepo.saveAndFlush(s);
@@ -99,16 +141,13 @@ public class SurveyServiceImpl implements SurveyService {
   private Profession cacheProfessionOrGet(
       Long professionId, Map<Long, Profession> professionCache) {
 
-    Profession profession;
     if (!professionCache.containsKey(professionId)) {
       Profession cachingProfession = professionRepo.findById(professionId)
           .orElseThrow(ProfessionNotFoundException::new);
-      profession = professionCache.put(professionId, cachingProfession);
-    } else {
-      profession = professionCache.get(professionId);
+      professionCache.put(professionId, cachingProfession);
     }
 
-    return profession;
+    return professionCache.get(professionId);
   }
 
   private void saveAndFlushSurveyQuestionAnswer(

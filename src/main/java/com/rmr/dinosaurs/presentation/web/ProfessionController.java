@@ -32,7 +32,7 @@ public class ProfessionController {
         .body(createdProfession);
   }
 
-  @GetMapping(path = "/{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<ProfessionDto> getProfessionById(@PathVariable long id) {
     ProfessionDto profession = professionService.getProfessionById(id);
     return ResponseEntity
@@ -40,7 +40,7 @@ public class ProfessionController {
         .body(profession);
   }
 
-  @PutMapping(path = "/{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<ProfessionDto> updateProfessionById(
       @PathVariable long id, @RequestBody ProfessionDto dto) {
 
@@ -50,7 +50,7 @@ public class ProfessionController {
         .body(profession);
   }
 
-  @GetMapping(path = "/all")
+  @GetMapping("/all")
   public ResponseEntity<List<ProfessionDto>> getAllProfessions() {
     List<ProfessionDto> professions = professionService.getAllProfessions();
     return ResponseEntity
