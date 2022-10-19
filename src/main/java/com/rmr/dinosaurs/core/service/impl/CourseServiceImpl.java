@@ -7,7 +7,7 @@ import com.rmr.dinosaurs.core.model.CourseAndTag;
 import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Tag;
-import com.rmr.dinosaurs.core.model.dto.CourseDto;
+import com.rmr.dinosaurs.core.model.dto.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
@@ -50,7 +50,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CourseDto createCourse(CourseDto dto) {
+  public CreateUpdateCourseDto createCourse(CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(CourseProviderNotFoundException::new);
     Course course = saveNewCourseAndFlush(mapper.toEntity(dto), provider);
@@ -61,7 +61,7 @@ public class CourseServiceImpl implements CourseService {
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
-    CourseDto createdCourse = mapper.toDto(course);
+    CreateUpdateCourseDto createdCourse = mapper.toDto(course);
     createdCourse.setProfessionId(dto.getProfessionId());
     createdCourse.setTags(dto.getTags());
     return createdCourse;
@@ -77,7 +77,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CourseDto updateCourseById(long id, CourseDto dto) {
+  public CreateUpdateCourseDto updateCourseById(long id, CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(CourseProviderNotFoundException::new);
     Course course = courseRepo.findById(id)
@@ -100,7 +100,7 @@ public class CourseServiceImpl implements CourseService {
     catRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
     saveNewTagsAndSaveNewCatRefs(updatedCourse, dto.getTags());
 
-    CourseDto updatedDto = mapper.toDto(updatedCourse);
+    CreateUpdateCourseDto updatedDto = mapper.toDto(updatedCourse);
     updatedDto.setProfessionId(dto.getProfessionId());
     updatedDto.setTags(dto.getTags());
     return updatedDto;
