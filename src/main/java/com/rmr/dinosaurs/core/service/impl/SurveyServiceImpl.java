@@ -7,16 +7,22 @@ import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
 import com.rmr.dinosaurs.core.model.dto.survey.AnswerDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.QuestionDto;
+import com.rmr.dinosaurs.core.model.dto.survey.ReadAnswerDto;
+import com.rmr.dinosaurs.core.model.dto.survey.ReadQuestionDto;
+import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
+import com.rmr.dinosaurs.core.service.exceptions.SurveyNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.SurveyEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyQuestionAnswerRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyQuestionRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyRepository;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,15 +40,23 @@ public class SurveyServiceImpl implements SurveyService {
   private final SurveyQuestionAnswerRepository answerRepo;
   private final ProfessionRepository professionRepo;
 
-  private Long surveyId;
+  private Long singletonSurveyId;
 
   @Override
   @Transactional
   public CreateSurveyDto createSurvey(CreateSurveyDto dto) {
     Survey savedSurvey = saveAndFlushSurvey(dto);
     saveAndFlushSurveyQuestionsAndTheirsAnswers(savedSurvey, dto.getSurvey());
-    surveyId = savedSurvey.getId();
+    singletonSurveyId = savedSurvey.getId();
     return dto;
+  }
+
+  @Override
+  @Transactional
+  public ReadSurveyDto getSurvey() {
+    Survey s = surveyRepo.findById(singletonSurveyId)
+        .orElseThrow(SurveyNotFoundException::new);
+    return toReadSurveyDto(s);
   }
 
   private Survey saveAndFlushSurvey(CreateSurveyDto dto) {
@@ -106,6 +120,31 @@ public class SurveyServiceImpl implements SurveyService {
     a.setProfession(profession);
     SurveyQuestionAnswer savedAnswer = answerRepo.saveAndFlush(a);
     adto.setAnswerId(savedAnswer.getId());
+  }
+
+  private ReadSurveyDto toReadSurveyDto(Survey survey) {
+    Set<SurveyQuestion> sqSet = survey.getQuestions();
+    List<ReadQuestionDto> qdtoList = new ArrayList<>(sqSet.size());
+    for (SurveyQuestion sq : sqSet) {
+
+      Set<SurveyQuestionAnswer> sqaSet = sq.getAnswers();
+      List<ReadAnswerDto> adtoList = new ArrayList<>(sqaSet.size());
+      for (SurveyQuestionAnswer sqa : sqaSet) {
+        adtoList.add(mapper.toReadAnswerDto(sqa));
+      }
+
+      ReadQuestionDto qdto = mapper.toReadQuestionDto(sq);
+      qdto.setAnswers(adtoList);
+      qdtoList.add(qdto);
+    }
+
+    ReadSurveyDto surveyDto = new ReadSurveyDto();
+    surveyDto.setSurveyId(survey.getId());
+    surveyDto.setTitle(survey.getTitle());
+    surveyDto.setDescription(survey.getDescription());
+    surveyDto.setSurvey(qdtoList);
+
+    return surveyDto;
   }
 
 }

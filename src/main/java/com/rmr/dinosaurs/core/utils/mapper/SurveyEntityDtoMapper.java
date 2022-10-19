@@ -6,6 +6,8 @@ import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
 import com.rmr.dinosaurs.core.model.dto.survey.AnswerDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.QuestionDto;
+import com.rmr.dinosaurs.core.model.dto.survey.ReadAnswerDto;
+import com.rmr.dinosaurs.core.model.dto.survey.ReadQuestionDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -27,5 +29,13 @@ public interface SurveyEntityDtoMapper {
   @Mapping(target = "question", ignore = true)
   @Mapping(target = "profession", ignore = true)
   SurveyQuestionAnswer toSurveyQuestionAnswer(AnswerDto dto);
+
+  @Mapping(target = "answerId", source = "id")
+  ReadAnswerDto toReadAnswerDto(SurveyQuestionAnswer entity);
+
+  @Mapping(target = "answers", ignore = true)
+  @Mapping(target = "questionId", source = "id")
+  @Mapping(target = "question", source = "text")
+  ReadQuestionDto toReadQuestionDto(SurveyQuestion entity);
 
 }

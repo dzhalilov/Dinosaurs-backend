@@ -1,10 +1,12 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
+import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,14 @@ public class SurveyController {
     return ResponseEntity
         .created(createdSurveyUri)
         .body(createdSurvey);
+  }
+
+  @GetMapping
+  public ResponseEntity<ReadSurveyDto> getSurvey() {
+    ReadSurveyDto survey = surveyService.getSurvey();
+    return ResponseEntity
+        .ok()
+        .body(survey);
   }
 
 }
