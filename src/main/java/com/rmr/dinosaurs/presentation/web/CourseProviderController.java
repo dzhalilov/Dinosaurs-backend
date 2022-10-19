@@ -1,7 +1,7 @@
 package com.rmr.dinosaurs.presentation.web;
 
-import com.rmr.dinosaurs.core.model.dto.CourseProviderDto;
-import com.rmr.dinosaurs.core.model.dto.CourseProviderPageDto;
+import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderDto;
+import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderPageDto;
 import com.rmr.dinosaurs.core.service.CourseProviderService;
 import java.net.URI;
 import java.util.List;

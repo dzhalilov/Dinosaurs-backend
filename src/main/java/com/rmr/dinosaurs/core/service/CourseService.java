@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.core.service;
 
-import com.rmr.dinosaurs.core.model.dto.CreateUpdateCourseDto;
-import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
-import com.rmr.dinosaurs.core.model.dto.ReadCoursePageDto;
+import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import java.util.List;
 
 public interface CourseService {

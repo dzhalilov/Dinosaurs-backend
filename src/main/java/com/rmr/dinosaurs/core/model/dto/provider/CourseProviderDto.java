@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.core.model.dto;
+package com.rmr.dinosaurs.core.model.dto.provider;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,11 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfessionDto {
+public class CourseProviderDto {
 
   Long id;
 
   String name;
+
+  String url;
 
   String description;
 

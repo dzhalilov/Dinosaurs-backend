@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.presentation.web;
 
-import com.rmr.dinosaurs.core.model.dto.CreateUpdateCourseDto;
-import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
-import com.rmr.dinosaurs.core.model.dto.ReadCoursePageDto;
+import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
 import java.util.List;

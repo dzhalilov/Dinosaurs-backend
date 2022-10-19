@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.core.utils.mapper;
 
 import com.rmr.dinosaurs.core.model.Course;
-import com.rmr.dinosaurs.core.model.dto.CreateUpdateCourseDto;
-import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
