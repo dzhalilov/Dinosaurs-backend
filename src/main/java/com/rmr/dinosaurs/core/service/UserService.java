@@ -5,13 +5,11 @@ import java.util.List;
 
 public interface UserService {
 
-  UserDto getMyProfile();
+  UserDto getCurrentUserDto();
 
   UserDto getUserById(Long id);
 
-  List<UserDto> getUsers();
-
-  UserDto deleteUserById(Long id);
+  List<UserDto> getAllUsers();
 
   UserDto setUserModerator(Long id, Boolean isModerator);
 
