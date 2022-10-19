@@ -42,7 +42,7 @@ public class UserInfo {
   @Column(name = "archived_at")
   LocalDateTime archivedAt;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "ui_user_id", updatable = false)
   User user;
 
