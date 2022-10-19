@@ -40,7 +40,7 @@ public class UserController {
 
   @PutMapping("/{id}")
   @AdminPermission
-  UserDto deleteUser(@PathVariable Long id, @RequestParam @NotNull Boolean isModerator) {
+  UserDto setUserModeratorById(@PathVariable Long id, @RequestParam @NotNull Boolean isModerator) {
     return userService.setUserModerator(id, isModerator);
   }
 
