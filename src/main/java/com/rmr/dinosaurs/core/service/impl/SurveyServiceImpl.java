@@ -99,16 +99,13 @@ public class SurveyServiceImpl implements SurveyService {
   private Profession cacheProfessionOrGet(
       Long professionId, Map<Long, Profession> professionCache) {
 
-    Profession profession;
     if (!professionCache.containsKey(professionId)) {
       Profession cachingProfession = professionRepo.findById(professionId)
           .orElseThrow(ProfessionNotFoundException::new);
-      profession = professionCache.put(professionId, cachingProfession);
-    } else {
-      profession = professionCache.get(professionId);
+      professionCache.put(professionId, cachingProfession);
     }
 
-    return profession;
+    return professionCache.get(professionId);
   }
 
   private void saveAndFlushSurveyQuestionAnswer(
