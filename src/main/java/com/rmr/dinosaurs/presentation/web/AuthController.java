@@ -1,10 +1,12 @@
 package com.rmr.dinosaurs.presentation.web;
 
-import com.rmr.dinosaurs.core.auth.security.JwtToken;
+import com.rmr.dinosaurs.core.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.core.model.LoginRequest;
+import com.rmr.dinosaurs.core.model.RefreshTokenRequest;
 import com.rmr.dinosaurs.core.model.SignupRequest;
 import com.rmr.dinosaurs.core.service.AuthService;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,13 +21,18 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/login")
-  JwtToken login(@RequestBody @Valid LoginRequest loginRequest) {
+  JwtTokenPair login(@RequestBody @Valid @NotNull LoginRequest loginRequest) {
     return authService.login(loginRequest);
   }
 
   @PostMapping("/signup")
-  JwtToken signup(@RequestBody @Valid SignupRequest signupRequest) {
+  JwtTokenPair signup(@RequestBody @Valid @NotNull SignupRequest signupRequest) {
     return authService.signup(signupRequest);
+  }
+
+  @PostMapping("/refresh")
+  JwtTokenPair refresh(@RequestBody @NotNull RefreshTokenRequest refreshTokenRequest) {
+    return authService.refresh(refreshTokenRequest);
   }
 
 }
