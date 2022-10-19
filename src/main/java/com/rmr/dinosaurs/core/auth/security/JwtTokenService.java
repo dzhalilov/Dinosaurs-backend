@@ -4,6 +4,8 @@ public interface JwtTokenService {
 
   DinoAuthentication getDinoAuthenticationByToken(String token);
 
-  JwtToken generateToken(DinoAuthentication dinoAuthentication);
+  JwtTokenPair generateJwtTokenPair(DinoAuthentication dinoAuthentication);
+
+  boolean isTokenValid(String value);
 
 }

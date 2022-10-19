@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rmr.dinosaurs.core.auth.security.DinoAuthentication;
 import com.rmr.dinosaurs.core.auth.security.DinoAuthenticationDto;
 import com.rmr.dinosaurs.core.auth.security.DinoPrincipal;
-import com.rmr.dinosaurs.core.auth.security.JwtToken;
+import com.rmr.dinosaurs.core.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.core.auth.security.JwtTokenProvider;
 import com.rmr.dinosaurs.core.auth.security.JwtTokenService;
 import io.jsonwebtoken.Claims;
@@ -37,8 +37,13 @@ public class JwtTokenServiceImpl implements JwtTokenService {
   }
 
   @Override
-  public JwtToken generateToken(DinoAuthentication dinoAuthentication) {
+  public JwtTokenPair generateJwtTokenPair(DinoAuthentication dinoAuthentication) {
     return jwtTokenProvider.generateJwtTokenPair(dinoAuthentication);
+  }
+
+  @Override
+  public boolean isTokenValid(String value) {
+    return jwtTokenProvider.isTokenValid(value);
   }
 
   private DinoAuthenticationDto parseDinoAuthentication(String subject) {

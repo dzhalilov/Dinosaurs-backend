@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rmr.dinosaurs.core.auth.security.DinoAuthentication;
 import com.rmr.dinosaurs.core.auth.security.DinoAuthenticationDto;
-import com.rmr.dinosaurs.core.auth.security.JwtToken;
+import com.rmr.dinosaurs.core.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.core.auth.security.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.security.Key;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import javax.annotation.PostConstruct;
@@ -38,20 +39,27 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
   }
 
   @Override
-  public JwtToken generateJwtTokenPair(DinoAuthentication dinoAuthentication) {
+  public JwtTokenPair generateJwtTokenPair(DinoAuthentication dinoAuthentication) {
     var dinoAuthenticationDto = new DinoAuthenticationDto(
         dinoAuthentication.getId(),
         dinoAuthentication.getEmail(),
         dinoAuthentication.getRole()
     );
     var now = Instant.now();
-    var token = Jwts.builder()
-        .setSubject(convertToJson(dinoAuthenticationDto))
+    var dinoAuthDtoAsString = convertToJson(dinoAuthenticationDto);
+    var accessToken = Jwts.builder()
+        .setSubject(dinoAuthDtoAsString)
         .setIssuedAt(Date.from(now))
         .setExpiration(Date.from(now.plusSeconds(ttl)))
         .signWith(hmacKey)
         .compact();
-    return new JwtToken(token);
+    var refreshTokenValue = Jwts.builder()
+        .setSubject(dinoAuthDtoAsString)
+        .setIssuedAt(Date.from(now))
+        .setExpiration(Date.from(now.plus(ttl, ChronoUnit.HOURS)))
+        .signWith(hmacKey)
+        .compact();
+    return new JwtTokenPair(accessToken, refreshTokenValue);
   }
 
   @Override
