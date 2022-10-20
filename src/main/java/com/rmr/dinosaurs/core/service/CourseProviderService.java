@@ -1,7 +1,7 @@
 package com.rmr.dinosaurs.core.service;
 
-import com.rmr.dinosaurs.core.model.dto.CourseProviderDto;
-import com.rmr.dinosaurs.core.model.dto.CourseProviderPageDto;
+import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderDto;
+import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderPageDto;
 import java.util.List;
 
 public interface CourseProviderService {

@@ -2,8 +2,8 @@ package com.rmr.dinosaurs.core.service.impl;
 
 import com.rmr.dinosaurs.core.configuration.properties.ProfessionServiceProperties;
 import com.rmr.dinosaurs.core.model.Profession;
-import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.ProfessionPageDto;
+import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.profession.ProfessionPageDto;
 import com.rmr.dinosaurs.core.service.ProfessionService;
 import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;

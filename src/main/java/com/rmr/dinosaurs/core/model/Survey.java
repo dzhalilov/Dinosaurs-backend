@@ -31,7 +31,7 @@ public class Survey {
   @Column(name = "title", nullable = false)
   String title;
 
-  @Column(name = "short_description", nullable = false)
+  @Column(name = "short_description", nullable = true)
   String shortDescription;
 
   @Column(name = "description", nullable = false, length = 4096)

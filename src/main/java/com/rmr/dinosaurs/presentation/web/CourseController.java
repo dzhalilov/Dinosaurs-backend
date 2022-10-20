@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.presentation.web;
 
-import com.rmr.dinosaurs.core.model.dto.CourseDto;
-import com.rmr.dinosaurs.core.model.dto.ReadCourseDto;
-import com.rmr.dinosaurs.core.model.dto.ReadCoursePageDto;
+import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
+import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
 import java.util.List;
@@ -25,15 +25,17 @@ public class CourseController {
   private final CourseService courseService;
 
   @PostMapping
-  public ResponseEntity<CourseDto> createCourse(@RequestBody CourseDto course) {
-    CourseDto createdCourse = courseService.createCourse(course);
+  public ResponseEntity<CreateUpdateCourseDto> createCourse(
+      @RequestBody CreateUpdateCourseDto course) {
+
+    CreateUpdateCourseDto createdCourse = courseService.createCourse(course);
     URI createdCourseUri = URI.create("/api/v1/courses/" + createdCourse.getId());
     return ResponseEntity
         .created(createdCourseUri)
         .body(createdCourse);
   }
 
-  @GetMapping(path = "/{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<ReadCourseDto> getCourseById(@PathVariable long id) {
     ReadCourseDto course = courseService.getCourseById(id);
     return ResponseEntity
@@ -41,18 +43,18 @@ public class CourseController {
         .body(course);
   }
 
-  @PutMapping(path = "/{id}")
-  public ResponseEntity<CourseDto> updateCourseById(
-      @PathVariable long id, @RequestBody CourseDto dto) {
+  @PutMapping("/{id}")
+  public ResponseEntity<CreateUpdateCourseDto> updateCourseById(
+      @PathVariable long id, @RequestBody CreateUpdateCourseDto dto) {
 
-    CourseDto course = courseService.updateCourseById(id, dto);
+    CreateUpdateCourseDto course = courseService.updateCourseById(id, dto);
     return ResponseEntity
         .ok()
         .body(course);
   }
 
-  @GetMapping(path = "/all")
-  public ResponseEntity<List<ReadCourseDto>> getAllProviders() {
+  @GetMapping("/all")
+  public ResponseEntity<List<ReadCourseDto>> getAllCourses() {
     List<ReadCourseDto> courses = courseService.getAllCourses();
     return ResponseEntity
         .ok()
