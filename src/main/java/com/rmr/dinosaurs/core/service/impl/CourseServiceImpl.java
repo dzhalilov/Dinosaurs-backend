@@ -117,8 +117,7 @@ public class CourseServiceImpl implements CourseService {
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());
 
-    Page<Course> page = courseRepo
-        .findByIsArchivedFalseOrderByStartsAtAsc(pageable);
+    Page<Course> page = courseRepo.findAll(spec, pageable);
 
     return toReadCoursePageDto(page);
   }

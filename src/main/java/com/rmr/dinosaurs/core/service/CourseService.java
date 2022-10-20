@@ -3,6 +3,7 @@ package com.rmr.dinosaurs.core.service;
 import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
+import com.rmr.dinosaurs.core.utils.CourseSpecification;
 import java.util.List;
 
 public interface CourseService {
@@ -15,6 +16,6 @@ public interface CourseService {
 
   List<ReadCourseDto> getAllCourses();
 
-  ReadCoursePageDto getCoursePage(int pageNum);
+  ReadCoursePageDto getFilteredCoursePage(int pageNum, CourseSpecification spec);
 
 }
