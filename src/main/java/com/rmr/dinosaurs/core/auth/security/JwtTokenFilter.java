@@ -2,6 +2,7 @@ package com.rmr.dinosaurs.core.auth.security;
 
 import static com.rmr.dinosaurs.core.exception.errorcode.AuthErrorCode.INVALID_TOKEN_PROVIDED;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rmr.dinosaurs.core.exception.ServiceException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
+  protected static final ObjectMapper objectMapper = new ObjectMapper();
   protected static final String AUTHORIZATION_HEADER = "Authorization";
   protected static final String BEARER = "Bearer ";
   protected static final String TOKEN_HEADER = "X-USER-TOKEN";
@@ -72,36 +74,41 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       String token = resolveToken(request);
       if (Objects.nonNull(token)) {
         if (Strings.isEmpty(token) || !jwtTokenProvider.isTokenValid(token)) {
-          throw new ServiceException(INVALID_TOKEN_PROVIDED);
+          customServletFilterExceptionHandler(response);
+          return;
         }
 
-        DinoAuthentication auth = jwtTokenService
-            .getDinoAuthenticationByToken(token);
+        DinoAuthentication auth = jwtTokenService.getDinoAuthenticationByToken(token);
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
       filterChain.doFilter(request, response);
     } catch (JwtException e) {
       SecurityContextHolder.clearContext();
-      throw new JwtException(e.getMessage());
+      customServletFilterExceptionHandler(response);
     }
+  }
 
+  private void customServletFilterExceptionHandler(HttpServletResponse response)
+      throws IOException {
+    ServiceException serviceException = new ServiceException(INVALID_TOKEN_PROVIDED);
+    response.setContentType("application/json");
+    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    response.getWriter().write(objectMapper.writeValueAsString(serviceException));
   }
 
   private String resolveToken(HttpServletRequest request) {
-    return Strings.isEmpty(request.getHeader(TOKEN_HEADER))
-        ? getBearerToken(request)
+    return Strings.isEmpty(request.getHeader(TOKEN_HEADER)) ? getBearerToken(request)
         : request.getHeader(TOKEN_HEADER);
   }
 
   private String getBearerToken(HttpServletRequest request) {
     String authToken = request.getHeader(AUTHORIZATION_HEADER);
-    return Strings.isNotEmpty(authToken)
-        ? authToken.substring(BEARER.length())
-        : Strings.EMPTY;
+    return Strings.isNotEmpty(authToken) ?
+        authToken.substring(BEARER.length()) : Strings.EMPTY;
   }
 
   @Override
-  protected boolean shouldNotFilter(@NotNull HttpServletRequest request) throws ServletException {
+  protected boolean shouldNotFilter(@NotNull HttpServletRequest request) {
     return IGNORED_PATHS.stream()
         .anyMatch(antPathRequestMatcher -> antPathRequestMatcher.matches(request));
   }
