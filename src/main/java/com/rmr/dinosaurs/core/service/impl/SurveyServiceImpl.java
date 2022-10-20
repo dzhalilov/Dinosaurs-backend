@@ -68,8 +68,13 @@ public class SurveyServiceImpl implements SurveyService {
   @Override
   @Transactional
   public ReadSurveyDto getSurvey() {
-    Survey s = surveyRepo.findById(singletonSurveyId)
-        .orElseThrow(SurveyNotFoundException::new);
+    Survey s;
+    if (singletonSurveyId == null) {
+      s = surveyRepo.findTop1By();
+    } else {
+      s = surveyRepo.findById(singletonSurveyId)
+          .orElseThrow(SurveyNotFoundException::new);
+    }
     return toReadSurveyDto(s);
   }
 

@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SurveyRepository extends JpaRepository<Survey, Long> {
 
+  Survey findTop1By();
+
 }
