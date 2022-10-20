@@ -15,6 +15,7 @@ import com.rmr.dinosaurs.core.service.exceptions.CourseNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
+import com.rmr.dinosaurs.core.utils.CourseSpecification;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndTagRepository;
@@ -39,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CourseServiceImpl implements CourseService {
 
   private final CourseServiceProperties props;
-  private final CourseEntityDtoMapper mapper;
+  private final CourseEntityDtoMapper courseMapper;
 
   private final CourseRepository courseRepo;
   private final CourseProviderRepository providerRepo;
@@ -53,7 +54,7 @@ public class CourseServiceImpl implements CourseService {
   public CreateUpdateCourseDto createCourse(CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(CourseProviderNotFoundException::new);
-    Course course = saveNewCourseAndFlush(mapper.toEntity(dto), provider);
+    Course course = saveNewCourseAndFlush(courseMapper.toEntity(dto), provider);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
         .orElseThrow(ProfessionNotFoundException::new);
@@ -61,7 +62,7 @@ public class CourseServiceImpl implements CourseService {
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
-    CreateUpdateCourseDto createdCourse = mapper.toDto(course);
+    CreateUpdateCourseDto createdCourse = courseMapper.toDto(course);
     createdCourse.setProfessionId(dto.getProfessionId());
     createdCourse.setTags(dto.getTags());
     return createdCourse;
@@ -93,7 +94,7 @@ public class CourseServiceImpl implements CourseService {
     catRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
     saveNewTagsAndSaveNewCatRefs(updatedCourse, dto.getTags());
 
-    CreateUpdateCourseDto updatedDto = mapper.toDto(updatedCourse);
+    CreateUpdateCourseDto updatedDto = courseMapper.toDto(updatedCourse);
     updatedDto.setProfessionId(dto.getProfessionId());
     updatedDto.setTags(dto.getTags());
     return updatedDto;
@@ -108,7 +109,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public ReadCoursePageDto getCoursePage(int pageNum) {
+  public ReadCoursePageDto getFilteredCoursePage(int pageNum, CourseSpecification spec) {
     --pageNum;
     if (pageNum < 0) {
       throw new NegativePageNumberException();
@@ -213,7 +214,7 @@ public class CourseServiceImpl implements CourseService {
         .map(cat -> cat.getTag().getValue())
         .toList();
 
-    ReadCourseDto readCourseDto = mapper.toReadCourseDto(course);
+    ReadCourseDto readCourseDto = courseMapper.toReadCourseDto(course);
     readCourseDto.setProfessionId(courseProfession.getId());
     readCourseDto.setProfessionName(courseProfession.getName());
     readCourseDto.setTags(tags);
