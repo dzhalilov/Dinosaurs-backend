@@ -5,7 +5,6 @@ import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
-import com.rmr.dinosaurs.core.utils.CourseSpecification;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -66,11 +65,8 @@ public class CourseController {
   }
 
   @GetMapping
-  public ResponseEntity<ReadCoursePageDto> getCoursePage(
-      @RequestParam(name = "page", defaultValue = "1") int pageNum,
-      CourseSpecification spec) {
-
-    ReadCoursePageDto coursePage = courseService.getFilteredCoursePage(pageNum, spec);
+  public ResponseEntity<ReadCoursePageDto> getCoursePage(@RequestParam(name = "page") int pageNum) {
+    ReadCoursePageDto coursePage = courseService.getCoursePage(pageNum);
     return ResponseEntity
         .ok()
         .body(coursePage);

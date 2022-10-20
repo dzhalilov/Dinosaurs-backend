@@ -15,7 +15,6 @@ import com.rmr.dinosaurs.core.service.exceptions.CourseNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
-import com.rmr.dinosaurs.core.utils.CourseSpecification;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndTagRepository;
@@ -109,7 +108,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public ReadCoursePageDto getFilteredCoursePage(int pageNum, CourseSpecification spec) {
+  public ReadCoursePageDto getCoursePage(int pageNum) {
     --pageNum;
     if (pageNum < 0) {
       throw new NegativePageNumberException();
@@ -117,7 +116,8 @@ public class CourseServiceImpl implements CourseService {
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());
 
-    Page<Course> page = courseRepo.findAll(spec, pageable);
+    Page<Course> page = courseRepo
+        .findByIsArchivedFalseOrderByStartsAtAsc(pageable);
 
     return toReadCoursePageDto(page);
   }
