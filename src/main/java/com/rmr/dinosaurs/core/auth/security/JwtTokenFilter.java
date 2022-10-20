@@ -97,14 +97,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
   }
 
   private String resolveToken(HttpServletRequest request) {
-    return Strings.isEmpty(request.getHeader(TOKEN_HEADER)) ? getBearerToken(request)
+    return Strings.isEmpty(request.getHeader(TOKEN_HEADER))
+        ? getBearerToken(request)
         : request.getHeader(TOKEN_HEADER);
   }
 
   private String getBearerToken(HttpServletRequest request) {
     String authToken = request.getHeader(AUTHORIZATION_HEADER);
-    return Strings.isNotEmpty(authToken) ?
-        authToken.substring(BEARER.length()) : Strings.EMPTY;
+    return Strings.isNotEmpty(authToken)
+        ? authToken.substring(BEARER.length())
+        : Strings.EMPTY;
   }
 
   @Override
