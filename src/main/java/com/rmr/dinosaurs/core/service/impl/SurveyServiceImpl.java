@@ -25,6 +25,7 @@ import com.rmr.dinosaurs.infrastucture.database.SurveyQuestionRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyRepository;
 import com.rmr.dinosaurs.infrastucture.database.UserInfoRepository;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,11 @@ public class SurveyServiceImpl implements SurveyService {
     Survey savedSurvey = saveAndFlushSurvey(dto);
     saveAndFlushSurveyQuestionsAndTheirsAnswers(savedSurvey, dto.getSurvey());
     singletonSurveyId = savedSurvey.getId();
+
+    List<CreateQuestionDto> sortedSurveyByQuestionId = dto.getSurvey().stream()
+        .sorted(Comparator.comparingLong(CreateQuestionDto::getQuestionId))
+        .toList();
+    dto.setSurvey(sortedSurveyByQuestionId);
     return dto;
   }
 
