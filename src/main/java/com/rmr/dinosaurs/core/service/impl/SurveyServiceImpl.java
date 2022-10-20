@@ -4,6 +4,7 @@ import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Survey;
 import com.rmr.dinosaurs.core.model.SurveyQuestion;
 import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
+import com.rmr.dinosaurs.core.model.UserInfo;
 import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateAnswerDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateQuestionDto;
@@ -21,6 +22,7 @@ import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyQuestionAnswerRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyQuestionRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyRepository;
+import com.rmr.dinosaurs.infrastucture.database.UserInfoRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,7 @@ public class SurveyServiceImpl implements SurveyService {
   private final SurveyQuestionRepository questionRepo;
   private final SurveyQuestionAnswerRepository answerRepo;
   private final ProfessionRepository professionRepo;
+  private final UserInfoRepository userInfoRepo;
 
   private Long singletonSurveyId;
 
@@ -71,7 +74,7 @@ public class SurveyServiceImpl implements SurveyService {
     List<SurveyQuestionAnswer> answers = answerRepo.findAllById(answerIds);
 
     Profession recommendedProfession = recommendProfession(answers);
-    for (SurveyQuestionAnswer sqa : answers) {
+    attachRecommendedProfessionToUser(email, recommendedProfession);
 
     Map.Entry<Profession, Integer> maxRepetitionEntry = professionRepetitionsMap
   }
@@ -187,4 +190,13 @@ public class SurveyServiceImpl implements SurveyService {
 
     return result;
   }
+
+  private void attachRecommendedProfessionToUser(String email, Profession recommendedProfession) {
+    UserInfo userInfo = userInfoRepo.findByUser_Email(email).orElse(null);
+    if (userInfo != null) {
+      userInfo.setRecommendedProfession(recommendedProfession);
+      userInfoRepo.save(userInfo);
+    }
+  }
+
 }
