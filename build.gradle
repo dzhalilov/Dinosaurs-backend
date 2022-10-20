@@ -63,6 +63,7 @@ dependencies {
 	implementation "org.springdoc:springdoc-openapi-ui:1.6.11"
 	implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
 	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+	implementation 'net.kaczmarzyk:specification-arg-resolver:2.6.3'
 
 	compileOnly 'org.projectlombok:lombok'
 
