@@ -12,7 +12,9 @@ import org.springframework.stereotype.Repository;
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
   @Query("SELECT c FROM Course c " +
-      "WHERE (:search is null or (c.title LIKE %:search% or c.description LIKE %:search%))")
+      "WHERE (:search is null " +
+      "or (lower(c.title) LIKE %:search% " +
+      "or lower(c.description) LIKE %:search%))")
   Page<Course> findByFilter(
       @Param("search") String search,
       Pageable page);

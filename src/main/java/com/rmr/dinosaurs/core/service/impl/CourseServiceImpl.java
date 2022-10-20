@@ -118,7 +118,7 @@ public class CourseServiceImpl implements CourseService {
         pageNum, props.getDefaultPageSize());
 
     Page<Course> page = courseRepo.findByFilter(
-        filter.getSearch(),
+        filter.getSearch().toLowerCase(),
         pageable);
 
     return toReadCoursePageDto(page);
