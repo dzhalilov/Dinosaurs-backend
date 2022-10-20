@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.presentation.web;
 
+import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
 import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderDto;
 import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderPageDto;
 import com.rmr.dinosaurs.core.service.CourseProviderService;
@@ -24,6 +25,7 @@ public class CourseProviderController {
   private final CourseProviderService providerService;
 
   @PostMapping
+  @ModeratorPermission
   public ResponseEntity<CourseProviderDto> createProvider(@RequestBody CourseProviderDto provider) {
     CourseProviderDto createdProvider = providerService.createProvider(provider);
     URI createdProviderUri = URI.create("/api/v1/providers/" + createdProvider.getId());
@@ -41,6 +43,7 @@ public class CourseProviderController {
   }
 
   @PutMapping("/{id}")
+  @ModeratorPermission
   public ResponseEntity<CourseProviderDto> updateProviderById(
       @PathVariable long id, @RequestBody CourseProviderDto dto) {
 

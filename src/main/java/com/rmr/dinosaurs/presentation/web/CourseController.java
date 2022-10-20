@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.presentation.web;
 
+import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
 import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
@@ -25,6 +26,7 @@ public class CourseController {
   private final CourseService courseService;
 
   @PostMapping
+  @ModeratorPermission
   public ResponseEntity<CreateUpdateCourseDto> createCourse(
       @RequestBody CreateUpdateCourseDto course) {
 
@@ -44,6 +46,7 @@ public class CourseController {
   }
 
   @PutMapping("/{id}")
+  @ModeratorPermission
   public ResponseEntity<CreateUpdateCourseDto> updateCourseById(
       @PathVariable long id, @RequestBody CreateUpdateCourseDto dto) {
 

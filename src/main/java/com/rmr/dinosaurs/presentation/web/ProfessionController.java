@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.presentation.web;
 
+import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
 import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.profession.ProfessionPageDto;
 import com.rmr.dinosaurs.core.service.ProfessionService;
@@ -24,6 +25,7 @@ public class ProfessionController {
   private final ProfessionService professionService;
 
   @PostMapping
+  @ModeratorPermission
   public ResponseEntity<ProfessionDto> createProfession(@RequestBody ProfessionDto profession) {
     ProfessionDto createdProfession = professionService.createProfession(profession);
     URI createdProfessionUri = URI.create("/api/v1/professions/" + createdProfession.getId());
@@ -41,6 +43,7 @@ public class ProfessionController {
   }
 
   @PutMapping("/{id}")
+  @ModeratorPermission
   public ResponseEntity<ProfessionDto> updateProfessionById(
       @PathVariable long id, @RequestBody ProfessionDto dto) {
 
