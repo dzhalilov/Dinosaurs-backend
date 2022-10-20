@@ -7,6 +7,7 @@ import com.rmr.dinosaurs.core.model.CourseAndTag;
 import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Tag;
+import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
@@ -108,7 +109,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public ReadCoursePageDto getCoursePage(int pageNum) {
+  public ReadCoursePageDto getCoursePage(int pageNum, FilterParamsDto filter) {
     --pageNum;
     if (pageNum < 0) {
       throw new NegativePageNumberException();
@@ -116,8 +117,9 @@ public class CourseServiceImpl implements CourseService {
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());
 
-    Page<Course> page = courseRepo
-        .findByIsArchivedFalseOrderByStartsAtAsc(pageable);
+    Page<Course> page = courseRepo.findByFilter(
+        filter.getSearch(),
+        pageable);
 
     return toReadCoursePageDto(page);
   }
