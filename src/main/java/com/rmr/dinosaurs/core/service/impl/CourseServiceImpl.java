@@ -120,15 +120,7 @@ public class CourseServiceImpl implements CourseService {
     Page<Course> page = courseRepo
         .findByIsArchivedFalseOrderByStartsAtAsc(pageable);
 
-    ReadCoursePageDto pageDto = new ReadCoursePageDto();
-    pageDto.setTotalElements(page.getTotalElements());
-    pageDto.setTotalPages(page.getTotalPages());
-    pageDto.setPageSize(page.getSize());
-    pageDto.setPageNumber(page.getNumber() + 1);
-    pageDto.setContent(page.getContent().stream()
-        .map(this::toReadCourseDto).toList());
-
-    return pageDto;
+    return toReadCoursePageDto(page);
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
@@ -220,6 +212,17 @@ public class CourseServiceImpl implements CourseService {
     readCourseDto.setTags(tags);
 
     return readCourseDto;
+  }
+
+  private ReadCoursePageDto toReadCoursePageDto(Page<Course> page) {
+    ReadCoursePageDto pageDto = new ReadCoursePageDto();
+    pageDto.setTotalElements(page.getTotalElements());
+    pageDto.setTotalPages(page.getTotalPages());
+    pageDto.setPageSize(page.getSize());
+    pageDto.setPageNumber(page.getNumber() + 1);
+    pageDto.setContent(page.getContent().stream()
+        .map(this::toReadCourseDto).toList());
+    return pageDto;
   }
 
 }
