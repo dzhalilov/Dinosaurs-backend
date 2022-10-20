@@ -82,14 +82,7 @@ public class CourseServiceImpl implements CourseService {
         .orElseThrow(CourseProviderNotFoundException::new);
     Course course = courseRepo.findById(id)
         .orElseThrow(CourseNotFoundException::new);
-    course.setProvider(provider);
-    course.setTitle(dto.getTitle());
-    course.setUrl(dto.getUrl());
-    course.setCoverUrl(dto.getCoverUrl());
-    course.setDescription(dto.getDescription());
-    course.setStartsAt(dto.getStartsAt());
-    course.setEndsAt(dto.getEndsAt());
-    course.setIsAdvanced(dto.getIsAdvanced());
+    setCourseUpdates(dto, course, provider);
     Course updatedCourse = courseRepo.saveAndFlush(course);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
@@ -196,6 +189,19 @@ public class CourseServiceImpl implements CourseService {
     }
 
     catRefRepo.saveAll(catRefs);
+  }
+
+  private void setCourseUpdates(
+      CreateUpdateCourseDto dto, Course course, CourseProvider provider) {
+
+    course.setProvider(provider);
+    course.setTitle(dto.getTitle());
+    course.setUrl(dto.getUrl());
+    course.setCoverUrl(dto.getCoverUrl());
+    course.setDescription(dto.getDescription());
+    course.setStartsAt(dto.getStartsAt());
+    course.setEndsAt(dto.getEndsAt());
+    course.setIsAdvanced(dto.getIsAdvanced());
   }
 
   private ReadCourseDto toReadCourseDto(Course course) {
