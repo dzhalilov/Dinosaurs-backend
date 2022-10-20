@@ -19,7 +19,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -49,8 +49,8 @@ services:
     default-internal-rating: 100
     default-is-indefinite: true
     default-is-archived: false
-    default-page-size: 10
+    default-page-size: 9
   profession:
-    default-page-size: 10
+    default-page-size: 9
   provider:
-    default-page-size: 10
+    default-page-size: 9

@@ -40,6 +40,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       new AntPathRequestMatcher("/api/v1/professions/**"),
       new AntPathRequestMatcher("/api/v1/courses"),
       new AntPathRequestMatcher("/api/v1/courses/**"),
+      new AntPathRequestMatcher("/api/v1/survey"),
+      new AntPathRequestMatcher("/api/v1/survey/**"),
 
       new AntPathRequestMatcher("/api/v1/providers", HttpMethod.POST.name()),
       new AntPathRequestMatcher("/api/v1/providers/**", HttpMethod.POST.name()),
@@ -47,13 +49,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       new AntPathRequestMatcher("/api/v1/professions/**", HttpMethod.POST.name()),
       new AntPathRequestMatcher("/api/v1/courses", HttpMethod.POST.name()),
       new AntPathRequestMatcher("/api/v1/courses/**", HttpMethod.POST.name()),
+      new AntPathRequestMatcher("/api/v1/survey", HttpMethod.POST.name()),
+      new AntPathRequestMatcher("/api/v1/survey/**", HttpMethod.POST.name()),
 
       new AntPathRequestMatcher("/api/v1/providers", HttpMethod.PUT.name()),
       new AntPathRequestMatcher("/api/v1/providers/**", HttpMethod.PUT.name()),
       new AntPathRequestMatcher("/api/v1/professions", HttpMethod.PUT.name()),
       new AntPathRequestMatcher("/api/v1/professions/**", HttpMethod.PUT.name()),
       new AntPathRequestMatcher("/api/v1/courses", HttpMethod.PUT.name()),
-      new AntPathRequestMatcher("/api/v1/courses/**", HttpMethod.PUT.name())
+      new AntPathRequestMatcher("/api/v1/courses/**", HttpMethod.PUT.name()),
+      new AntPathRequestMatcher("/api/v1/survey", HttpMethod.PUT.name()),
+      new AntPathRequestMatcher("/api/v1/survey/**", HttpMethod.PUT.name())
   );
 
   private final JwtTokenProvider jwtTokenProvider;

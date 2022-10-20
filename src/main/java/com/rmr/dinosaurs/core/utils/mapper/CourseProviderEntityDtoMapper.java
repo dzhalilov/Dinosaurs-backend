@@ -1,7 +1,7 @@
 package com.rmr.dinosaurs.core.utils.mapper;
 
 import com.rmr.dinosaurs.core.model.CourseProvider;
-import com.rmr.dinosaurs.core.model.dto.CourseProviderDto;
+import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

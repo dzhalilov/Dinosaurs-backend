@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.core.model.dto;
+package com.rmr.dinosaurs.core.model.dto.survey;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfessionDto {
+public class CreateAnswerDto {
 
-  Long id;
+  Long answerId;
 
-  String name;
+  String text;
 
-  String description;
-
-  String coverUrl;
+  Long professionId;
 
 }

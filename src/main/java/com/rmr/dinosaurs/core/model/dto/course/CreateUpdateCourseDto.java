@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.core.model.dto;
+package com.rmr.dinosaurs.core.model.dto.course;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseDto {
+public class CreateUpdateCourseDto {
 
   Long id;
 
