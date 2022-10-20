@@ -4,6 +4,7 @@ import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Survey;
 import com.rmr.dinosaurs.core.model.SurveyQuestion;
 import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
+import com.rmr.dinosaurs.core.model.UserInfo;
 import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateAnswerDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateQuestionDto;
@@ -16,11 +17,13 @@ import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.SurveyNotFoundException;
+import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.core.utils.mapper.SurveyEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyQuestionAnswerRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyQuestionRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyRepository;
+import com.rmr.dinosaurs.infrastucture.database.UserInfoRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,12 +39,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SurveyServiceImpl implements SurveyService {
 
-  private final SurveyEntityDtoMapper mapper;
+  private final SurveyEntityDtoMapper surveyMapper;
+  private final ProfessionEntityDtoMapper professionMapper;
 
   private final SurveyRepository surveyRepo;
   private final SurveyQuestionRepository questionRepo;
   private final SurveyQuestionAnswerRepository answerRepo;
   private final ProfessionRepository professionRepo;
+  private final UserInfoRepository userInfoRepo;
 
   private Long singletonSurveyId;
 
@@ -64,45 +69,20 @@ public class SurveyServiceImpl implements SurveyService {
 
   @Override
   @Transactional
-  public ProfessionDto resultSurvey(SurveyResponseDto response) {
+  public ProfessionDto resultSurvey(SurveyResponseDto response, String email) {
     List<Long> answerIds = response.getSurvey().stream()
         .map(SurveyQuestionResponseDto::getAnswerId)
         .toList();
     List<SurveyQuestionAnswer> answers = answerRepo.findAllById(answerIds);
 
-    Map<Profession, Integer> professionRepetitionsMap = new HashMap<>();
-    for (SurveyQuestionAnswer sqa : answers) {
-      Profession profession = sqa.getProfession();
-      if (!professionRepetitionsMap.containsKey(profession)) {
-        professionRepetitionsMap.put(profession, 1);
-      } else {
-        professionRepetitionsMap.put(
-            profession,
-            professionRepetitionsMap.get(profession) + 1);
-      }
-    }
+    Profession recommendedProfession = recommendProfession(answers);
+    attachRecommendedProfessionToUser(email, recommendedProfession);
 
-    Map.Entry<Profession, Integer> maxRepetitionEntry = professionRepetitionsMap
-        .entrySet().stream()
-        .max(Map.Entry.comparingByValue()).orElse(null);
-
-    ProfessionDto result;
-    if (maxRepetitionEntry == null) {
-      result = null;
-    } else {
-      Profession resultProfession = maxRepetitionEntry.getKey();
-      result = new ProfessionDto();
-      result.setId(resultProfession.getId());
-      result.setName(resultProfession.getName());
-      result.setDescription(resultProfession.getDescription());
-      result.setCoverUrl(resultProfession.getCoverUrl());
-    }
-
-    return result;
+    return professionMapper.toDto(recommendedProfession);
   }
 
   private Survey saveAndFlushSurvey(CreateSurveyDto dto) {
-    Survey s = mapper.toSurvey(dto);
+    Survey s = surveyMapper.toSurvey(dto);
     Survey savedSurvey = surveyRepo.saveAndFlush(s);
     dto.setSurveyId(savedSurvey.getId());
     return savedSurvey;
@@ -119,7 +99,7 @@ public class SurveyServiceImpl implements SurveyService {
   }
 
   private SurveyQuestion saveAndFlushSurveyQuestion(Survey survey, CreateQuestionDto qdto) {
-    SurveyQuestion q = mapper.toSurveyQuestion(qdto);
+    SurveyQuestion q = surveyMapper.toSurveyQuestion(qdto);
     q.setSurvey(survey);
     SurveyQuestion savedQuestion = questionRepo.saveAndFlush(q);
     qdto.setQuestionId(savedQuestion.getId());
@@ -154,7 +134,7 @@ public class SurveyServiceImpl implements SurveyService {
       SurveyQuestion question, Profession profession,
       CreateAnswerDto adto) {
 
-    SurveyQuestionAnswer a = mapper.toSurveyQuestionAnswer(adto);
+    SurveyQuestionAnswer a = surveyMapper.toSurveyQuestionAnswer(adto);
     a.setQuestion(question);
     a.setProfession(profession);
     SurveyQuestionAnswer savedAnswer = answerRepo.saveAndFlush(a);
@@ -169,10 +149,10 @@ public class SurveyServiceImpl implements SurveyService {
       Set<SurveyQuestionAnswer> sqaSet = sq.getAnswers();
       List<ReadAnswerDto> adtoList = new ArrayList<>(sqaSet.size());
       for (SurveyQuestionAnswer sqa : sqaSet) {
-        adtoList.add(mapper.toReadAnswerDto(sqa));
+        adtoList.add(surveyMapper.toReadAnswerDto(sqa));
       }
 
-      ReadQuestionDto qdto = mapper.toReadQuestionDto(sq);
+      ReadQuestionDto qdto = surveyMapper.toReadQuestionDto(sq);
       qdto.setAnswers(adtoList);
       qdtoList.add(qdto);
     }
@@ -184,6 +164,41 @@ public class SurveyServiceImpl implements SurveyService {
     surveyDto.setSurvey(qdtoList);
 
     return surveyDto;
+  }
+
+  private Profession recommendProfession(List<SurveyQuestionAnswer> answers) {
+    Map<Profession, Integer> professionRepetitionsMap = new HashMap<>();
+    for (SurveyQuestionAnswer sqa : answers) {
+      Profession profession = sqa.getProfession();
+      if (!professionRepetitionsMap.containsKey(profession)) {
+        professionRepetitionsMap.put(profession, 1);
+      } else {
+        professionRepetitionsMap.put(
+            profession,
+            professionRepetitionsMap.get(profession) + 1);
+      }
+    }
+
+    Map.Entry<Profession, Integer> maxRepetitionEntry = professionRepetitionsMap
+        .entrySet().stream()
+        .max(Map.Entry.comparingByValue()).orElse(null);
+
+    Profession result;
+    if (maxRepetitionEntry == null) {
+      result = null;
+    } else {
+      result = maxRepetitionEntry.getKey();
+    }
+
+    return result;
+  }
+
+  private void attachRecommendedProfessionToUser(String email, Profession recommendedProfession) {
+    UserInfo userInfo = userInfoRepo.findByUser_Email(email).orElse(null);
+    if (userInfo != null) {
+      userInfo.setRecommendedProfession(recommendedProfession);
+      userInfoRepo.save(userInfo);
+    }
   }
 
 }

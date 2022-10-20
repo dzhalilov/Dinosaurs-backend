@@ -1,11 +1,13 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
+import com.rmr.dinosaurs.core.model.dto.UserDto;
 import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
+import com.rmr.dinosaurs.core.service.UserService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SurveyController {
 
   private final SurveyService surveyService;
+  private final UserService userService;
 
   @PostMapping
   @ModeratorPermission
@@ -42,7 +45,10 @@ public class SurveyController {
 
   @PostMapping("/result")
   public ResponseEntity<ProfessionDto> resultSurvey(@RequestBody SurveyResponseDto response) {
-    ProfessionDto result = surveyService.resultSurvey(response);
+    UserDto user = userService.getCurrentUserDto();
+    String userEmail = user.getEmail();
+
+    ProfessionDto result = surveyService.resultSurvey(response, userEmail);
     return ResponseEntity
         .ok()
         .body(result);
