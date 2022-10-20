@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.presentation.web;
 
+import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
 import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
@@ -22,6 +23,7 @@ public class SurveyController {
   private final SurveyService surveyService;
 
   @PostMapping
+  @ModeratorPermission
   public ResponseEntity<CreateSurveyDto> createSurvey(@RequestBody CreateSurveyDto survey) {
     CreateSurveyDto createdSurvey = surveyService.createSurvey(survey);
     URI createdSurveyUri = URI.create("/api/v1/survey");

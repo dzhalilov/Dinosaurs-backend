@@ -36,32 +36,15 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       new AntPathRequestMatcher("/v3/api-docs/**"),
       new AntPathRequestMatcher("/actuator/**"),
 
-      new AntPathRequestMatcher("/api/v1/providers"),
-      new AntPathRequestMatcher("/api/v1/providers/**"),
-      new AntPathRequestMatcher("/api/v1/professions"),
-      new AntPathRequestMatcher("/api/v1/professions/**"),
-      new AntPathRequestMatcher("/api/v1/courses"),
-      new AntPathRequestMatcher("/api/v1/courses/**"),
-      new AntPathRequestMatcher("/api/v1/survey"),
-      new AntPathRequestMatcher("/api/v1/survey/**"),
+      new AntPathRequestMatcher("/api/v1/professions/all", HttpMethod.GET.name()),
+      new AntPathRequestMatcher("/api/v1/professions", HttpMethod.GET.name()),
 
-      new AntPathRequestMatcher("/api/v1/providers", HttpMethod.POST.name()),
-      new AntPathRequestMatcher("/api/v1/providers/**", HttpMethod.POST.name()),
-      new AntPathRequestMatcher("/api/v1/professions", HttpMethod.POST.name()),
-      new AntPathRequestMatcher("/api/v1/professions/**", HttpMethod.POST.name()),
-      new AntPathRequestMatcher("/api/v1/courses", HttpMethod.POST.name()),
-      new AntPathRequestMatcher("/api/v1/courses/**", HttpMethod.POST.name()),
-      new AntPathRequestMatcher("/api/v1/survey", HttpMethod.POST.name()),
-      new AntPathRequestMatcher("/api/v1/survey/**", HttpMethod.POST.name()),
+      new AntPathRequestMatcher("/api/v1/providers/*", HttpMethod.GET.name()),
+      new AntPathRequestMatcher("/api/v1/providers/all", HttpMethod.GET.name()),
+      new AntPathRequestMatcher("/api/v1/providers", HttpMethod.GET.name()),
 
-      new AntPathRequestMatcher("/api/v1/providers", HttpMethod.PUT.name()),
-      new AntPathRequestMatcher("/api/v1/providers/**", HttpMethod.PUT.name()),
-      new AntPathRequestMatcher("/api/v1/professions", HttpMethod.PUT.name()),
-      new AntPathRequestMatcher("/api/v1/professions/**", HttpMethod.PUT.name()),
-      new AntPathRequestMatcher("/api/v1/courses", HttpMethod.PUT.name()),
-      new AntPathRequestMatcher("/api/v1/courses/**", HttpMethod.PUT.name()),
-      new AntPathRequestMatcher("/api/v1/survey", HttpMethod.PUT.name()),
-      new AntPathRequestMatcher("/api/v1/survey/**", HttpMethod.PUT.name())
+      new AntPathRequestMatcher("/api/v1/courses", HttpMethod.GET.name()),
+      new AntPathRequestMatcher("/api/v1/courses/all", HttpMethod.GET.name())
   );
 
   private final JwtTokenProvider jwtTokenProvider;
