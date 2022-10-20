@@ -92,7 +92,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       throws IOException {
     ServiceException serviceException = new ServiceException(INVALID_TOKEN_PROVIDED);
     response.setContentType("application/json");
-    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.getWriter().write(objectMapper.writeValueAsString(serviceException));
   }
 
