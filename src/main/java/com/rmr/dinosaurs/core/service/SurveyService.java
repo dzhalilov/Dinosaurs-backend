@@ -11,6 +11,6 @@ public interface SurveyService {
 
   ReadSurveyDto getSurvey();
 
-  ProfessionDto resultSurvey(SurveyResponseDto response);
+  ProfessionDto resultSurvey(SurveyResponseDto response, String email);
 
 }

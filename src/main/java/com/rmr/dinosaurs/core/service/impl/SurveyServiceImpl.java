@@ -17,6 +17,7 @@ import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.SurveyNotFoundException;
+import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.core.utils.mapper.SurveyEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.SurveyQuestionAnswerRepository;
@@ -39,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SurveyServiceImpl implements SurveyService {
 
   private final SurveyEntityDtoMapper surveyMapper;
+  private final ProfessionEntityDtoMapper professionMapper;
 
   private final SurveyRepository surveyRepo;
   private final SurveyQuestionRepository questionRepo;
@@ -67,7 +69,7 @@ public class SurveyServiceImpl implements SurveyService {
 
   @Override
   @Transactional
-  public ProfessionDto resultSurvey(SurveyResponseDto response) {
+  public ProfessionDto resultSurvey(SurveyResponseDto response, String email) {
     List<Long> answerIds = response.getSurvey().stream()
         .map(SurveyQuestionResponseDto::getAnswerId)
         .toList();
@@ -76,7 +78,7 @@ public class SurveyServiceImpl implements SurveyService {
     Profession recommendedProfession = recommendProfession(answers);
     attachRecommendedProfessionToUser(email, recommendedProfession);
 
-    Map.Entry<Profession, Integer> maxRepetitionEntry = professionRepetitionsMap
+    return professionMapper.toDto(recommendedProfession);
   }
 
   private Survey saveAndFlushSurvey(CreateSurveyDto dto) {
