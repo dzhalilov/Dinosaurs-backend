@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SurveyServiceImpl implements SurveyService {
 
-  private final SurveyEntityDtoMapper mapper;
+  private final SurveyEntityDtoMapper surveyMapper;
 
   private final SurveyRepository surveyRepo;
   private final SurveyQuestionRepository questionRepo;
@@ -102,7 +102,7 @@ public class SurveyServiceImpl implements SurveyService {
   }
 
   private Survey saveAndFlushSurvey(CreateSurveyDto dto) {
-    Survey s = mapper.toSurvey(dto);
+    Survey s = surveyMapper.toSurvey(dto);
     Survey savedSurvey = surveyRepo.saveAndFlush(s);
     dto.setSurveyId(savedSurvey.getId());
     return savedSurvey;
@@ -119,7 +119,7 @@ public class SurveyServiceImpl implements SurveyService {
   }
 
   private SurveyQuestion saveAndFlushSurveyQuestion(Survey survey, CreateQuestionDto qdto) {
-    SurveyQuestion q = mapper.toSurveyQuestion(qdto);
+    SurveyQuestion q = surveyMapper.toSurveyQuestion(qdto);
     q.setSurvey(survey);
     SurveyQuestion savedQuestion = questionRepo.saveAndFlush(q);
     qdto.setQuestionId(savedQuestion.getId());
@@ -154,7 +154,7 @@ public class SurveyServiceImpl implements SurveyService {
       SurveyQuestion question, Profession profession,
       CreateAnswerDto adto) {
 
-    SurveyQuestionAnswer a = mapper.toSurveyQuestionAnswer(adto);
+    SurveyQuestionAnswer a = surveyMapper.toSurveyQuestionAnswer(adto);
     a.setQuestion(question);
     a.setProfession(profession);
     SurveyQuestionAnswer savedAnswer = answerRepo.saveAndFlush(a);
@@ -169,10 +169,10 @@ public class SurveyServiceImpl implements SurveyService {
       Set<SurveyQuestionAnswer> sqaSet = sq.getAnswers();
       List<ReadAnswerDto> adtoList = new ArrayList<>(sqaSet.size());
       for (SurveyQuestionAnswer sqa : sqaSet) {
-        adtoList.add(mapper.toReadAnswerDto(sqa));
+        adtoList.add(surveyMapper.toReadAnswerDto(sqa));
       }
 
-      ReadQuestionDto qdto = mapper.toReadQuestionDto(sq);
+      ReadQuestionDto qdto = surveyMapper.toReadQuestionDto(sq);
       qdto.setAnswers(adtoList);
       qdtoList.add(qdto);
     }
