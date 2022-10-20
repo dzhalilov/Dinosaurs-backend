@@ -70,35 +70,10 @@ public class SurveyServiceImpl implements SurveyService {
         .toList();
     List<SurveyQuestionAnswer> answers = answerRepo.findAllById(answerIds);
 
-    Map<Profession, Integer> professionRepetitionsMap = new HashMap<>();
+    Profession recommendedProfession = recommendProfession(answers);
     for (SurveyQuestionAnswer sqa : answers) {
-      Profession profession = sqa.getProfession();
-      if (!professionRepetitionsMap.containsKey(profession)) {
-        professionRepetitionsMap.put(profession, 1);
-      } else {
-        professionRepetitionsMap.put(
-            profession,
-            professionRepetitionsMap.get(profession) + 1);
-      }
-    }
 
     Map.Entry<Profession, Integer> maxRepetitionEntry = professionRepetitionsMap
-        .entrySet().stream()
-        .max(Map.Entry.comparingByValue()).orElse(null);
-
-    ProfessionDto result;
-    if (maxRepetitionEntry == null) {
-      result = null;
-    } else {
-      Profession resultProfession = maxRepetitionEntry.getKey();
-      result = new ProfessionDto();
-      result.setId(resultProfession.getId());
-      result.setName(resultProfession.getName());
-      result.setDescription(resultProfession.getDescription());
-      result.setCoverUrl(resultProfession.getCoverUrl());
-    }
-
-    return result;
   }
 
   private Survey saveAndFlushSurvey(CreateSurveyDto dto) {
@@ -186,4 +161,30 @@ public class SurveyServiceImpl implements SurveyService {
     return surveyDto;
   }
 
+  private Profession recommendProfession(List<SurveyQuestionAnswer> answers) {
+    Map<Profession, Integer> professionRepetitionsMap = new HashMap<>();
+    for (SurveyQuestionAnswer sqa : answers) {
+      Profession profession = sqa.getProfession();
+      if (!professionRepetitionsMap.containsKey(profession)) {
+        professionRepetitionsMap.put(profession, 1);
+      } else {
+        professionRepetitionsMap.put(
+            profession,
+            professionRepetitionsMap.get(profession) + 1);
+      }
+    }
+
+    Map.Entry<Profession, Integer> maxRepetitionEntry = professionRepetitionsMap
+        .entrySet().stream()
+        .max(Map.Entry.comparingByValue()).orElse(null);
+
+    Profession result;
+    if (maxRepetitionEntry == null) {
+      result = null;
+    } else {
+      result = maxRepetitionEntry.getKey();
+    }
+
+    return result;
+  }
 }
