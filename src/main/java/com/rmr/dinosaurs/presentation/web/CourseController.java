@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
+import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
@@ -65,8 +66,15 @@ public class CourseController {
   }
 
   @GetMapping
-  public ResponseEntity<ReadCoursePageDto> getCoursePage(@RequestParam(name = "page") int pageNum) {
-    ReadCoursePageDto coursePage = courseService.getCoursePage(pageNum);
+  public ResponseEntity<ReadCoursePageDto> getCoursePage(
+      @RequestParam(name = "page", required = false, defaultValue = "1") int pageNum,
+      @RequestParam(name = "search", required = false) String search,
+      @RequestParam(name = "isAdvanced", required = false) Boolean isAdvanced,
+      @RequestParam(name = "professionId", required = false) Long professionId) {
+
+    FilterParamsDto filter = new FilterParamsDto(search, isAdvanced, professionId);
+
+    ReadCoursePageDto coursePage = courseService.getFilteredCoursePage(pageNum, filter);
     return ResponseEntity
         .ok()
         .body(coursePage);

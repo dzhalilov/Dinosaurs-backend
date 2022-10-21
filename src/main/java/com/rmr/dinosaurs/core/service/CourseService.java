@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.core.service;
 
+import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
@@ -15,6 +16,6 @@ public interface CourseService {
 
   List<ReadCourseDto> getAllCourses();
 
-  ReadCoursePageDto getCoursePage(int pageNum);
+  ReadCoursePageDto getFilteredCoursePage(int pageNum, FilterParamsDto filter);
 
 }

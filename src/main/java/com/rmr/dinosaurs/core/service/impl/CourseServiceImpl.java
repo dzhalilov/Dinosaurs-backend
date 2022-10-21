@@ -7,6 +7,7 @@ import com.rmr.dinosaurs.core.model.CourseAndTag;
 import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Tag;
+import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
@@ -23,6 +24,7 @@ import com.rmr.dinosaurs.infrastucture.database.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.TagRepository;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CourseServiceImpl implements CourseService {
 
   private final CourseServiceProperties props;
-  private final CourseEntityDtoMapper mapper;
+  private final CourseEntityDtoMapper courseMapper;
 
   private final CourseRepository courseRepo;
   private final CourseProviderRepository providerRepo;
@@ -53,7 +55,7 @@ public class CourseServiceImpl implements CourseService {
   public CreateUpdateCourseDto createCourse(CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(CourseProviderNotFoundException::new);
-    Course course = saveNewCourseAndFlush(mapper.toEntity(dto), provider);
+    Course course = saveNewCourseAndFlush(courseMapper.toEntity(dto), provider);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
         .orElseThrow(ProfessionNotFoundException::new);
@@ -61,7 +63,7 @@ public class CourseServiceImpl implements CourseService {
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
-    CreateUpdateCourseDto createdCourse = mapper.toDto(course);
+    CreateUpdateCourseDto createdCourse = courseMapper.toDto(course);
     createdCourse.setProfessionId(dto.getProfessionId());
     createdCourse.setTags(dto.getTags());
     return createdCourse;
@@ -82,14 +84,7 @@ public class CourseServiceImpl implements CourseService {
         .orElseThrow(CourseProviderNotFoundException::new);
     Course course = courseRepo.findById(id)
         .orElseThrow(CourseNotFoundException::new);
-    course.setProvider(provider);
-    course.setTitle(dto.getTitle());
-    course.setUrl(dto.getUrl());
-    course.setCoverUrl(dto.getCoverUrl());
-    course.setDescription(dto.getDescription());
-    course.setStartsAt(dto.getStartsAt());
-    course.setEndsAt(dto.getEndsAt());
-    course.setIsAdvanced(dto.getIsAdvanced());
+    setCourseUpdates(dto, course, provider);
     Course updatedCourse = courseRepo.saveAndFlush(course);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
@@ -100,7 +95,7 @@ public class CourseServiceImpl implements CourseService {
     catRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
     saveNewTagsAndSaveNewCatRefs(updatedCourse, dto.getTags());
 
-    CreateUpdateCourseDto updatedDto = mapper.toDto(updatedCourse);
+    CreateUpdateCourseDto updatedDto = courseMapper.toDto(updatedCourse);
     updatedDto.setProfessionId(dto.getProfessionId());
     updatedDto.setTags(dto.getTags());
     return updatedDto;
@@ -115,26 +110,35 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public ReadCoursePageDto getCoursePage(int pageNum) {
+  public ReadCoursePageDto getFilteredCoursePage(int pageNum, FilterParamsDto filter) {
     --pageNum;
     if (pageNum < 0) {
       throw new NegativePageNumberException();
     }
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());
+    String filterSearch;
+    if (filter.getSearch() == null) {
+      filterSearch = null;
+    } else {
+      filterSearch = filter.getSearch();
+    }
 
-    Page<Course> page = courseRepo
-        .findByIsArchivedFalseOrderByStartsAtAsc(pageable);
+    Page<Course> page = courseRepo.findByFilter(
+        filterSearch,
+        filter.getIsAdvanced(),
+        pageable);
 
-    ReadCoursePageDto pageDto = new ReadCoursePageDto();
-    pageDto.setTotalElements(page.getTotalElements());
-    pageDto.setTotalPages(page.getTotalPages());
-    pageDto.setPageSize(page.getSize());
-    pageDto.setPageNumber(page.getNumber() + 1);
-    pageDto.setContent(page.getContent().stream()
-        .map(this::toReadCourseDto).toList());
+    ReadCoursePageDto filteredResult = toReadCoursePageDto(page);
+    Long filterProfessionId = filter.getProfessionId();
+    List<ReadCourseDto> filteredCourses = filteredResult.getContent().stream()
+        .filter(c -> ((filterProfessionId == null)
+            || (c.getProfessionId() == (long) filterProfessionId)))
+        .sorted(Comparator.comparing(ReadCourseDto::getStartsAt))
+        .toList();
+    filteredResult.setContent(filteredCourses);
 
-    return pageDto;
+    return filteredResult;
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
@@ -198,6 +202,19 @@ public class CourseServiceImpl implements CourseService {
     catRefRepo.saveAll(catRefs);
   }
 
+  private void setCourseUpdates(
+      CreateUpdateCourseDto dto, Course course, CourseProvider provider) {
+
+    course.setProvider(provider);
+    course.setTitle(dto.getTitle());
+    course.setUrl(dto.getUrl());
+    course.setCoverUrl(dto.getCoverUrl());
+    course.setDescription(dto.getDescription());
+    course.setStartsAt(dto.getStartsAt());
+    course.setEndsAt(dto.getEndsAt());
+    course.setIsAdvanced(dto.getIsAdvanced());
+  }
+
   private ReadCourseDto toReadCourseDto(Course course) {
     Profession courseProfession = course.getCourseAndProfessionRefs()
         .iterator().next()
@@ -207,12 +224,23 @@ public class CourseServiceImpl implements CourseService {
         .map(cat -> cat.getTag().getValue())
         .toList();
 
-    ReadCourseDto readCourseDto = mapper.toReadCourseDto(course);
+    ReadCourseDto readCourseDto = courseMapper.toReadCourseDto(course);
     readCourseDto.setProfessionId(courseProfession.getId());
     readCourseDto.setProfessionName(courseProfession.getName());
     readCourseDto.setTags(tags);
 
     return readCourseDto;
+  }
+
+  private ReadCoursePageDto toReadCoursePageDto(Page<Course> page) {
+    ReadCoursePageDto pageDto = new ReadCoursePageDto();
+    pageDto.setTotalElements(page.getTotalElements());
+    pageDto.setTotalPages(page.getTotalPages());
+    pageDto.setPageSize(page.getSize());
+    pageDto.setPageNumber(page.getNumber() + 1);
+    pageDto.setContent(page.getContent().stream()
+        .map(this::toReadCourseDto).toList());
+    return pageDto;
   }
 
 }
