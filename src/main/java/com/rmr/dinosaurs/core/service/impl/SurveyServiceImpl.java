@@ -57,11 +57,6 @@ public class SurveyServiceImpl implements SurveyService {
     Survey savedSurvey = saveAndFlushSurvey(dto);
     saveAndFlushSurveyQuestionsAndTheirsAnswers(savedSurvey, dto.getSurvey());
     singletonSurveyId = savedSurvey.getId();
-
-    List<CreateQuestionDto> sortedSurveyByQuestionId = dto.getSurvey().stream()
-        .sorted(Comparator.comparingLong(CreateQuestionDto::getQuestionId))
-        .toList();
-    dto.setSurvey(sortedSurveyByQuestionId);
     return dto;
   }
 
@@ -75,7 +70,13 @@ public class SurveyServiceImpl implements SurveyService {
       s = surveyRepo.findById(singletonSurveyId)
           .orElseThrow(SurveyNotFoundException::new);
     }
-    return toReadSurveyDto(s);
+
+    ReadSurveyDto dto = toReadSurveyDto(s);
+    List<ReadQuestionDto> sortedSurveyByQuestionId = dto.getSurvey().stream()
+        .sorted(Comparator.comparingLong(ReadQuestionDto::getQuestionId))
+        .toList();
+    dto.setSurvey(sortedSurveyByQuestionId);
+    return dto;
   }
 
   @Override
