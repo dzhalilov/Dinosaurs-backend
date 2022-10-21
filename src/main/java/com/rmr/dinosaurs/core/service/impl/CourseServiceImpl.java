@@ -24,6 +24,7 @@ import com.rmr.dinosaurs.infrastucture.database.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.TagRepository;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -109,19 +110,35 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public ReadCoursePageDto getCoursePage(int pageNum, FilterParamsDto filter) {
+  public ReadCoursePageDto getFilteredCoursePage(int pageNum, FilterParamsDto filter) {
     --pageNum;
     if (pageNum < 0) {
       throw new NegativePageNumberException();
     }
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());
+    String filterSearch;
+    if (filter.getSearch() == null) {
+      filterSearch = null;
+    } else {
+      filterSearch = filter.getSearch();
+    }
 
     Page<Course> page = courseRepo.findByFilter(
-        filter.getSearch().toLowerCase(),
+        filterSearch,
+        filter.getIsAdvanced(),
         pageable);
 
-    return toReadCoursePageDto(page);
+    ReadCoursePageDto filteredResult = toReadCoursePageDto(page);
+    Long filterProfessionId = filter.getProfessionId();
+    List<ReadCourseDto> filteredCourses = filteredResult.getContent().stream()
+        .filter(c -> ((filterProfessionId == null)
+            || (c.getProfessionId() == (long) filterProfessionId)))
+        .sorted(Comparator.comparing(ReadCourseDto::getStartsAt))
+        .toList();
+    filteredResult.setContent(filteredCourses);
+
+    return filteredResult;
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {

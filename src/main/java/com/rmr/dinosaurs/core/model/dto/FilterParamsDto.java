@@ -11,4 +11,8 @@ public class FilterParamsDto {
 
   String search;
 
+  Boolean isAdvanced;
+
+  Long professionId;
+
 }

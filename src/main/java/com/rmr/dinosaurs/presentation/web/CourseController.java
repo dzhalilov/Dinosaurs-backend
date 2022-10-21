@@ -67,12 +67,14 @@ public class CourseController {
 
   @GetMapping
   public ResponseEntity<ReadCoursePageDto> getCoursePage(
-      @RequestParam(name = "page", defaultValue = "1") int pageNum,
-      @RequestParam(name = "search") String search) {
+      @RequestParam(name = "page", required = false, defaultValue = "1") int pageNum,
+      @RequestParam(name = "search", required = false) String search,
+      @RequestParam(name = "isAdvanced", required = false) Boolean isAdvanced,
+      @RequestParam(name = "professionId", required = false) Long professionId) {
 
-    FilterParamsDto filter = new FilterParamsDto(search);
+    FilterParamsDto filter = new FilterParamsDto(search, isAdvanced, professionId);
 
-    ReadCoursePageDto coursePage = courseService.getCoursePage(pageNum, filter);
+    ReadCoursePageDto coursePage = courseService.getFilteredCoursePage(pageNum, filter);
     return ResponseEntity
         .ok()
         .body(coursePage);
