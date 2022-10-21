@@ -36,12 +36,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       new AntPathRequestMatcher("/v3/api-docs/**"),
       new AntPathRequestMatcher("/actuator/**"),
 
-      new AntPathRequestMatcher("/api/v1/professions/all", HttpMethod.GET.name()),
       new AntPathRequestMatcher("/api/v1/professions", HttpMethod.GET.name()),
+      new AntPathRequestMatcher("/api/v1/professions/all", HttpMethod.GET.name()),
+      new AntPathRequestMatcher("/api/v1/professions/*", HttpMethod.GET.name()),
 
-      new AntPathRequestMatcher("/api/v1/providers/*", HttpMethod.GET.name()),
-      new AntPathRequestMatcher("/api/v1/providers/all", HttpMethod.GET.name()),
       new AntPathRequestMatcher("/api/v1/providers", HttpMethod.GET.name()),
+      new AntPathRequestMatcher("/api/v1/providers/all", HttpMethod.GET.name()),
+      new AntPathRequestMatcher("/api/v1/providers/*", HttpMethod.GET.name()),
 
       new AntPathRequestMatcher("/api/v1/courses", HttpMethod.GET.name()),
       new AntPathRequestMatcher("/api/v1/courses/all", HttpMethod.GET.name())
