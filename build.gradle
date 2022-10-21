@@ -35,21 +35,18 @@ dependencyManagement {
 
 sourceSets {
 	integrationTest {
-		java.srcDir "src/integrationTest/java"
+//		java.srcDir("src/integrationTest/java")
+//		resources.srcDir("src/integrationTest/resources")
 		compileClasspath += main.output + test.output
 		runtimeClasspath += main.output + test.output
-
-//		resources.srcDir "src/integrationTest/resources"
 	}
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
 	integrationTestImplementation.extendsFrom implementation, testImplementation
 	integrationTestCompileOnly.extendsFrom compileOnly
 	integrationTestAnnotationProcessor.extendsFrom annotationProcessor
+	integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 dependencies {
@@ -59,7 +56,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.flywaydb:flyway-core'
-	implementation 'io.swagger.core.v3:swagger-annotations:2.2.3'
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.4'
 	implementation "org.springdoc:springdoc-openapi-ui:1.6.11"
 	implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
 	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
@@ -78,10 +75,11 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation "org.testcontainers:testcontainers"
+	testImplementation "org.testcontainers:junit-jupiter"
+	testImplementation "org.testcontainers:postgresql"
 
 	integrationTestImplementation 'org.springframework.security:spring-security-test'
-	integrationTestImplementation 'org.testcontainers:junit-jupiter'
-	integrationTestImplementation 'org.testcontainers:postgresql'
 }
 
 
@@ -95,13 +93,15 @@ task integrationTest(type: Test) {
 	}
 }
 
+//check.dependsOn integrationTest
+
 test {
 	useJUnitPlatform()
 }
 
-//integrationTest {
-//	useJUnitPlatform()
-//}
+integrationTest {
+	useJUnitPlatform()
+}
 
 clean.doFirst {
 	delete "${rootDir}\\out"
