@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
-  @Query("SELECT c FROM Course c " +
-      "WHERE (:search is null " +
-      "or (lower(c.title) LIKE %:search% " +
-      "or lower(c.description) LIKE %:search%))" +
-      "and ((:isAdvanced is null) or (c.isAdvanced = :isAdvanced))")
+  @Query("SELECT c FROM Course c "
+      + "WHERE (:search is null "
+      + "or (lower(c.title) LIKE %:search% "
+      + "or lower(c.description) LIKE %:search%))"
+      + "and ((:isAdvanced is null) or (c.isAdvanced = :isAdvanced))")
   Page<Course> findByFilter(
       @Param("search") String search,
       @Param("isAdvanced") Boolean isAdvanced,
