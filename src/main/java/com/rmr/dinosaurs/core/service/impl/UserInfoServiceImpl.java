@@ -39,13 +39,13 @@ public class UserInfoServiceImpl implements UserInfoService {
   }
 
   @Override
-  public UserInfoDto getUserById(Long id) {
+  public UserInfoDto getUserInfoById(Long id) {
     return userInfoConverter.toUserInfoDto(
         userInfoRepository.findById(id).orElseThrow(USER_PROFILE_NOT_FOUND_EXCEPTION_SUPPLIER));
   }
 
   @Override
-  public List<ShortUserInfoDto> getAllUsers() {
+  public List<ShortUserInfoDto> getAllUserInfos() {
     return userInfoRepository.findAll().stream().map(userInfoConverter::toShortUserInfoDto)
         .toList();
   }

@@ -13,13 +13,13 @@ spring:
       indent_output: true
       WRITE_DATES_AS_TIMESTAMPS: false
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/dinodb}
+    url: ${SPRING_DATASOURCE_URL:jdbc:tc:postgresql://localhost:5432/dinodb}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:password}
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect

@@ -12,7 +12,6 @@ import com.rmr.dinosaurs.core.model.SignupRequest;
 import com.rmr.dinosaurs.core.model.User;
 import com.rmr.dinosaurs.infrastucture.database.UserRepository;
 import com.rmr.dinosaurs.presentation.web.AuthController;
-import configuration.ContainersEnvironment;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +36,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = DinosaursApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-class AuthControllerIntegrationTest extends ContainersEnvironment {
+class AuthControllerIntegrationTest {
 
   private static final String BASE_URL = "http://localhost";
   private static final String TEST_PASSWORD = "pAssw0rd";
@@ -50,7 +49,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
       "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO", Authority.ROLE_REGULAR, null);
 
   @Autowired
-  AuthController authController;
+  private AuthController authController;
 
   @Autowired
   private UserRepository userRepository;
@@ -72,14 +71,10 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
     userRepository.deleteAll();
   }
 
-  @Test
-  public void testContext() {
-    assertThat(authController).isNotNull();
-  }
 
   @Test
   @DisplayName("login as existing user")
-  public void testLogin() {
+  void testLogin() {
     // given
     var loginRequest = new LoginRequest(testUser.getEmail(), TEST_PASSWORD);
     var requestEntity = new HttpEntity<>(loginRequest, requestHeaders);
@@ -99,7 +94,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
 
   @Test
   @DisplayName("sign up as a new valid user")
-  public void testSignup() {
+  void testSignup() {
     // given
     var signupRequest = new SignupRequest("newuser@email.com", TEST_PASSWORD, "TestName",
         "TestSurname");
@@ -122,7 +117,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
 
   @Test
   @DisplayName("sign up as existing user")
-  public void testSignupAsExistingUser() {
+  void testSignupAsExistingUser() {
     // given
     var signupRequest = new SignupRequest(testUser.getEmail(), TEST_PASSWORD, "TestName",
         "TestSurname");
@@ -139,7 +134,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
 
   @Test
   @DisplayName("sign up with invalid user email")
-  public void testSignupWithInvalidEmail() {
+  void testSignupWithInvalidEmail() {
     // given
     var signupRequest = new SignupRequest("123581321", TEST_PASSWORD, "TestName", "TestSurname");
     var requestEntity = new HttpEntity<>(signupRequest, requestHeaders);
@@ -155,7 +150,7 @@ class AuthControllerIntegrationTest extends ContainersEnvironment {
 
   @Test
   @DisplayName("sign up with invalid user password")
-  public void testSignupWithInvalidPassword() {
+  void testSignupWithInvalidPassword() {
     // given
     var signupRequest = new SignupRequest("correct@email.com", "abc", "Username", "Usersurname");
     var requestEntity = new HttpEntity<>(signupRequest, requestHeaders);
