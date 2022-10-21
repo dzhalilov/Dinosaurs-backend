@@ -14,6 +14,8 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "user_info")
@@ -44,6 +46,7 @@ public class UserInfo {
 
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "ui_user_id", updatable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   User user;
 
   @ManyToOne(fetch = FetchType.LAZY)

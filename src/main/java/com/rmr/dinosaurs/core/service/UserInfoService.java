@@ -8,9 +8,9 @@ public interface UserInfoService {
 
   UserInfoDto getMyProfile();
 
-  UserInfoDto getUserById(Long id);
+  UserInfoDto getUserInfoById(Long id);
 
-  List<ShortUserInfoDto> getAllUsers();
+  List<ShortUserInfoDto> getAllUserInfos();
 
   List<ShortUserInfoDto> getAllModerators();
 }
