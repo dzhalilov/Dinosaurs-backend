@@ -13,8 +13,8 @@ public class ProfessionDto {
 
   String name;
 
-  String description;
-
   String coverUrl;
+
+  String description;
 
 }
