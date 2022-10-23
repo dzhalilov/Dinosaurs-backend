@@ -25,38 +25,38 @@ public class ProfessionServiceImpl implements ProfessionService {
   private final ProfessionServiceProperties props;
   private final ProfessionEntityDtoMapper mapper;
 
-  private final ProfessionRepository professionRepo;
+  private final ProfessionRepository repo;
 
   @Override
   public ProfessionDto createProfession(ProfessionDto dto) {
     Profession newProfession = mapper.toEntity(dto);
-    Profession savedProvider = professionRepo.saveAndFlush(newProfession);
-    return mapper.toDto(savedProvider);
+    Profession savedProfession = repo.saveAndFlush(newProfession);
+    return mapper.toDto(savedProfession);
   }
 
   @Override
   public ProfessionDto getProfessionById(long id) {
-    Profession profession = professionRepo.findById(id)
+    Profession profession = repo.findById(id)
         .orElseThrow(ProfessionNotFoundException::new);
     return mapper.toDto(profession);
   }
 
   @Override
   public ProfessionDto updateProfessionById(long id, ProfessionDto dto) {
-    Profession profession = professionRepo.findById(id)
+    Profession profession = repo.findById(id)
         .orElseThrow(ProfessionNotFoundException::new);
 
     profession.setName(dto.getName());
-    profession.setDescription(dto.getDescription());
     profession.setCoverUrl(dto.getCoverUrl());
+    profession.setDescription(dto.getDescription());
 
-    Profession updatedProfession = professionRepo.saveAndFlush(profession);
+    Profession updatedProfession = repo.saveAndFlush(profession);
     return mapper.toDto(updatedProfession);
   }
 
   @Override
   public List<ProfessionDto> getAllProfessions() {
-    return professionRepo.findAll()
+    return repo.findAll()
         .stream().map(mapper::toDto).toList();
   }
 
@@ -69,7 +69,7 @@ public class ProfessionServiceImpl implements ProfessionService {
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());
 
-    Page<Profession> page = professionRepo
+    Page<Profession> page = repo
         .findByOrderByNameAsc(pageable);
 
     ProfessionPageDto pageDto = new ProfessionPageDto();
