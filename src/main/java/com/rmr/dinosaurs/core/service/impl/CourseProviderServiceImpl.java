@@ -12,7 +12,6 @@ import com.rmr.dinosaurs.core.service.CourseProviderService;
 import com.rmr.dinosaurs.core.utils.mapper.CourseProviderEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
 import java.util.List;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,10 +23,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 public class CourseProviderServiceImpl implements CourseProviderService {
-
-  public static final Supplier<RuntimeException>
-      COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER = () ->
-      new ServiceException(COURSE_PROVIDER_NOT_FOUND);
 
   private final CourseProviderServiceProperties props;
   private final CourseProviderEntityDtoMapper mapper;
@@ -44,14 +39,14 @@ public class CourseProviderServiceImpl implements CourseProviderService {
   @Override
   public CourseProviderDto getProviderById(long id) {
     CourseProvider provider = providerRepo.findById(id)
-        .orElseThrow(COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER);
+        .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     return mapper.toDto(provider);
   }
 
   @Override
   public CourseProviderDto updateProviderById(long id, CourseProviderDto dto) {
     CourseProvider provider = providerRepo.findById(id)
-        .orElseThrow(COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER);
+        .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
 
     provider.setName(dto.getName());
     provider.setUrl(dto.getUrl());

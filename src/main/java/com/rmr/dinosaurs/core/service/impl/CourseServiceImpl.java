@@ -1,9 +1,9 @@
 package com.rmr.dinosaurs.core.service.impl;
 
 import static com.rmr.dinosaurs.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
+import static com.rmr.dinosaurs.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
 import static com.rmr.dinosaurs.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
-import static com.rmr.dinosaurs.core.service.impl.CourseProviderServiceImpl.COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER;
-import static com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl.PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER;
+import static com.rmr.dinosaurs.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 
 import com.rmr.dinosaurs.core.configuration.properties.CourseServiceProperties;
 import com.rmr.dinosaurs.core.exception.ServiceException;
@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -42,9 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
-
-  public static final Supplier<RuntimeException> COURSE_NOT_FOUND_EXCEPTION_SUPPLIER = () ->
-      new ServiceException(COURSE_NOT_FOUND);
 
   private final CourseServiceProperties props;
   private final CourseEntityDtoMapper courseMapper;
@@ -60,11 +56,11 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public CreateUpdateCourseDto createCourse(CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
-        .orElseThrow(COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER);
+        .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     Course course = saveNewCourseAndFlush(courseMapper.toEntity(dto), provider);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
-        .orElseThrow(PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER);
+        .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
     saveNewCapRef(course, profession);
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
@@ -79,7 +75,7 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public ReadCourseDto getCourseById(long id) {
     Course course = courseRepo.findById(id)
-        .orElseThrow(COURSE_NOT_FOUND_EXCEPTION_SUPPLIER);
+        .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
     return toReadCourseDto(course);
   }
 
@@ -87,14 +83,14 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public CreateUpdateCourseDto updateCourseById(long id, CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
-        .orElseThrow(COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER);
+        .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     Course course = courseRepo.findById(id)
-        .orElseThrow(COURSE_NOT_FOUND_EXCEPTION_SUPPLIER);
+        .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
     setCourseUpdates(dto, course, provider);
     Course updatedCourse = courseRepo.saveAndFlush(course);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
-        .orElseThrow(PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER);
+        .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
     capRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
     saveNewCapRef(updatedCourse, profession);
 
