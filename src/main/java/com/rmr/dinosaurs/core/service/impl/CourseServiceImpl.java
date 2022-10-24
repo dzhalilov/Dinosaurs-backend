@@ -197,10 +197,10 @@ public class CourseServiceImpl implements CourseService {
   }
 
   private ReadCoursePageDto findPagedFilteredCourses(FilterParamsDto filter, Pageable pageable) {
-    String notEmptySearch = (Objects.equals(filter.getSearch(), ""))
-        ? null
-        : filter.getSearch();
-    filter.setSearch(notEmptySearch);
+    String loweredSearch = (filter.getSearch() == null)
+        ? ""
+        : filter.getSearch().toLowerCase();
+    filter.setSearch(loweredSearch);
 
     Page<Course> page = courseRepo.findByFilter(
         filter.getSearch(),
