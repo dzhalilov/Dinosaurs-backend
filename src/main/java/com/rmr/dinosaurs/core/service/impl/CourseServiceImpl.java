@@ -26,7 +26,6 @@ import com.rmr.dinosaurs.infrastucture.database.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.TagRepository;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -207,17 +206,10 @@ public class CourseServiceImpl implements CourseService {
     Page<Course> page = courseRepo.findByFilter(
         filterSearch,
         filterIsAdvanced,
+        filterProfessionId,
         pageable);
-    ReadCoursePageDto result = toReadCoursePageDto(page);
 
-    List<ReadCourseDto> filteredCourses = result.getContent().stream()
-        .filter(c -> (filterProfessionId == null)
-            || (c.getProfessionId() == (long) filterProfessionId))
-        .sorted(Comparator.comparing(ReadCourseDto::getStartsAt))
-        .toList();
-    result.setContent(filteredCourses);
-
-    return result;
+    return toReadCoursePageDto(page);
   }
 
   private ReadCourseDto toReadCourseDto(Course course) {

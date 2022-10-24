@@ -17,10 +17,12 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
       + "WHERE (:search is null "
       + "or (lower(c.title) LIKE %:search% "
       + "or lower(c.description) LIKE %:search%))"
-      + "and ((:isAdvanced is null) or (c.isAdvanced = :isAdvanced))")
+      + " and ((:isAdvanced is null) or (c.isAdvanced = :isAdvanced))"
+      + " and ((:professionId is null) or (p.id = :professionId))")
   Page<Course> findByFilter(
       @Param("search") String search,
       @Param("isAdvanced") Boolean isAdvanced,
+      @Param("professionId") Long professionId,
       Pageable page);
 
 }
