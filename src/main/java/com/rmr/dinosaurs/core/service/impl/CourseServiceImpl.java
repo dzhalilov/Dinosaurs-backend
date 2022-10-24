@@ -28,6 +28,7 @@ import com.rmr.dinosaurs.infrastucture.database.TagRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -117,30 +118,9 @@ public class CourseServiceImpl implements CourseService {
     if (pageNum < 0) {
       throw new ServiceException(NEGATIVE_PAGE_NUMBER);
     }
-    Pageable pageable = PageRequest.of(
-        pageNum, props.getDefaultPageSize());
-    String filterSearch;
-    if (filter.getSearch() == null) {
-      filterSearch = null;
-    } else {
-      filterSearch = filter.getSearch();
-    }
+    Pageable pageable = PageRequest.of(pageNum, props.getDefaultPageSize());
 
-    Page<Course> page = courseRepo.findByFilter(
-        filterSearch,
-        filter.getIsAdvanced(),
-        pageable);
-
-    ReadCoursePageDto filteredResult = toReadCoursePageDto(page);
-    Long filterProfessionId = filter.getProfessionId();
-    List<ReadCourseDto> filteredCourses = filteredResult.getContent().stream()
-        .filter(c -> ((filterProfessionId == null)
-            || (c.getProfessionId() == (long) filterProfessionId)))
-        .sorted(Comparator.comparing(ReadCourseDto::getStartsAt))
-        .toList();
-    filteredResult.setContent(filteredCourses);
-
-    return filteredResult;
+    return findCoursesByFilter(filter, pageable);
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
@@ -215,6 +195,29 @@ public class CourseServiceImpl implements CourseService {
     course.setStartsAt(dto.getStartsAt());
     course.setEndsAt(dto.getEndsAt());
     course.setIsAdvanced(dto.getIsAdvanced());
+  }
+
+  private ReadCoursePageDto findCoursesByFilter(FilterParamsDto filter, Pageable pageable) {
+    String filterSearch = (Objects.equals(filter.getSearch(), ""))
+        ? null
+        : filter.getSearch();
+    Boolean filterIsAdvanced = filter.getIsAdvanced();
+    Long filterProfessionId = filter.getProfessionId();
+
+    Page<Course> page = courseRepo.findByFilter(
+        filterSearch,
+        filterIsAdvanced,
+        pageable);
+    ReadCoursePageDto result = toReadCoursePageDto(page);
+
+    List<ReadCourseDto> filteredCourses = result.getContent().stream()
+        .filter(c -> (filterProfessionId == null)
+            || (c.getProfessionId() == (long) filterProfessionId))
+        .sorted(Comparator.comparing(ReadCourseDto::getStartsAt))
+        .toList();
+    result.setContent(filteredCourses);
+
+    return result;
   }
 
   private ReadCourseDto toReadCourseDto(Course course) {
