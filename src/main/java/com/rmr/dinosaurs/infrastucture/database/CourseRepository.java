@@ -15,11 +15,13 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
   @Query("SELECT c FROM Course c"
       + " INNER JOIN CourseAndProfession cap ON c.id = cap.course.id"
       + " INNER JOIN Profession p ON cap.profession.id = p.id"
-      + " WHERE (:search is null"
-      + " or (lower(c.title) LIKE %:search%"
-      + " or lower(c.description) LIKE %:search%))"
+      + " WHERE ((:search is null)"
+      + " or ((lower(c.title) LIKE %:search%) or (lower(c.description) LIKE %:search%))"
+      + ")"
       + " and ((:isAdvanced is null) or (c.isAdvanced = :isAdvanced))"
-      + " and ((:professionId is null) or (p.id = :professionId))")
+      + " and ((:professionId is null) or (p.id = :professionId))"
+      + " and ((:startsAt is null) or (:startsAt >= c.startsAt))"
+      + " and ((:endsAt is null) or (:endsAt <= c.endsAt))")
   Page<Course> findByFilter(
       @Param("search") String search,
       @Param("isAdvanced") Boolean isAdvanced,
