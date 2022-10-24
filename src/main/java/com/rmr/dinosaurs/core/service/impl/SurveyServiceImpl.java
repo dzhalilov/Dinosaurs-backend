@@ -1,7 +1,7 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import static com.rmr.dinosaurs.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static com.rmr.dinosaurs.core.exception.errorcode.SurveyErrorCode.SURVEY_NOT_FOUND;
-import static com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl.PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER;
 
 import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.Profession;
@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,9 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class SurveyServiceImpl implements SurveyService {
-
-  public static final Supplier<RuntimeException> SURVEY_NOT_FOUND_EXCEPTION_SUPPLIER = () ->
-      new ServiceException(SURVEY_NOT_FOUND);
 
   private final SurveyEntityDtoMapper surveyMapper;
   private final ProfessionEntityDtoMapper professionMapper;
@@ -74,7 +70,7 @@ public class SurveyServiceImpl implements SurveyService {
       s = surveyRepo.findTop1By();
     } else {
       s = surveyRepo.findById(singletonSurveyId)
-          .orElseThrow(SURVEY_NOT_FOUND_EXCEPTION_SUPPLIER);
+          .orElseThrow(() -> new ServiceException(SURVEY_NOT_FOUND));
     }
 
     ReadSurveyDto dto = toReadSurveyDto(s);
@@ -141,7 +137,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     if (!professionCache.containsKey(professionId)) {
       Profession cachingProfession = professionRepo.findById(professionId)
-          .orElseThrow(PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER);
+          .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
       professionCache.put(professionId, cachingProfession);
     }
 
