@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum UserInfoErrorCode implements ErrorCode {
 
-  USER_INFO_NOT_FOUND("ITD_UIEC_1", "No such user profile found", HttpStatus.NOT_FOUND);
+  USER_INFO_NOT_FOUND("ITD_UIEC_1", "No such user profile found", HttpStatus.NOT_FOUND),
+  NO_PERMISSIONS_TO_EDIT("ITD_UIEC_2", "Current user can't edit the profile not belongs to",
+      HttpStatus.BAD_REQUEST);
 
   private final String errorName;
   private final String message;

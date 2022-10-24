@@ -5,6 +5,7 @@ import static com.rmr.dinosaurs.core.model.Authority.ROLE_REGULAR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.rmr.dinosaurs.DinosaursApplication;
 import com.rmr.dinosaurs.core.auth.security.DinoAuthentication;
@@ -45,6 +46,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(classes = DinosaursApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserInfoControllerIntegrationTest {
 
+  private static final String USER_TOKEN_HEADER = "X-USER-TOKEN";
   private static final String BASE_URL = "http://localhost";
   private static final String TEST_PASSWORD_ENCRYPTED =
       "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO";
@@ -106,7 +108,7 @@ public class UserInfoControllerIntegrationTest {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
-    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/my");
 
@@ -118,6 +120,52 @@ public class UserInfoControllerIntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
     var actual = responseEntity.getBody();
     assertNotNull(actual);
+    assertThat(actual.getUserId()).isEqualTo(currentUser.getId());
+    assertThat(actual.getEmail()).isEqualTo(currentUser.getEmail());
+    assertThat(actual.getRole()).isEqualTo(currentUser.getRole());
+    assertTrue(actual.getIsConfirmed());
+  }
+
+  @Test
+  void shouldEditCurrentUserInfoDto() {
+    // given
+    var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
+    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
+    UserInfo userInfo = userInfoRepository.findByUser(currentUser).orElseThrow();
+    UserInfoDto expectedUserInfoDto = userInfoConverter.toUserInfoDto(userInfo);
+    expectedUserInfoDto.setName("Franz");
+    expectedUserInfoDto.setSurname("Kafka");
+    var requestEntity = new HttpEntity<>(expectedUserInfoDto, requestHeaders);
+    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/my");
+
+    // when
+    var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST,
+        requestEntity, UserInfoDto.class);
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    var actual = responseEntity.getBody();
+    assertNotNull(actual);
+    assertThat(actual).isEqualTo(expectedUserInfoDto);
+  }
+
+  @Test
+  void shouldResponseWithErrorOnEditAnotherUserInfoDto() {
+    // given
+    var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
+    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
+    UserInfo anotherUserInfo = userInfoRepository.findByUser(moderatorUser).orElseThrow();
+    var requestEntity = new HttpEntity<>(anotherUserInfo, requestHeaders);
+    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/my");
+
+    // when
+    var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST,
+        requestEntity, UserInfoDto.class);
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
   }
 
   @Test
@@ -126,7 +174,7 @@ public class UserInfoControllerIntegrationTest {
     var currentUser = userRepository.findByEmailIgnoreCase(moderatorUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
     User testUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
-    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var requestEntity = new HttpEntity<>(requestHeaders);
     var testUserInfo = userInfoRepository.findByUser(testUser).orElseThrow();
     var expectedUserInfoDto = userInfoConverter.toUserInfoDto(testUserInfo);
@@ -148,7 +196,7 @@ public class UserInfoControllerIntegrationTest {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(moderatorUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
-    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var expectedList = userInfoRepository.findAll()
         .stream().map(userInfoConverter::toShortUserInfoDto).toList();
     var requestEntity = new HttpEntity<>(requestHeaders);
@@ -173,7 +221,7 @@ public class UserInfoControllerIntegrationTest {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(moderatorUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
-    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var expectedList = userInfoRepository.findAll()
         .stream()
         .filter(userInfo -> ROLE_MODERATOR.equals(userInfo.getUser().getRole()))
@@ -200,7 +248,7 @@ public class UserInfoControllerIntegrationTest {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
-    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/100");
 
@@ -219,7 +267,7 @@ public class UserInfoControllerIntegrationTest {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
-    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl);
     ParameterizedTypeReference<List<ShortUserInfoDto>> parameterizedTypeReference =
@@ -241,7 +289,7 @@ public class UserInfoControllerIntegrationTest {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
-    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/moderators");
     ParameterizedTypeReference<List<ShortUserInfoDto>> parameterizedTypeReference =
