@@ -28,29 +28,29 @@ import org.springframework.data.domain.Pageable;
 @ExtendWith(MockitoExtension.class)
 class ProfessionServiceImplTest {
 
-  private final Long ID = 1L;
-  private final Long NOT_EXISTING_ID = -1L;
-  private final String NAME = "Программист";
-  private final String COVER_URL =
+  private final Long id = 1L;
+  private final Long notExistingId = -1L;
+  private final String name = "Программист";
+  private final String coverUrl =
       "http://www.kremlinrus.ru/upload/iblock/e6f/programmist-3.jpg";
-  private final String DESCRIPTION = "Привет, Мир!";
-  private final String UPDATED_NAME = "Программист с опечаткой";
-  private final String UPDATED_COVER_URL =
+  private final String description = "Привет, Мир!";
+  private final String updatedName = "Программист с опечаткой";
+  private final String updatedCoverUrl =
       "https://shwanoff.ru/wp-content/uploads/2018/07/hackerman.png";
-  private final String UPDATED_DESCRIPTION = "Привет, Мир! с опечаткой";
-  private final int DEFAULT_PAGE_SIZE = 10;
-  private final int PAGE_NUM_1 = 1;
-  private final Profession e = new Profession(
-      ID, NAME, COVER_URL,
-      null, DESCRIPTION,
+  private final String updatedDescription = "Привет, Мир! с опечаткой";
+  private final int defaultPageSize = 10;
+  private final int pageNum = 1;
+  private final Profession expectedProfession = new Profession(
+      id, name, coverUrl,
+      null, description,
       null, null, null);
-  private final ProfessionDto eDto = new ProfessionDto(
-      e.getId(), e.getName(), e.getCoverUrl(),
-      e.getDescription()
+  private final ProfessionDto expectedProfessionDto = new ProfessionDto(
+      expectedProfession.getId(), expectedProfession.getName(), expectedProfession.getCoverUrl(),
+      expectedProfession.getDescription()
   );
   private final ProfessionDto updatedProfessionDto = new ProfessionDto(
-      e.getId(), UPDATED_NAME, UPDATED_COVER_URL,
-      UPDATED_DESCRIPTION
+      expectedProfession.getId(), updatedName, updatedCoverUrl,
+      updatedDescription
   );
 
   @Mock
@@ -68,78 +68,85 @@ class ProfessionServiceImplTest {
   @Test
   void getProfessionById_with_existing_profession_and_its_id_returns() {
     // given
-    given(repoMock.findById(e.getId())).willReturn(Optional.of(e));
-    given(mapperMock.toDto(e)).willReturn(eDto);
+    given(repoMock.findById(expectedProfession.getId()))
+        .willReturn(Optional.of(expectedProfession));
+    given(mapperMock.toDto(expectedProfession))
+        .willReturn(expectedProfessionDto);
 
     // when
-    ProfessionDto a = service.getProfessionById(e.getId());
+    ProfessionDto a = service.getProfessionById(expectedProfession.getId());
 
     // then
-    assertEquals(e.getId(), a.getId());
-    assertEquals(e.getName(), a.getName());
-    assertEquals(e.getCoverUrl(), a.getCoverUrl());
-    assertEquals(e.getDescription(), a.getDescription());
+    assertEquals(expectedProfession.getId(), a.getId());
+    assertEquals(expectedProfession.getName(), a.getName());
+    assertEquals(expectedProfession.getCoverUrl(), a.getCoverUrl());
+    assertEquals(expectedProfession.getDescription(), a.getDescription());
   }
 
   @Test
   void getProfessionById_with_not_existing_id_throws_ProfessionNotFoundException() {
     // given
-    given(repoMock.findById(NOT_EXISTING_ID)).willReturn(Optional.empty());
+    given(repoMock.findById(notExistingId)).willReturn(Optional.empty());
 
     // when and then
     assertThrows(ProfessionNotFoundException.class,
-        () -> service.getProfessionById(NOT_EXISTING_ID));
+        () -> service.getProfessionById(notExistingId));
   }
 
   @Test
   void updateProfessionByIdById_with_existing_profession_and_its_id_returns() {
     // given
-    given(repoMock.findById(e.getId())).willReturn(Optional.of(e));
-    given(repoMock.saveAndFlush(e)).willReturn(e);
+    given(repoMock.findById(expectedProfession.getId()))
+        .willReturn(Optional.of(expectedProfession));
+    given(repoMock.saveAndFlush(expectedProfession))
+        .willReturn(expectedProfession);
     //
-    Profession updatedProfession = new Profession(ID, NAME, COVER_URL,
-        null, DESCRIPTION,
+    Profession updatedProfession = new Profession(id, name, coverUrl,
+        null, description,
         null, null, null);
-    updatedProfession.setName(UPDATED_NAME);
-    updatedProfession.setCoverUrl(UPDATED_COVER_URL);
-    updatedProfession.setDescription(UPDATED_DESCRIPTION);
-    given(mapperMock.toDto(updatedProfession)).willReturn(updatedProfessionDto);
+    updatedProfession.setName(updatedName);
+    updatedProfession.setCoverUrl(updatedCoverUrl);
+    updatedProfession.setDescription(updatedDescription);
+    given(mapperMock.toDto(updatedProfession))
+        .willReturn(updatedProfessionDto);
 
     // when
-    ProfessionDto a = service.updateProfessionById(e.getId(), updatedProfessionDto);
+    ProfessionDto a = service.updateProfessionById(
+        expectedProfession.getId(), updatedProfessionDto
+    );
 
     // then
-    assertEquals(e.getId(), a.getId());
-    assertEquals(e.getName(), a.getName());
-    assertEquals(e.getCoverUrl(), a.getCoverUrl());
-    assertEquals(e.getDescription(), a.getDescription());
+    assertEquals(expectedProfession.getId(), a.getId());
+    assertEquals(expectedProfession.getName(), a.getName());
+    assertEquals(expectedProfession.getCoverUrl(), a.getCoverUrl());
+    assertEquals(expectedProfession.getDescription(), a.getDescription());
   }
 
   @Test
   void updateProfessionByIdById_with_not_existing_id_throws_ProfessionNotFoundException() {
     // given
-    given(repoMock.findById(NOT_EXISTING_ID)).willReturn(Optional.empty());
+    given(repoMock.findById(notExistingId)).willReturn(Optional.empty());
 
     // when and then
     assertThrows(ProfessionNotFoundException.class,
-        () -> service.updateProfessionById(NOT_EXISTING_ID, updatedProfessionDto));
+        () -> service.updateProfessionById(notExistingId, updatedProfessionDto));
   }
 
   @Test
   void getAllProfessions_with_existing_profession_and_its_id_returns() {
     // given
-    given(repoMock.findAll()).willReturn(List.of(e));
-    given(mapperMock.toDto(e)).willReturn(eDto);
+    given(repoMock.findAll()).willReturn(List.of(expectedProfession));
+    given(mapperMock.toDto(expectedProfession)).willReturn(expectedProfessionDto);
 
     // when
     List<ProfessionDto> a = service.getAllProfessions();
 
     // then
     assertFalse(a.isEmpty());
-    assertEquals(e.getId(), a.get(0).getId());
-    assertEquals(e.getName(), a.get(0).getName());
-    assertEquals(e.getCoverUrl(), a.get(0).getCoverUrl());
-    assertEquals(e.getDescription(), a.get(0).getDescription());
+    assertEquals(expectedProfession.getId(), a.get(0).getId());
+    assertEquals(expectedProfession.getName(), a.get(0).getName());
+    assertEquals(expectedProfession.getCoverUrl(), a.get(0).getCoverUrl());
+    assertEquals(expectedProfession.getDescription(), a.get(0).getDescription());
   }
 
   @Test
@@ -157,21 +164,21 @@ class ProfessionServiceImplTest {
   @Test
   void getProfessionPage_with_existing_profession_and_its_id_and_with_pageNum_1_returns() {
     // given
-    given(propsMock.getDefaultPageSize()).willReturn(DEFAULT_PAGE_SIZE);
-    given(mapperMock.toDto(e)).willReturn(eDto);
+    given(propsMock.getDefaultPageSize()).willReturn(defaultPageSize);
+    given(mapperMock.toDto(expectedProfession)).willReturn(expectedProfessionDto);
     //
-    Pageable pageable = PageRequest.of(PAGE_NUM_1 - 1, DEFAULT_PAGE_SIZE);
-    List<Profession> professionList = List.of(e);
+    Pageable pageable = PageRequest.of(pageNum - 1, defaultPageSize);
+    List<Profession> professionList = List.of(expectedProfession);
     given(repoMock.findByOrderByNameAsc(pageable))
         .willReturn(new PageImpl<>(professionList));
     //
-    List<ProfessionDto> professionDtoList = List.of(eDto);
+    List<ProfessionDto> professionDtoList = List.of(expectedProfessionDto);
     ProfessionPageDto expectedPageDto = new ProfessionPageDto(
-        (long) professionList.size(), PAGE_NUM_1, professionList.size(), PAGE_NUM_1,
+        (long) professionList.size(), pageNum, professionList.size(), pageNum,
         professionDtoList);
 
     // when
-    ProfessionPageDto a = service.getProfessionPage(PAGE_NUM_1);
+    ProfessionPageDto a = service.getProfessionPage(pageNum);
 
     // then
     assertEquals(expectedPageDto.getTotalElements(), a.getTotalElements());

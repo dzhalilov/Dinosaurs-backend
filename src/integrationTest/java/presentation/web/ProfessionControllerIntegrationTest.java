@@ -40,14 +40,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(classes = DinosaursApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ProfessionControllerIntegrationTest {
 
-  private final String BASE_URL = "http://localhost";
-  private final String PROFESSION_API_URL = "/api/v1/professions";
+  private final String baseUrl = "http://localhost";
+  private final String professionApiUrl = "/api/v1/professions";
   // encrypted "pAssw0rd"
-  private final String TEST_PASSWORD_ENCRYPTED =
+  private final String encryptedPassword =
       "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO";
-  private final User regularUser = new User(null, "regular@email.com", TEST_PASSWORD_ENCRYPTED,
+  private final User regularUser = new User(null, "regular@email.com", encryptedPassword,
       ROLE_REGULAR, null);
-  private final User moderatorUser = new User(null, "moder@email.com", TEST_PASSWORD_ENCRYPTED,
+  private final User moderatorUser = new User(null, "moder@email.com", encryptedPassword,
       ROLE_MODERATOR, null);
 
   private final TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -71,7 +71,7 @@ public class ProfessionControllerIntegrationTest {
 
   @BeforeEach
   void setUp() {
-    endpointUrl = BASE_URL + ":" + port + PROFESSION_API_URL;
+    endpointUrl = baseUrl + ":" + port + professionApiUrl;
     requestHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
 
     userRepository.saveAll(List.of(regularUser, moderatorUser));
