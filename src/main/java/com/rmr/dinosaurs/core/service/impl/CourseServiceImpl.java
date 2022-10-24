@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.core.service.impl;
 
 import static com.rmr.dinosaurs.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
+import static com.rmr.dinosaurs.core.service.impl.CourseProviderServiceImpl.COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER;
 import static com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl.PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER;
 
 import com.rmr.dinosaurs.core.configuration.properties.CourseServiceProperties;
@@ -16,7 +17,6 @@ import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
-import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
@@ -60,7 +60,7 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public CreateUpdateCourseDto createCourse(CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
-        .orElseThrow(CourseProviderNotFoundException::new);
+        .orElseThrow(COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER);
     Course course = saveNewCourseAndFlush(courseMapper.toEntity(dto), provider);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
@@ -87,7 +87,7 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public CreateUpdateCourseDto updateCourseById(long id, CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
-        .orElseThrow(CourseProviderNotFoundException::new);
+        .orElseThrow(COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER);
     Course course = courseRepo.findById(id)
         .orElseThrow(COURSE_NOT_FOUND_EXCEPTION_SUPPLIER);
     setCourseUpdates(dto, course, provider);
