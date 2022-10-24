@@ -25,7 +25,6 @@ import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.TagRepository;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -120,7 +119,7 @@ public class CourseServiceImpl implements CourseService {
     }
     Pageable pageable = PageRequest.of(pageNum, props.getDefaultPageSize());
 
-    return findCoursesByFilter(filter, pageable);
+    return findPagedFilteredCourses(filter, pageable);
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
@@ -197,21 +196,18 @@ public class CourseServiceImpl implements CourseService {
     course.setIsAdvanced(dto.getIsAdvanced());
   }
 
-  private ReadCoursePageDto findCoursesByFilter(FilterParamsDto filter, Pageable pageable) {
-    String filterSearch = (Objects.equals(filter.getSearch(), ""))
+  private ReadCoursePageDto findPagedFilteredCourses(FilterParamsDto filter, Pageable pageable) {
+    String notEmptySearch = (Objects.equals(filter.getSearch(), ""))
         ? null
         : filter.getSearch();
-    Boolean filterIsAdvanced = filter.getIsAdvanced();
-    Long filterProfessionId = filter.getProfessionId();
-    LocalDateTime filterStartsAt = filter.getStartsAt();
-    LocalDateTime filterEndsAt = filter.getEndsAt();
+    filter.setSearch(notEmptySearch);
 
     Page<Course> page = courseRepo.findByFilter(
-        filterSearch,
-        filterIsAdvanced,
-        filterProfessionId,
-        filterStartsAt,
-        filterEndsAt,
+        filter.getSearch(),
+        filter.getIsAdvanced(),
+        filter.getProfessionId(),
+        filter.getStartsAt(),
+        filter.getEndsAt(),
         pageable);
 
     return toReadCoursePageDto(page);
