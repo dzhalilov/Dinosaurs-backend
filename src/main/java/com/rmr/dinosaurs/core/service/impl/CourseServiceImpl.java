@@ -1,8 +1,10 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import static com.rmr.dinosaurs.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
 import static com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl.PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER;
 
 import com.rmr.dinosaurs.core.configuration.properties.CourseServiceProperties;
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.Course;
 import com.rmr.dinosaurs.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.core.model.CourseAndTag;
@@ -14,7 +16,6 @@ import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
-import com.rmr.dinosaurs.core.service.exceptions.CourseNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,6 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
+
+  public static final Supplier<RuntimeException> COURSE_NOT_FOUND_EXCEPTION_SUPPLIER = () ->
+      new ServiceException(COURSE_NOT_FOUND);
 
   private final CourseServiceProperties props;
   private final CourseEntityDtoMapper courseMapper;
@@ -74,7 +79,7 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public ReadCourseDto getCourseById(long id) {
     Course course = courseRepo.findById(id)
-        .orElseThrow(CourseNotFoundException::new);
+        .orElseThrow(COURSE_NOT_FOUND_EXCEPTION_SUPPLIER);
     return toReadCourseDto(course);
   }
 
@@ -84,7 +89,7 @@ public class CourseServiceImpl implements CourseService {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(CourseProviderNotFoundException::new);
     Course course = courseRepo.findById(id)
-        .orElseThrow(CourseNotFoundException::new);
+        .orElseThrow(COURSE_NOT_FOUND_EXCEPTION_SUPPLIER);
     setCourseUpdates(dto, course, provider);
     Course updatedCourse = courseRepo.saveAndFlush(course);
 
