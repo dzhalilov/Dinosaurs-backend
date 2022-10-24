@@ -20,8 +20,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
       + ")"
       + " and ((:isAdvanced is null) or (c.isAdvanced = :isAdvanced))"
       + " and ((:professionId is null) or (p.id = :professionId))"
-      + " and ((:startsAt is null) or (:startsAt >= c.startsAt))"
-      + " and ((:endsAt is null) or (:endsAt <= c.endsAt))")
+      + " and ((cast(:startsAt as timestamp) is null) or (:startsAt >= c.startsAt))"
+      + " and ((cast(:endsAt as timestamp) is null) or (:endsAt <= c.endsAt))")
   Page<Course> findByFilter(
       @Param("search") String search,
       @Param("isAdvanced") Boolean isAdvanced,
