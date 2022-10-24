@@ -25,6 +25,7 @@ import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.TagRepository;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -202,11 +203,15 @@ public class CourseServiceImpl implements CourseService {
         : filter.getSearch();
     Boolean filterIsAdvanced = filter.getIsAdvanced();
     Long filterProfessionId = filter.getProfessionId();
+    LocalDateTime filterStartsAt = filter.getStartsAt();
+    LocalDateTime filterEndsAt = filter.getEndsAt();
 
     Page<Course> page = courseRepo.findByFilter(
         filterSearch,
         filterIsAdvanced,
         filterProfessionId,
+        filterStartsAt,
+        filterEndsAt,
         pageable);
 
     return toReadCoursePageDto(page);

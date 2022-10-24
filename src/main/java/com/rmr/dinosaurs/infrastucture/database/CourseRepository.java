@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.infrastucture.database;
 
 import com.rmr.dinosaurs.core.model.Course;
+import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,6 +24,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
       @Param("search") String search,
       @Param("isAdvanced") Boolean isAdvanced,
       @Param("professionId") Long professionId,
+      @Param("startsAt") LocalDateTime startsAt,
+      @Param("endsAt") LocalDateTime endsAt,
       Pageable page);
 
 }
