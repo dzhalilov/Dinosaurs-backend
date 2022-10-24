@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import static com.rmr.dinosaurs.core.exception.errorcode.UserInfoErrorCode.NO_PERMISSIONS_TO_EDIT;
 import static com.rmr.dinosaurs.core.exception.errorcode.UserInfoErrorCode.USER_INFO_NOT_FOUND;
 import static com.rmr.dinosaurs.core.model.Authority.ROLE_MODERATOR;
 import static com.rmr.dinosaurs.core.service.impl.UserServiceImpl.NO_USER_FOUND_EXCEPTION_SUPPLIER;
@@ -15,6 +16,7 @@ import com.rmr.dinosaurs.core.utils.converters.UserInfoConverter;
 import com.rmr.dinosaurs.infrastucture.database.UserInfoRepository;
 import com.rmr.dinosaurs.infrastucture.database.UserRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +41,21 @@ public class UserInfoServiceImpl implements UserInfoService {
   }
 
   @Override
+  public UserInfoDto editMyProfile(UserInfoDto userInfoDto) {
+    var currentUserInfo = getUserInfoFromRepositoryByUserId(
+        getCurrentUserPrincipal().getId());
+    checkUserCanEditProfileOrThrow(userInfoDto, currentUserInfo);
+    if (Objects.nonNull(userInfoDto.getName())) {
+      currentUserInfo.setName(userInfoDto.getName());
+    }
+    if (Objects.nonNull(userInfoDto.getSurname())) {
+      currentUserInfo.setSurname(userInfoDto.getSurname());
+    }
+    var savedUserInfo = userInfoRepository.save(currentUserInfo);
+    return userInfoConverter.toUserInfoDto(savedUserInfo);
+  }
+
+  @Override
   public UserInfoDto getUserInfoById(Long id) {
     return userInfoConverter.toUserInfoDto(
         userInfoRepository.findById(id).orElseThrow(USER_PROFILE_NOT_FOUND_EXCEPTION_SUPPLIER));
@@ -55,6 +72,13 @@ public class UserInfoServiceImpl implements UserInfoService {
     return userInfoRepository.findAll().stream()
         .filter(userInfo -> ROLE_MODERATOR.equals(userInfo.getUser().getRole()))
         .map(userInfoConverter::toShortUserInfoDto).toList();
+  }
+
+  private void checkUserCanEditProfileOrThrow(UserInfoDto userInfoDto, UserInfo currentUserInfo) {
+    if (Objects.isNull(userInfoDto.getUserId())
+        || !userInfoDto.getUserId().equals(currentUserInfo.getUser().getId())) {
+      throw new ServiceException(NO_PERMISSIONS_TO_EDIT);
+    }
   }
 
   private UserInfo getUserInfoFromRepositoryByUserId(Long id) {
