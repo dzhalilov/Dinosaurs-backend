@@ -1,5 +1,9 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import static com.rmr.dinosaurs.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
+import static com.rmr.dinosaurs.core.exception.errorcode.SurveyErrorCode.SURVEY_NOT_FOUND;
+
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Survey;
 import com.rmr.dinosaurs.core.model.SurveyQuestion;
@@ -15,8 +19,6 @@ import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.SurveyQuestionResponseDto;
 import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
-import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
-import com.rmr.dinosaurs.core.service.exceptions.SurveyNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.core.utils.mapper.SurveyEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
@@ -68,7 +70,7 @@ public class SurveyServiceImpl implements SurveyService {
       s = surveyRepo.findTop1By();
     } else {
       s = surveyRepo.findById(singletonSurveyId)
-          .orElseThrow(SurveyNotFoundException::new);
+          .orElseThrow(() -> new ServiceException(SURVEY_NOT_FOUND));
     }
 
     ReadSurveyDto dto = toReadSurveyDto(s);
@@ -135,7 +137,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     if (!professionCache.containsKey(professionId)) {
       Profession cachingProfession = professionRepo.findById(professionId)
-          .orElseThrow(ProfessionNotFoundException::new);
+          .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
       professionCache.put(professionId, cachingProfession);
     }
 

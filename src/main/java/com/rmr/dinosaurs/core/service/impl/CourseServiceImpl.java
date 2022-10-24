@@ -1,6 +1,12 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import static com.rmr.dinosaurs.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
+import static com.rmr.dinosaurs.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
+import static com.rmr.dinosaurs.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
+import static com.rmr.dinosaurs.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
+
 import com.rmr.dinosaurs.core.configuration.properties.CourseServiceProperties;
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.Course;
 import com.rmr.dinosaurs.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.core.model.CourseAndTag;
@@ -12,10 +18,6 @@ import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
-import com.rmr.dinosaurs.core.service.exceptions.CourseNotFoundException;
-import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
-import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
-import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndTagRepository;
@@ -24,8 +26,8 @@ import com.rmr.dinosaurs.infrastucture.database.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.TagRepository;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,11 +56,11 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public CreateUpdateCourseDto createCourse(CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
-        .orElseThrow(CourseProviderNotFoundException::new);
+        .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     Course course = saveNewCourseAndFlush(courseMapper.toEntity(dto), provider);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
-        .orElseThrow(ProfessionNotFoundException::new);
+        .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
     saveNewCapRef(course, profession);
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
@@ -73,7 +75,7 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public ReadCourseDto getCourseById(long id) {
     Course course = courseRepo.findById(id)
-        .orElseThrow(CourseNotFoundException::new);
+        .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
     return toReadCourseDto(course);
   }
 
@@ -81,14 +83,14 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public CreateUpdateCourseDto updateCourseById(long id, CreateUpdateCourseDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
-        .orElseThrow(CourseProviderNotFoundException::new);
+        .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     Course course = courseRepo.findById(id)
-        .orElseThrow(CourseNotFoundException::new);
+        .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
     setCourseUpdates(dto, course, provider);
     Course updatedCourse = courseRepo.saveAndFlush(course);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
-        .orElseThrow(ProfessionNotFoundException::new);
+        .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
     capRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
     saveNewCapRef(updatedCourse, profession);
 
@@ -113,32 +115,11 @@ public class CourseServiceImpl implements CourseService {
   public ReadCoursePageDto getFilteredCoursePage(int pageNum, FilterParamsDto filter) {
     --pageNum;
     if (pageNum < 0) {
-      throw new NegativePageNumberException();
+      throw new ServiceException(NEGATIVE_PAGE_NUMBER);
     }
-    Pageable pageable = PageRequest.of(
-        pageNum, props.getDefaultPageSize());
-    String filterSearch;
-    if (filter.getSearch() == null) {
-      filterSearch = null;
-    } else {
-      filterSearch = filter.getSearch();
-    }
+    Pageable pageable = PageRequest.of(pageNum, props.getDefaultPageSize());
 
-    Page<Course> page = courseRepo.findByFilter(
-        filterSearch,
-        filter.getIsAdvanced(),
-        pageable);
-
-    ReadCoursePageDto filteredResult = toReadCoursePageDto(page);
-    Long filterProfessionId = filter.getProfessionId();
-    List<ReadCourseDto> filteredCourses = filteredResult.getContent().stream()
-        .filter(c -> ((filterProfessionId == null)
-            || (c.getProfessionId() == (long) filterProfessionId)))
-        .sorted(Comparator.comparing(ReadCourseDto::getStartsAt))
-        .toList();
-    filteredResult.setContent(filteredCourses);
-
-    return filteredResult;
+    return findPagedFilteredCourses(filter, pageable);
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
@@ -213,6 +194,23 @@ public class CourseServiceImpl implements CourseService {
     course.setStartsAt(dto.getStartsAt());
     course.setEndsAt(dto.getEndsAt());
     course.setIsAdvanced(dto.getIsAdvanced());
+  }
+
+  private ReadCoursePageDto findPagedFilteredCourses(FilterParamsDto filter, Pageable pageable) {
+    String loweredSearch = (filter.getSearch() == null)
+        ? ""
+        : filter.getSearch().toLowerCase();
+    filter.setSearch(loweredSearch);
+
+    Page<Course> page = courseRepo.findByFilter(
+        filter.getSearch(),
+        filter.getIsAdvanced(),
+        filter.getProfessionId(),
+        filter.getStartsAt(),
+        filter.getEndsAt(),
+        pageable);
+
+    return toReadCoursePageDto(page);
   }
 
   private ReadCourseDto toReadCourseDto(Course course) {

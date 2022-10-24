@@ -7,8 +7,10 @@ import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,13 +68,19 @@ public class CourseController {
   }
 
   @GetMapping
-  public ResponseEntity<ReadCoursePageDto> getCoursePage(
+  public ResponseEntity<ReadCoursePageDto> getFilteredCoursesPage(
       @RequestParam(name = "page", required = false, defaultValue = "1") int pageNum,
       @RequestParam(name = "search", required = false) String search,
       @RequestParam(name = "isAdvanced", required = false) Boolean isAdvanced,
-      @RequestParam(name = "professionId", required = false) Long professionId) {
+      @RequestParam(name = "professionId", required = false) Long professionId,
+      @RequestParam(name = "startsAt", required = false)
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startsAt,
+      @RequestParam(name = "endsAt", required = false)
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endsAt) {
 
-    FilterParamsDto filter = new FilterParamsDto(search, isAdvanced, professionId);
+    FilterParamsDto filter = new FilterParamsDto(
+        search, isAdvanced, professionId, startsAt, endsAt
+    );
 
     ReadCoursePageDto coursePage = courseService.getFilteredCoursePage(pageNum, filter);
     return ResponseEntity

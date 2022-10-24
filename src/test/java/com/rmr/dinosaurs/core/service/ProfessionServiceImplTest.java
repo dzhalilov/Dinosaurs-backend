@@ -1,16 +1,17 @@
 package com.rmr.dinosaurs.core.service;
 
+import static com.rmr.dinosaurs.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 
 import com.rmr.dinosaurs.core.configuration.properties.ProfessionServiceProperties;
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.profession.ProfessionPageDto;
-import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
@@ -88,9 +89,12 @@ class ProfessionServiceImplTest {
     // given
     given(repoMock.findById(notExistingId)).willReturn(Optional.empty());
 
-    // when and then
-    assertThrows(ProfessionNotFoundException.class,
-        () -> service.getProfessionById(notExistingId));
+    assertThatThrownBy(
+        // when
+        () -> service.getProfessionById(notExistingId))
+        // then
+        .isInstanceOf(ServiceException.class)
+        .hasFieldOrPropertyWithValue("errorCode", PROFESSION_NOT_FOUND).hasNoCause();
   }
 
   @Test
@@ -127,9 +131,12 @@ class ProfessionServiceImplTest {
     // given
     given(repoMock.findById(notExistingId)).willReturn(Optional.empty());
 
-    // when and then
-    assertThrows(ProfessionNotFoundException.class,
-        () -> service.updateProfessionById(notExistingId, updatedProfessionDto));
+    assertThatThrownBy(
+        // when
+        () -> service.updateProfessionById(notExistingId, updatedProfessionDto))
+        // then
+        .isInstanceOf(ServiceException.class)
+        .hasFieldOrPropertyWithValue("errorCode", PROFESSION_NOT_FOUND).hasNoCause();
   }
 
   @Test
