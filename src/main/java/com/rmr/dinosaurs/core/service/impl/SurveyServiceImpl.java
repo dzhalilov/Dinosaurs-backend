@@ -1,5 +1,7 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import static com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl.PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER;
+
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Survey;
 import com.rmr.dinosaurs.core.model.SurveyQuestion;
@@ -15,7 +17,6 @@ import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
 import com.rmr.dinosaurs.core.model.dto.survey.SurveyQuestionResponseDto;
 import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
-import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.SurveyNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.core.utils.mapper.SurveyEntityDtoMapper;
@@ -135,7 +136,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     if (!professionCache.containsKey(professionId)) {
       Profession cachingProfession = professionRepo.findById(professionId)
-          .orElseThrow(ProfessionNotFoundException::new);
+          .orElseThrow(PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER);
       professionCache.put(professionId, cachingProfession);
     }
 

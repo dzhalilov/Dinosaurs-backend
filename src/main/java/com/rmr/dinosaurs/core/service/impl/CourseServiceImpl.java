@@ -1,5 +1,7 @@
 package com.rmr.dinosaurs.core.service.impl;
 
+import static com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl.PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER;
+
 import com.rmr.dinosaurs.core.configuration.properties.CourseServiceProperties;
 import com.rmr.dinosaurs.core.model.Course;
 import com.rmr.dinosaurs.core.model.CourseAndProfession;
@@ -15,7 +17,6 @@ import com.rmr.dinosaurs.core.service.CourseService;
 import com.rmr.dinosaurs.core.service.exceptions.CourseNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.CourseProviderNotFoundException;
 import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
-import com.rmr.dinosaurs.core.service.exceptions.ProfessionNotFoundException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndTagRepository;
@@ -58,7 +59,7 @@ public class CourseServiceImpl implements CourseService {
     Course course = saveNewCourseAndFlush(courseMapper.toEntity(dto), provider);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
-        .orElseThrow(ProfessionNotFoundException::new);
+        .orElseThrow(PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER);
     saveNewCapRef(course, profession);
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
@@ -88,7 +89,7 @@ public class CourseServiceImpl implements CourseService {
     Course updatedCourse = courseRepo.saveAndFlush(course);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
-        .orElseThrow(ProfessionNotFoundException::new);
+        .orElseThrow(PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER);
     capRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
     saveNewCapRef(updatedCourse, profession);
 
