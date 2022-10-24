@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.core.service.impl;
 
 import static com.rmr.dinosaurs.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
+import static com.rmr.dinosaurs.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
 import static com.rmr.dinosaurs.core.service.impl.CourseProviderServiceImpl.COURSE_PROVIDER_NOT_FOUND_EXCEPTION_SUPPLIER;
 import static com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl.PROFESSION_NOT_FOUND_EXCEPTION_SUPPLIER;
 
@@ -17,7 +18,6 @@ import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
 import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
-import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndTagRepository;
@@ -119,7 +119,7 @@ public class CourseServiceImpl implements CourseService {
   public ReadCoursePageDto getFilteredCoursePage(int pageNum, FilterParamsDto filter) {
     --pageNum;
     if (pageNum < 0) {
-      throw new NegativePageNumberException();
+      throw new ServiceException(NEGATIVE_PAGE_NUMBER);
     }
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());

@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.core.service.impl;
 
 import static com.rmr.dinosaurs.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
+import static com.rmr.dinosaurs.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
 
 import com.rmr.dinosaurs.core.configuration.properties.CourseProviderServiceProperties;
 import com.rmr.dinosaurs.core.exception.ServiceException;
@@ -8,7 +9,6 @@ import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderDto;
 import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderPageDto;
 import com.rmr.dinosaurs.core.service.CourseProviderService;
-import com.rmr.dinosaurs.core.service.exceptions.NegativePageNumberException;
 import com.rmr.dinosaurs.core.utils.mapper.CourseProviderEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
 import java.util.List;
@@ -72,7 +72,7 @@ public class CourseProviderServiceImpl implements CourseProviderService {
   public CourseProviderPageDto getProviderPage(int pageNum) {
     --pageNum;
     if (pageNum < 0) {
-      throw new NegativePageNumberException();
+      throw new ServiceException(NEGATIVE_PAGE_NUMBER);
     }
     Pageable pageable = PageRequest.of(
         pageNum, props.getDefaultPageSize());
