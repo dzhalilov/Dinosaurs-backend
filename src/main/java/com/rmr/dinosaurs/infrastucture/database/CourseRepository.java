@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
   @Query("SELECT c FROM Course c "
+      + "INNER JOIN CourseAndProfession cap ON c.id = cap.course.id "
+      + "INNER JOIN Profession p ON cap.profession.id = p.id "
       + "WHERE (:search is null "
       + "or (lower(c.title) LIKE %:search% "
       + "or lower(c.description) LIKE %:search%))"
