@@ -26,11 +26,11 @@ public class CourseAndProfession {
   Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "cap_course_id", updatable = false)
+  @JoinColumn(name = "cap_course_id", nullable = false, updatable = false)
   Course course;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "cap_profession_id", updatable = false)
+  @JoinColumn(name = "cap_profession_id", nullable = false, updatable = false)
   Profession profession;
 
 }
