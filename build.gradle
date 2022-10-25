@@ -35,8 +35,6 @@ dependencyManagement {
 
 sourceSets {
 	integrationTest {
-//		java.srcDir("src/integrationTest/java")
-//		resources.srcDir("src/integrationTest/resources")
 		compileClasspath += main.output + test.output
 		runtimeClasspath += main.output + test.output
 	}
@@ -93,7 +91,7 @@ task integrationTest(type: Test) {
 	}
 }
 
-//check.dependsOn integrationTest
+check.dependsOn integrationTest
 
 test {
 	useJUnitPlatform()
