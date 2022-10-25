@@ -17,6 +17,7 @@ import com.rmr.dinosaurs.infrastucture.database.UserInfoRepository;
 import com.rmr.dinosaurs.infrastucture.database.UserRepository;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,12 +46,10 @@ public class UserInfoServiceImpl implements UserInfoService {
     var currentUserInfo = getUserInfoFromRepositoryByUserId(
         getCurrentUserPrincipal().getId());
     checkUserCanEditProfileOrThrow(userInfoDto, currentUserInfo);
-    if (Objects.nonNull(userInfoDto.getName())) {
-      currentUserInfo.setName(userInfoDto.getName());
-    }
-    if (Objects.nonNull(userInfoDto.getSurname())) {
-      currentUserInfo.setSurname(userInfoDto.getSurname());
-    }
+    Optional.of(userInfoDto.getName())
+        .ifPresent(name -> currentUserInfo.setName(name));
+    Optional.of(userInfoDto.getSurname())
+        .ifPresent(surname -> currentUserInfo.setSurname(surname));
     var savedUserInfo = userInfoRepository.save(currentUserInfo);
     return userInfoConverter.toUserInfoDto(savedUserInfo);
   }
