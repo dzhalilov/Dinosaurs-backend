@@ -27,13 +27,13 @@ import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.TagRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,12 +112,26 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public ReadCoursePageDto getFilteredCoursePage(int pageNum, FilterParamsDto filter) {
+  public ReadCoursePageDto getFilteredCoursePage(
+      int pageNum, String sortBy, FilterParamsDto filter) {
+
     --pageNum;
     if (pageNum < 0) {
       throw new ServiceException(NEGATIVE_PAGE_NUMBER);
     }
-    Pageable pageable = PageRequest.of(pageNum, props.getDefaultPageSize());
+
+    Sort sort;
+    if (sortBy == null) {
+      sort = Sort.by(Sort.Order.asc("startsAt"));
+    } else if (sortBy.equals("startsAt")) {
+      sort = Sort.by(Sort.Order.asc("startsAt"));
+    } else if (sortBy.equals("endsAt")) {
+      sort = Sort.by(Sort.Order.asc("endsAt"));
+    } else {
+      sort = Sort.by(Sort.Order.asc("startsAt"));
+    }
+
+    Pageable pageable = PageRequest.of(pageNum, props.getDefaultPageSize(), sort);
 
     return findPagedFilteredCourses(filter, pageable);
   }

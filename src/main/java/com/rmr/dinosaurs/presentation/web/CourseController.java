@@ -76,13 +76,14 @@ public class CourseController {
       @RequestParam(name = "startsAt", required = false)
       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startsAt,
       @RequestParam(name = "endsAt", required = false)
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endsAt) {
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endsAt,
+      @RequestParam(name = "sortBy", required = false) String sortBy) {
 
     FilterParamsDto filter = new FilterParamsDto(
         search, isAdvanced, professionId, startsAt, endsAt
     );
 
-    ReadCoursePageDto coursePage = courseService.getFilteredCoursePage(pageNum, filter);
+    ReadCoursePageDto coursePage = courseService.getFilteredCoursePage(pageNum, sortBy, filter);
     return ResponseEntity
         .ok()
         .body(coursePage);
