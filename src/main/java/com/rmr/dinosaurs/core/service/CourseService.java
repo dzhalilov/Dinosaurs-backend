@@ -16,6 +16,6 @@ public interface CourseService {
 
   List<ReadCourseDto> getAllCourses();
 
-  ReadCoursePageDto getFilteredCoursePage(int pageNum, FilterParamsDto filter);
+  ReadCoursePageDto getFilteredCoursePage(int pageNum, String sortBy, FilterParamsDto filter);
 
 }
