@@ -181,6 +181,8 @@ class UserControllerIntegrationTest {
     assertThat(actual.getId()).isEqualTo(testUser.getId());
     assertThat(actual.getEmail()).isEqualTo(testUser.getEmail());
     assertThat(actual.getRole()).isEqualTo(ROLE_MODERATOR);
+    var actualUserInDb = userRepository.findByEmailIgnoreCase(testUser.getEmail()).orElseThrow();
+    assertThat(actualUserInDb.getRole()).isEqualTo(ROLE_MODERATOR);
   }
 
   @Test
@@ -207,6 +209,8 @@ class UserControllerIntegrationTest {
     assertThat(actual.getId()).isEqualTo(testUser.getId());
     assertThat(actual.getEmail()).isEqualTo(testUser.getEmail());
     assertThat(actual.getRole()).isEqualTo(ROLE_REGULAR);
+    var actualUserInDb = userRepository.findByEmailIgnoreCase(testUser.getEmail()).orElseThrow();
+    assertThat(actualUserInDb.getRole()).isEqualTo(ROLE_REGULAR);
   }
 
   @Test

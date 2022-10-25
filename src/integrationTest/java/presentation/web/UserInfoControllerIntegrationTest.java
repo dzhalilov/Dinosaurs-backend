@@ -148,6 +148,9 @@ public class UserInfoControllerIntegrationTest {
     var actual = responseEntity.getBody();
     assertNotNull(actual);
     assertThat(actual).isEqualTo(expectedUserInfoDto);
+    UserInfo actualUserInfoInDb = userInfoRepository.findByUser(currentUser).orElseThrow();
+    assertThat(actualUserInfoInDb.getName()).isEqualTo(expectedUserInfoDto.getName());
+    assertThat(actualUserInfoInDb.getSurname()).isEqualTo(expectedUserInfoDto.getSurname());
   }
 
   @Test

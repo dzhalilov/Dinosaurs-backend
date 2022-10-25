@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
         user.setRole(ROLE_REGULAR);
       }
     }
+    user = userRepository.save(user);
     return userConverter.toUserDto(user);
   }
 
