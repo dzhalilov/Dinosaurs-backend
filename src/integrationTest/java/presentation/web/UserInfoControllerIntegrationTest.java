@@ -39,12 +39,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import testcontainers.CustomPostgresContainer;
 
 @Testcontainers
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = DinosaursApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserInfoControllerIntegrationTest {
+
+  @Container
+  private static final CustomPostgresContainer container = CustomPostgresContainer.getInstance();
 
   private static final String USER_TOKEN_HEADER = "X-USER-TOKEN";
   private static final String BASE_URL = "http://localhost";
