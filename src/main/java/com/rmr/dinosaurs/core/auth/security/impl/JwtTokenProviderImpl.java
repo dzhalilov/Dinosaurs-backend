@@ -54,7 +54,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         .signWith(hmacKey)
         .compact();
     var refreshTokenValue = Jwts.builder()
-        .setSubject(dinoAuthDtoAsString)
+        .setSubject(dinoAuthentication.getId().toString())
         .setIssuedAt(Date.from(now))
         .setExpiration(Date.from(now.plus(ttl, ChronoUnit.HOURS)))
         .signWith(hmacKey)
