@@ -10,7 +10,7 @@ public interface CourseProviderService {
 
   ProviderDto getProviderById(long id);
 
-  ProviderDto updateProviderById(long id, ProviderDto dto);
+  ProviderDto editProviderById(long id, ProviderDto dto);
 
   List<ProviderDto> getAllProviders();
 

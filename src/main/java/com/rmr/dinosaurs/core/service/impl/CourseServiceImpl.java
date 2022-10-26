@@ -81,7 +81,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CourseCreateUpdateDto updateCourseById(long id, CourseCreateUpdateDto dto) {
+  public CourseCreateUpdateDto editCourseById(long id, CourseCreateUpdateDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     Course course = courseRepo.findById(id)

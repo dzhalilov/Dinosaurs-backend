@@ -47,7 +47,7 @@ public class ProfessionController {
   public ResponseEntity<ProfessionDto> updateProfessionById(
       @PathVariable long id, @RequestBody ProfessionDto dto) {
 
-    ProfessionDto profession = professionService.updateProfessionById(id, dto);
+    ProfessionDto profession = professionService.editProfessionById(id, dto);
     return ResponseEntity
         .ok()
         .body(profession);

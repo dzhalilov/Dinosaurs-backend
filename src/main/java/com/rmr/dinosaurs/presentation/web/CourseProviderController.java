@@ -47,7 +47,7 @@ public class CourseProviderController {
   public ResponseEntity<ProviderDto> updateProviderById(
       @PathVariable long id, @RequestBody ProviderDto dto) {
 
-    ProviderDto provider = providerService.updateProviderById(id, dto);
+    ProviderDto provider = providerService.editProviderById(id, dto);
     return ResponseEntity
         .ok()
         .body(provider);

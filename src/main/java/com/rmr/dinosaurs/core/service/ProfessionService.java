@@ -10,7 +10,7 @@ public interface ProfessionService {
 
   ProfessionDto getProfessionById(long id);
 
-  ProfessionDto updateProfessionById(long id, ProfessionDto dto);
+  ProfessionDto editProfessionById(long id, ProfessionDto dto);
 
   List<ProfessionDto> getAllProfessions();
 

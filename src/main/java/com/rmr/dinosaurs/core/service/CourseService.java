@@ -12,7 +12,7 @@ public interface CourseService {
 
   CourseReadDto getCourseById(long id);
 
-  CourseCreateUpdateDto updateCourseById(long id, CourseCreateUpdateDto dto);
+  CourseCreateUpdateDto editCourseById(long id, CourseCreateUpdateDto dto);
 
   List<CourseReadDto> getAllCourses();
 

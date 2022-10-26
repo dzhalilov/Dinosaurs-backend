@@ -115,7 +115,7 @@ class ProfessionServiceImplTest {
         .willReturn(updatedProfessionDto);
 
     // when
-    ProfessionDto a = service.updateProfessionById(
+    ProfessionDto a = service.editProfessionById(
         expectedProfession.getId(), updatedProfessionDto
     );
 
@@ -133,7 +133,7 @@ class ProfessionServiceImplTest {
 
     assertThatThrownBy(
         // when
-        () -> service.updateProfessionById(notExistingId, updatedProfessionDto))
+        () -> service.editProfessionById(notExistingId, updatedProfessionDto))
         // then
         .isInstanceOf(ServiceException.class)
         .hasFieldOrPropertyWithValue("errorCode", PROFESSION_NOT_FOUND).hasNoCause();

@@ -44,7 +44,7 @@ public class ProfessionServiceImpl implements ProfessionService {
   }
 
   @Override
-  public ProfessionDto updateProfessionById(long id, ProfessionDto dto) {
+  public ProfessionDto editProfessionById(long id, ProfessionDto dto) {
     Profession profession = repo.findById(id)
         .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
 

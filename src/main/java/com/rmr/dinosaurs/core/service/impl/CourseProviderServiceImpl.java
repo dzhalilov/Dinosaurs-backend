@@ -44,7 +44,7 @@ public class CourseProviderServiceImpl implements CourseProviderService {
   }
 
   @Override
-  public ProviderDto updateProviderById(long id, ProviderDto dto) {
+  public ProviderDto editProviderById(long id, ProviderDto dto) {
     CourseProvider provider = providerRepo.findById(id)
         .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
 

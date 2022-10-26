@@ -53,7 +53,7 @@ public class CourseController {
   public ResponseEntity<CourseCreateUpdateDto> updateCourseById(
       @PathVariable long id, @RequestBody CourseCreateUpdateDto dto) {
 
-    CourseCreateUpdateDto course = courseService.updateCourseById(id, dto);
+    CourseCreateUpdateDto course = courseService.editCourseById(id, dto);
     return ResponseEntity
         .ok()
         .body(course);
