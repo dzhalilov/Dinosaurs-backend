@@ -1,9 +1,15 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.dto.ProviderDto;
 import com.rmr.dinosaurs.core.model.dto.ProviderPageDto;
 import com.rmr.dinosaurs.core.service.CourseProviderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +40,17 @@ public class CourseProviderController {
         .body(createdProvider);
   }
 
+  @Operation(description = "get course provider profile data by its id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got provider profile by id",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProviderDto.class))}),
+      @ApiResponse(responseCode = "404", description = "provider profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping("/{id}")
-  public ResponseEntity<ProviderDto> getProviderById(@PathVariable long id) {
-    ProviderDto provider = providerService.getProviderById(id);
+  public ResponseEntity<ProviderDto> getProviderById(@PathVariable long providerId) {
+    ProviderDto provider = providerService.getProviderById(providerId);
     return ResponseEntity
         .ok()
         .body(provider);

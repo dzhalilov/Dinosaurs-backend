@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.SurveyCreateDto;
 import com.rmr.dinosaurs.core.model.dto.SurveyReadDto;
@@ -8,6 +9,11 @@ import com.rmr.dinosaurs.core.model.dto.SurveyResponseDto;
 import com.rmr.dinosaurs.core.model.dto.UserDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import com.rmr.dinosaurs.core.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +41,14 @@ public class SurveyController {
         .body(createdSurvey);
   }
 
+  @Operation(description = "get survey data")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got survey data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = SurveyReadDto.class))}),
+      @ApiResponse(responseCode = "404", description = "survey not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping
   public ResponseEntity<SurveyReadDto> getSurvey() {
     SurveyReadDto survey = surveyService.getSurvey();

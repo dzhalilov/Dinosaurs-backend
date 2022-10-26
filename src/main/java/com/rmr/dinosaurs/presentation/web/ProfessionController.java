@@ -1,9 +1,15 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
 import com.rmr.dinosaurs.core.model.dto.ProfessionPageDto;
 import com.rmr.dinosaurs.core.service.ProfessionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +40,17 @@ public class ProfessionController {
         .body(createdProfession);
   }
 
+  @Operation(description = "get profession profile data by its id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got profession profile by id",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProfessionDto.class))}),
+      @ApiResponse(responseCode = "404", description = "profession profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping("/{id}")
-  public ResponseEntity<ProfessionDto> getProfessionById(@PathVariable long id) {
-    ProfessionDto profession = professionService.getProfessionById(id);
+  public ResponseEntity<ProfessionDto> getProfessionById(@PathVariable long professionId) {
+    ProfessionDto profession = professionService.getProfessionById(professionId);
     return ResponseEntity
         .ok()
         .body(profession);

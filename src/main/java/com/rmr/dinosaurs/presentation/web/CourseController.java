@@ -1,11 +1,17 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
+import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.core.service.CourseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,9 +46,17 @@ public class CourseController {
         .body(createdCourse);
   }
 
+  @Operation(description = "get course profile data by its id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got course profile by id",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseReadDto.class))}),
+      @ApiResponse(responseCode = "404", description = "course profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping("/{id}")
-  public ResponseEntity<CourseReadDto> getCourseById(@PathVariable long id) {
-    CourseReadDto course = courseService.getCourseById(id);
+  public ResponseEntity<CourseReadDto> getCourseById(@PathVariable long courseId) {
+    CourseReadDto course = courseService.getCourseById(courseId);
     return ResponseEntity
         .ok()
         .body(course);
