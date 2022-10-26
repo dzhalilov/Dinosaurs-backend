@@ -52,7 +52,6 @@ public class CourseController {
           description = "current user has no permissions to create provided course",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
-  @PutMapping("/{id}")
   @PostMapping
   @ModeratorPermission
   public ResponseEntity<CourseCreateUpdateDto> addCourse(
