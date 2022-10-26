@@ -10,8 +10,8 @@ import static org.mockito.BDDMockito.given;
 import com.rmr.dinosaurs.core.configuration.properties.ProfessionServiceProperties;
 import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.Profession;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionPageDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionPageDto;
 import com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
@@ -115,7 +115,7 @@ class ProfessionServiceImplTest {
         .willReturn(updatedProfessionDto);
 
     // when
-    ProfessionDto a = service.updateProfessionById(
+    ProfessionDto a = service.editProfessionById(
         expectedProfession.getId(), updatedProfessionDto
     );
 
@@ -133,7 +133,7 @@ class ProfessionServiceImplTest {
 
     assertThatThrownBy(
         // when
-        () -> service.updateProfessionById(notExistingId, updatedProfessionDto))
+        () -> service.editProfessionById(notExistingId, updatedProfessionDto))
         // then
         .isInstanceOf(ServiceException.class)
         .hasFieldOrPropertyWithValue("errorCode", PROFESSION_NOT_FOUND).hasNoCause();

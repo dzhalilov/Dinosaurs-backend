@@ -1,21 +1,53 @@
 package com.rmr.dinosaurs.core.service;
 
+import com.rmr.dinosaurs.core.model.dto.CourseCreateUpdateDto;
+import com.rmr.dinosaurs.core.model.dto.CourseReadDto;
+import com.rmr.dinosaurs.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
-import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
-import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
-import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import java.util.List;
 
 public interface CourseService {
 
-  CreateUpdateCourseDto createCourse(CreateUpdateCourseDto course);
+  /**
+   * create course profile data
+   *
+   * @param courseDto to be created
+   * @return created course profile data
+   */
+  CourseCreateUpdateDto addCourse(CourseCreateUpdateDto courseDto);
 
-  ReadCourseDto getCourseById(long id);
+  /**
+   * get course profile data by course id
+   *
+   * @param courseId course profiler id
+   * @return course profile
+   */
+  CourseReadDto getCourseById(long courseId);
 
-  CreateUpdateCourseDto updateCourseById(long id, CreateUpdateCourseDto dto);
+  /**
+   * set course profile data
+   *
+   * @param courseId  course profile id to be changed to
+   * @param courseDto to be changed to
+   * @return changed course profile data
+   */
+  CourseCreateUpdateDto editCourseById(long courseId, CourseCreateUpdateDto courseDto);
 
-  List<ReadCourseDto> getAllCourses();
+  /**
+   * get list of all course profiles
+   *
+   * @return list of course profile data
+   */
+  List<CourseReadDto> getAllCourses();
 
-  ReadCoursePageDto getFilteredCoursePage(int pageNum, String sortBy, FilterParamsDto filter);
+  /**
+   * get page of filtered course profiles
+   *
+   * @param pageNum page number
+   * @param sortBy  sort by startsAt or endsAt param
+   * @param filter  filter params
+   * @return page of filtered course profile data
+   */
+  CourseReadPageDto getFilteredCoursePage(int pageNum, String sortBy, FilterParamsDto filter);
 
 }

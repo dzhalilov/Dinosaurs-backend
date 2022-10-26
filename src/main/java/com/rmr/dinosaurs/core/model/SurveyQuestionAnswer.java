@@ -29,11 +29,11 @@ public class SurveyQuestionAnswer {
   String text;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sqa_question_id", updatable = false)
+  @JoinColumn(name = "sqa_question_id", nullable = false, updatable = false)
   SurveyQuestion question;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sqa_profession_id", updatable = false)
+  @JoinColumn(name = "sqa_profession_id", nullable = false, updatable = false)
   Profession profession;
 
 }
