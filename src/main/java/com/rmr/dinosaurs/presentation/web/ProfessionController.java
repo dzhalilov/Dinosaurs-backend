@@ -67,6 +67,11 @@ public class ProfessionController {
         .body(profession);
   }
 
+  @Operation(description = "get all profession profiles")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got list of profession profiles",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProfessionDto.class))})})
   @GetMapping("/all")
   public ResponseEntity<List<ProfessionDto>> getAllProfessions() {
     List<ProfessionDto> professions = professionService.getAllProfessions();

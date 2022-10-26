@@ -73,6 +73,11 @@ public class CourseController {
         .body(course);
   }
 
+  @Operation(description = "get all course profiles")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got list of course profiles",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseReadDto.class))})})
   @GetMapping("/all")
   public ResponseEntity<List<CourseReadDto>> getAllCourses() {
     List<CourseReadDto> courses = courseService.getAllCourses();

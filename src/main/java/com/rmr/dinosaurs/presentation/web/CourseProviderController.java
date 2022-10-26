@@ -67,6 +67,11 @@ public class CourseProviderController {
         .body(provider);
   }
 
+  @Operation(description = "get all course provider profiles")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got list of provider profiles",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProviderDto.class))})})
   @GetMapping("/all")
   public ResponseEntity<List<ProviderDto>> getAllProviders() {
     List<ProviderDto> providers = providerService.getAllProviders();
