@@ -107,6 +107,14 @@ public class ProfessionController {
         .body(professions);
   }
 
+  @Operation(description = "get page of profession profiles")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got page of profession profiles",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProfessionPageDto.class))}),
+      @ApiResponse(responseCode = "400", description = "not positive page number",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping
   public ResponseEntity<ProfessionPageDto>
   getProfessionPage(@RequestParam(name = "page") int pageNum) {

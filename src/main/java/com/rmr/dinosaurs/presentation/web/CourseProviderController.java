@@ -107,6 +107,14 @@ public class CourseProviderController {
         .body(providers);
   }
 
+  @Operation(description = "get page of course provider profiles")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got page of provider profiles",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProviderPageDto.class))}),
+      @ApiResponse(responseCode = "400", description = "not positive page number",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping
   public ResponseEntity<ProviderPageDto>
   getProviderPage(@RequestParam(name = "page") int pageNum) {

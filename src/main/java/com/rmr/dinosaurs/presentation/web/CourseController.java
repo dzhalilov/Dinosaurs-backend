@@ -126,6 +126,14 @@ public class CourseController {
         .body(courses);
   }
 
+  @Operation(description = "get page of filtered course profiles")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got page of course profiles",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseReadPageDto.class))}),
+      @ApiResponse(responseCode = "400", description = "not positive page number",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping
   public ResponseEntity<CourseReadPageDto> getFilteredCoursesPage(
       @RequestParam(name = "page", required = false, defaultValue = "1") int pageNum,
