@@ -30,7 +30,7 @@ public class CourseProviderServiceImpl implements CourseProviderService {
   private final CourseProviderRepository providerRepo;
 
   @Override
-  public ProviderDto createProvider(ProviderDto dto) {
+  public ProviderDto addProvider(ProviderDto dto) {
     CourseProvider newProvider = mapper.toEntity(dto);
     CourseProvider savedProvider = providerRepo.saveAndFlush(newProvider);
     return mapper.toDto(savedProvider);

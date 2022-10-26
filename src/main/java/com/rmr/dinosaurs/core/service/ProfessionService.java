@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ProfessionService {
 
-  ProfessionDto createProfession(ProfessionDto provider);
+  ProfessionDto addProfession(ProfessionDto provider);
 
   ProfessionDto getProfessionById(long id);
 

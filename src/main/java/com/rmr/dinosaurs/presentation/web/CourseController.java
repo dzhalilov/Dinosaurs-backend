@@ -33,7 +33,7 @@ public class CourseController {
   public ResponseEntity<CourseCreateUpdateDto> createCourse(
       @RequestBody CourseCreateUpdateDto course) {
 
-    CourseCreateUpdateDto createdCourse = courseService.createCourse(course);
+    CourseCreateUpdateDto createdCourse = courseService.addCourse(course);
     URI createdCourseUri = URI.create("/api/v1/courses/" + createdCourse.getId());
     return ResponseEntity
         .created(createdCourseUri)

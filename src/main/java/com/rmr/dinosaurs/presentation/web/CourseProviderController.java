@@ -27,7 +27,7 @@ public class CourseProviderController {
   @PostMapping
   @ModeratorPermission
   public ResponseEntity<ProviderDto> createProvider(@RequestBody ProviderDto provider) {
-    ProviderDto createdProvider = providerService.createProvider(provider);
+    ProviderDto createdProvider = providerService.addProvider(provider);
     URI createdProviderUri = URI.create("/api/v1/providers/" + createdProvider.getId());
     return ResponseEntity
         .created(createdProviderUri)

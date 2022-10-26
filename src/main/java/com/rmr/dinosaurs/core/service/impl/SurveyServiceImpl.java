@@ -56,7 +56,7 @@ public class SurveyServiceImpl implements SurveyService {
 
   @Override
   @Transactional
-  public SurveyCreateDto createSurvey(SurveyCreateDto dto) {
+  public SurveyCreateDto addSurvey(SurveyCreateDto dto) {
     validateSurveyCreateDto(dto);
 
     Survey savedSurvey = saveAndFlushSurvey(dto);

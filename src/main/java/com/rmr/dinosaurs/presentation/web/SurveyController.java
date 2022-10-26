@@ -28,7 +28,7 @@ public class SurveyController {
   @PostMapping
   @ModeratorPermission
   public ResponseEntity<SurveyCreateDto> createSurvey(@RequestBody SurveyCreateDto survey) {
-    SurveyCreateDto createdSurvey = surveyService.createSurvey(survey);
+    SurveyCreateDto createdSurvey = surveyService.addSurvey(survey);
     URI createdSurveyUri = URI.create("/api/v1/survey");
     return ResponseEntity
         .created(createdSurveyUri)

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CourseProviderService {
 
-  ProviderDto createProvider(ProviderDto provider);
+  ProviderDto addProvider(ProviderDto provider);
 
   ProviderDto getProviderById(long id);
 

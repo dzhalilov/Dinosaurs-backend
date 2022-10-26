@@ -54,7 +54,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CourseCreateUpdateDto createCourse(CourseCreateUpdateDto dto) {
+  public CourseCreateUpdateDto addCourse(CourseCreateUpdateDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     Course course = saveNewCourseAndFlush(courseMapper.toEntity(dto), provider);

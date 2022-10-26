@@ -27,7 +27,7 @@ public class ProfessionController {
   @PostMapping
   @ModeratorPermission
   public ResponseEntity<ProfessionDto> createProfession(@RequestBody ProfessionDto profession) {
-    ProfessionDto createdProfession = professionService.createProfession(profession);
+    ProfessionDto createdProfession = professionService.addProfession(profession);
     URI createdProfessionUri = URI.create("/api/v1/professions/" + createdProfession.getId());
     return ResponseEntity
         .created(createdProfessionUri)

@@ -7,7 +7,7 @@ import com.rmr.dinosaurs.core.model.dto.SurveyResponseDto;
 
 public interface SurveyService {
 
-  SurveyCreateDto createSurvey(SurveyCreateDto survey);
+  SurveyCreateDto addSurvey(SurveyCreateDto survey);
 
   SurveyReadDto getSurvey();
 

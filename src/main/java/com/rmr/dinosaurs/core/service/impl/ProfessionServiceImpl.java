@@ -30,7 +30,7 @@ public class ProfessionServiceImpl implements ProfessionService {
   private final ProfessionRepository repo;
 
   @Override
-  public ProfessionDto createProfession(ProfessionDto dto) {
+  public ProfessionDto addProfession(ProfessionDto dto) {
     Profession newProfession = mapper.toEntity(dto);
     Profession savedProfession = repo.saveAndFlush(newProfession);
     return mapper.toDto(savedProfession);

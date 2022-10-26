@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CourseService {
 
-  CourseCreateUpdateDto createCourse(CourseCreateUpdateDto course);
+  CourseCreateUpdateDto addCourse(CourseCreateUpdateDto course);
 
   CourseReadDto getCourseById(long id);
 
