@@ -33,7 +33,7 @@ public class SurveyQuestion {
   String text;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sq_survey_id", updatable = false)
+  @JoinColumn(name = "sq_survey_id", nullable = false, updatable = false)
   Survey survey;
 
   @OneToMany(fetch = FetchType.LAZY)

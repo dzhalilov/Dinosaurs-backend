@@ -13,10 +13,10 @@ import com.rmr.dinosaurs.core.model.CourseAndTag;
 import com.rmr.dinosaurs.core.model.CourseProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.Tag;
+import com.rmr.dinosaurs.core.model.dto.CourseCreateUpdateDto;
+import com.rmr.dinosaurs.core.model.dto.CourseReadDto;
+import com.rmr.dinosaurs.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
-import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
-import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
-import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import com.rmr.dinosaurs.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseAndProfessionRepository;
@@ -54,7 +54,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CreateUpdateCourseDto createCourse(CreateUpdateCourseDto dto) {
+  public CourseCreateUpdateDto addCourse(CourseCreateUpdateDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     Course course = saveNewCourseAndFlush(courseMapper.toEntity(dto), provider);
@@ -65,7 +65,7 @@ public class CourseServiceImpl implements CourseService {
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
-    CreateUpdateCourseDto createdCourse = courseMapper.toDto(course);
+    CourseCreateUpdateDto createdCourse = courseMapper.toDto(course);
     createdCourse.setProfessionId(dto.getProfessionId());
     createdCourse.setTags(dto.getTags());
     return createdCourse;
@@ -73,7 +73,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public ReadCourseDto getCourseById(long id) {
+  public CourseReadDto getCourseById(long id) {
     Course course = courseRepo.findById(id)
         .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
     return toReadCourseDto(course);
@@ -81,7 +81,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CreateUpdateCourseDto updateCourseById(long id, CreateUpdateCourseDto dto) {
+  public CourseCreateUpdateDto editCourseById(long id, CourseCreateUpdateDto dto) {
     CourseProvider provider = providerRepo.findById(dto.getProviderId())
         .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     Course course = courseRepo.findById(id)
@@ -97,7 +97,7 @@ public class CourseServiceImpl implements CourseService {
     catRefRepo.deleteAllByCourse_Id(updatedCourse.getId());
     saveNewTagsAndSaveNewCatRefs(updatedCourse, dto.getTags());
 
-    CreateUpdateCourseDto updatedDto = courseMapper.toDto(updatedCourse);
+    CourseCreateUpdateDto updatedDto = courseMapper.toDto(updatedCourse);
     updatedDto.setProfessionId(dto.getProfessionId());
     updatedDto.setTags(dto.getTags());
     return updatedDto;
@@ -105,14 +105,14 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public List<ReadCourseDto> getAllCourses() {
+  public List<CourseReadDto> getAllCourses() {
     return courseRepo.findAll()
         .stream().map(this::toReadCourseDto).toList();
   }
 
   @Override
   @Transactional
-  public ReadCoursePageDto getFilteredCoursePage(
+  public CourseReadPageDto getFilteredCoursePage(
       int pageNum, String sortBy, FilterParamsDto filter) {
 
     --pageNum;
@@ -198,7 +198,7 @@ public class CourseServiceImpl implements CourseService {
   }
 
   private void setCourseUpdates(
-      CreateUpdateCourseDto dto, Course course, CourseProvider provider) {
+      CourseCreateUpdateDto dto, Course course, CourseProvider provider) {
 
     course.setProvider(provider);
     course.setTitle(dto.getTitle());
@@ -210,7 +210,7 @@ public class CourseServiceImpl implements CourseService {
     course.setIsAdvanced(dto.getIsAdvanced());
   }
 
-  private ReadCoursePageDto findPagedFilteredCourses(FilterParamsDto filter, Pageable pageable) {
+  private CourseReadPageDto findPagedFilteredCourses(FilterParamsDto filter, Pageable pageable) {
     String loweredSearch = (filter.getSearch() == null)
         ? ""
         : filter.getSearch().toLowerCase();
@@ -227,7 +227,7 @@ public class CourseServiceImpl implements CourseService {
     return toReadCoursePageDto(page);
   }
 
-  private ReadCourseDto toReadCourseDto(Course course) {
+  private CourseReadDto toReadCourseDto(Course course) {
     Profession courseProfession = course.getCourseAndProfessionRefs()
         .iterator().next()
         .getProfession();
@@ -236,16 +236,16 @@ public class CourseServiceImpl implements CourseService {
         .map(cat -> cat.getTag().getValue())
         .toList();
 
-    ReadCourseDto readCourseDto = courseMapper.toReadCourseDto(course);
-    readCourseDto.setProfessionId(courseProfession.getId());
-    readCourseDto.setProfessionName(courseProfession.getName());
-    readCourseDto.setTags(tags);
+    CourseReadDto courseReadDto = courseMapper.toReadCourseDto(course);
+    courseReadDto.setProfessionId(courseProfession.getId());
+    courseReadDto.setProfessionName(courseProfession.getName());
+    courseReadDto.setTags(tags);
 
-    return readCourseDto;
+    return courseReadDto;
   }
 
-  private ReadCoursePageDto toReadCoursePageDto(Page<Course> page) {
-    ReadCoursePageDto pageDto = new ReadCoursePageDto();
+  private CourseReadPageDto toReadCoursePageDto(Page<Course> page) {
+    CourseReadPageDto pageDto = new CourseReadPageDto();
     pageDto.setTotalElements(page.getTotalElements());
     pageDto.setTotalPages(page.getTotalPages());
     pageDto.setPageSize(page.getSize());

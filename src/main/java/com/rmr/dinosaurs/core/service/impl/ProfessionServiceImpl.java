@@ -6,8 +6,8 @@ import static com.rmr.dinosaurs.core.exception.errorcode.ProfessionErrorCode.PRO
 import com.rmr.dinosaurs.core.configuration.properties.ProfessionServiceProperties;
 import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.Profession;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionPageDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionPageDto;
 import com.rmr.dinosaurs.core.service.ProfessionService;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
@@ -30,7 +30,7 @@ public class ProfessionServiceImpl implements ProfessionService {
   private final ProfessionRepository repo;
 
   @Override
-  public ProfessionDto createProfession(ProfessionDto dto) {
+  public ProfessionDto addProfession(ProfessionDto dto) {
     Profession newProfession = mapper.toEntity(dto);
     Profession savedProfession = repo.saveAndFlush(newProfession);
     return mapper.toDto(savedProfession);
@@ -44,7 +44,7 @@ public class ProfessionServiceImpl implements ProfessionService {
   }
 
   @Override
-  public ProfessionDto updateProfessionById(long id, ProfessionDto dto) {
+  public ProfessionDto editProfessionById(long id, ProfessionDto dto) {
     Profession profession = repo.findById(id)
         .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
 

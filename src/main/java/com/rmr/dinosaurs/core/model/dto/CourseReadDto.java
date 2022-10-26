@@ -1,6 +1,7 @@
-package com.rmr.dinosaurs.core.model.dto.course;
+package com.rmr.dinosaurs.core.model.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUpdateCourseDto {
+public class CourseReadDto {
 
   Long id;
 
@@ -28,8 +29,16 @@ public class CreateUpdateCourseDto {
 
   Long providerId;
 
+  String providerName;
+
+  String providerUrl;
+
+  String providerCoverUrl;
+
   Long professionId;
 
-  String[] tags;
+  String professionName;
+
+  List<String> tags;
 
 }
