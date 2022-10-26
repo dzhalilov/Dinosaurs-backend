@@ -60,7 +60,7 @@ public class CourseProviderController {
       @ApiResponse(responseCode = "404", description = "provider profile not found",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
-  @GetMapping("/{id}")
+  @GetMapping("/{providerId}")
   public ResponseEntity<ProviderDto> getProviderById(@PathVariable long providerId) {
     ProviderDto provider = providerService.getProviderById(providerId);
     return ResponseEntity
@@ -83,7 +83,7 @@ public class CourseProviderController {
           description = "current user has no permissions to edit provided provider",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
-  @PutMapping("/{id}")
+  @PutMapping("/{providerId}")
   @ModeratorPermission
   public ResponseEntity<ProviderDto> editProviderById(
       @PathVariable long providerId, @RequestBody ProviderDto providerDto) {
@@ -116,8 +116,8 @@ public class CourseProviderController {
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping
-  public ResponseEntity<ProviderPageDto>
-      getProviderPage(@RequestParam(name = "page") int pageNum) {
+  public ResponseEntity<ProviderPageDto> getProviderPage(
+      @RequestParam(name = "page", required = false, defaultValue = "1") int pageNum) {
 
     ProviderPageDto provider = providerService.getProviderPage(pageNum);
     return ResponseEntity

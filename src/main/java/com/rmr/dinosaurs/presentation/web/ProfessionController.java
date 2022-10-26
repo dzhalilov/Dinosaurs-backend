@@ -60,7 +60,7 @@ public class ProfessionController {
       @ApiResponse(responseCode = "404", description = "profession profile not found",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
-  @GetMapping("/{id}")
+  @GetMapping("/{professionId}")
   public ResponseEntity<ProfessionDto> getProfessionById(@PathVariable long professionId) {
     ProfessionDto profession = professionService.getProfessionById(professionId);
     return ResponseEntity
@@ -83,7 +83,7 @@ public class ProfessionController {
           description = "current user has no permissions to edit provided profession",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
-  @PutMapping("/{id}")
+  @PutMapping("/{professionId}")
   @ModeratorPermission
   public ResponseEntity<ProfessionDto> editProfessionById(
       @PathVariable long professionId, @RequestBody ProfessionDto professionDto) {
@@ -116,8 +116,8 @@ public class ProfessionController {
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping
-  public ResponseEntity<ProfessionPageDto>
-      getProfessionPage(@RequestParam(name = "page") int pageNum) {
+  public ResponseEntity<ProfessionPageDto> getProfessionPage(
+      @RequestParam(name = "page", required = false, defaultValue = "1") int pageNum) {
 
     ProfessionPageDto professionPage = professionService.getProfessionPage(pageNum);
     return ResponseEntity
