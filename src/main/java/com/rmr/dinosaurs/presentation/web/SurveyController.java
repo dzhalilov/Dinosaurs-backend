@@ -75,12 +75,28 @@ public class SurveyController {
         .body(survey);
   }
 
+  @Operation(description = "post survey response using dto")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got recommended profession data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProfessionDto.class))}),
+      @ApiResponse(responseCode = "404", description = "question with such id not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "404", description = "answer with such id not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping("/result")
-  public ResponseEntity<ProfessionDto> resultSurvey(@RequestBody SurveyResponseDto response) {
-    UserDto user = userService.getCurrentUserDto();
-    String userEmail = user.getEmail();
+  public ResponseEntity<ProfessionDto> resultSurvey(
+      @RequestBody SurveyResponseDto surveyResponseDto) {
 
-    ProfessionDto result = surveyService.resultSurvey(response, userEmail);
+    UserDto currentUser = userService.getCurrentUserDto();
+    String userProfileEmail = currentUser.getEmail();
+
+    ProfessionDto result = surveyService.resultSurvey(surveyResponseDto, userProfileEmail);
     return ResponseEntity
         .ok()
         .body(result);
