@@ -7,10 +7,28 @@ import com.rmr.dinosaurs.core.model.dto.SurveyResponseDto;
 
 public interface SurveyService {
 
-  SurveyCreateDto addSurvey(SurveyCreateDto survey);
+  /**
+   * create survey data
+   *
+   * @param surveyDto to be created
+   * @return created survey data
+   */
+  SurveyCreateDto addSurvey(SurveyCreateDto surveyDto);
 
+  /**
+   * get current survey
+   *
+   * @return survey data
+   */
   SurveyReadDto getSurvey();
 
-  ProfessionDto resultSurvey(SurveyResponseDto response, String email);
+  /**
+   * get recommended profession profile by survey response
+   *
+   * @param surveyResponseDto survey response
+   * @param userProfileEmail  user profile getting recommended profession
+   * @return recommended profession profile
+   */
+  ProfessionDto resultSurvey(SurveyResponseDto surveyResponseDto, String userProfileEmail);
 
 }
