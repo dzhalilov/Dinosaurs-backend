@@ -117,7 +117,7 @@ public class CourseProviderController {
               schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping
   public ResponseEntity<ProviderPageDto>
-  getProviderPage(@RequestParam(name = "page") int pageNum) {
+      getProviderPage(@RequestParam(name = "page") int pageNum) {
 
     ProviderPageDto provider = providerService.getProviderPage(pageNum);
     return ResponseEntity

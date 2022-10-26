@@ -6,8 +6,8 @@ import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
 import com.rmr.dinosaurs.core.model.dto.AnswerCreateDto;
 import com.rmr.dinosaurs.core.model.dto.AnswerReadDto;
 import com.rmr.dinosaurs.core.model.dto.QuestionCreateDto;
-import com.rmr.dinosaurs.core.model.dto.SurveyCreateDto;
 import com.rmr.dinosaurs.core.model.dto.QuestionReadDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyCreateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
