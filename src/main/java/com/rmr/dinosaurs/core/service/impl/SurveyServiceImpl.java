@@ -2,6 +2,7 @@ package com.rmr.dinosaurs.core.service.impl;
 
 import static com.rmr.dinosaurs.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static com.rmr.dinosaurs.core.exception.errorcode.SurveyErrorCode.SURVEY_NOT_FOUND;
+import static com.rmr.dinosaurs.core.exception.errorcode.SurveyErrorCode.SURVEY_QUESTION_ANSWER_WITH_NO_PROFESSION_ID;
 
 import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.Profession;
@@ -56,9 +57,13 @@ public class SurveyServiceImpl implements SurveyService {
   @Override
   @Transactional
   public SurveyCreateDto createSurvey(SurveyCreateDto dto) {
+    validateSurveyCreateDto(dto);
+
     Survey savedSurvey = saveAndFlushSurvey(dto);
     saveAndFlushSurveyQuestionsAndTheirsAnswers(savedSurvey, dto.getSurvey());
+
     singletonSurveyId = savedSurvey.getId();
+
     return dto;
   }
 
@@ -212,6 +217,16 @@ public class SurveyServiceImpl implements SurveyService {
     if (userInfo != null) {
       userInfo.setRecommendedProfession(recommendedProfession);
       userInfoRepo.save(userInfo);
+    }
+  }
+
+  private void validateSurveyCreateDto(SurveyCreateDto dto) {
+    for (QuestionCreateDto q : dto.getSurvey()) {
+      for (AnswerCreateDto a : q.getAnswers()) {
+        if (a.getProfessionId() == null) {
+          throw new ServiceException(SURVEY_QUESTION_ANSWER_WITH_NO_PROFESSION_ID);
+        }
+      }
     }
   }
 
