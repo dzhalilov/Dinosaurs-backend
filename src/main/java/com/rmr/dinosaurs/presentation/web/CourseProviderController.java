@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
-import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderDto;
-import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderPageDto;
+import com.rmr.dinosaurs.core.model.dto.ProviderDto;
+import com.rmr.dinosaurs.core.model.dto.ProviderPageDto;
 import com.rmr.dinosaurs.core.service.CourseProviderService;
 import java.net.URI;
 import java.util.List;
@@ -26,8 +26,8 @@ public class CourseProviderController {
 
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<CourseProviderDto> createProvider(@RequestBody CourseProviderDto provider) {
-    CourseProviderDto createdProvider = providerService.createProvider(provider);
+  public ResponseEntity<ProviderDto> createProvider(@RequestBody ProviderDto provider) {
+    ProviderDto createdProvider = providerService.createProvider(provider);
     URI createdProviderUri = URI.create("/api/v1/providers/" + createdProvider.getId());
     return ResponseEntity
         .created(createdProviderUri)
@@ -35,8 +35,8 @@ public class CourseProviderController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<CourseProviderDto> getProviderById(@PathVariable long id) {
-    CourseProviderDto provider = providerService.getProviderById(id);
+  public ResponseEntity<ProviderDto> getProviderById(@PathVariable long id) {
+    ProviderDto provider = providerService.getProviderById(id);
     return ResponseEntity
         .ok()
         .body(provider);
@@ -44,28 +44,28 @@ public class CourseProviderController {
 
   @PutMapping("/{id}")
   @ModeratorPermission
-  public ResponseEntity<CourseProviderDto> updateProviderById(
-      @PathVariable long id, @RequestBody CourseProviderDto dto) {
+  public ResponseEntity<ProviderDto> updateProviderById(
+      @PathVariable long id, @RequestBody ProviderDto dto) {
 
-    CourseProviderDto provider = providerService.updateProviderById(id, dto);
+    ProviderDto provider = providerService.updateProviderById(id, dto);
     return ResponseEntity
         .ok()
         .body(provider);
   }
 
   @GetMapping("/all")
-  public ResponseEntity<List<CourseProviderDto>> getAllProviders() {
-    List<CourseProviderDto> providers = providerService.getAllProviders();
+  public ResponseEntity<List<ProviderDto>> getAllProviders() {
+    List<ProviderDto> providers = providerService.getAllProviders();
     return ResponseEntity
         .ok()
         .body(providers);
   }
 
   @GetMapping
-  public ResponseEntity<CourseProviderPageDto>
-      getProviderPage(@RequestParam(name = "page") int pageNum) {
+  public ResponseEntity<ProviderPageDto>
+  getProviderPage(@RequestParam(name = "page") int pageNum) {
 
-    CourseProviderPageDto provider = providerService.getProviderPage(pageNum);
+    ProviderPageDto provider = providerService.getProviderPage(pageNum);
     return ResponseEntity
         .ok()
         .body(provider);

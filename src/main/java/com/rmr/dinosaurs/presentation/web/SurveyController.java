@@ -1,11 +1,11 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
+import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyCreateDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyReadDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyResponseDto;
 import com.rmr.dinosaurs.core.model.dto.UserDto;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
-import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
-import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import com.rmr.dinosaurs.core.service.UserService;
 import java.net.URI;
@@ -27,8 +27,8 @@ public class SurveyController {
 
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<CreateSurveyDto> createSurvey(@RequestBody CreateSurveyDto survey) {
-    CreateSurveyDto createdSurvey = surveyService.createSurvey(survey);
+  public ResponseEntity<SurveyCreateDto> createSurvey(@RequestBody SurveyCreateDto survey) {
+    SurveyCreateDto createdSurvey = surveyService.createSurvey(survey);
     URI createdSurveyUri = URI.create("/api/v1/survey");
     return ResponseEntity
         .created(createdSurveyUri)
@@ -36,8 +36,8 @@ public class SurveyController {
   }
 
   @GetMapping
-  public ResponseEntity<ReadSurveyDto> getSurvey() {
-    ReadSurveyDto survey = surveyService.getSurvey();
+  public ResponseEntity<SurveyReadDto> getSurvey() {
+    SurveyReadDto survey = surveyService.getSurvey();
     return ResponseEntity
         .ok()
         .body(survey);

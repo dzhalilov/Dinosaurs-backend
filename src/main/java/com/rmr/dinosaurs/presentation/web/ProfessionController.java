@@ -1,8 +1,8 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionPageDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionPageDto;
 import com.rmr.dinosaurs.core.service.ProfessionService;
 import java.net.URI;
 import java.util.List;
@@ -63,7 +63,7 @@ public class ProfessionController {
 
   @GetMapping
   public ResponseEntity<ProfessionPageDto>
-      getProfessionPage(@RequestParam(name = "page") int pageNum) {
+  getProfessionPage(@RequestParam(name = "page") int pageNum) {
 
     ProfessionPageDto professionPage = professionService.getProfessionPage(pageNum);
     return ResponseEntity

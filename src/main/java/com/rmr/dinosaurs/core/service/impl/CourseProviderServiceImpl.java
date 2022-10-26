@@ -6,8 +6,8 @@ import static com.rmr.dinosaurs.core.exception.errorcode.PageErrorCode.NEGATIVE_
 import com.rmr.dinosaurs.core.configuration.properties.CourseProviderServiceProperties;
 import com.rmr.dinosaurs.core.exception.ServiceException;
 import com.rmr.dinosaurs.core.model.CourseProvider;
-import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderDto;
-import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderPageDto;
+import com.rmr.dinosaurs.core.model.dto.ProviderDto;
+import com.rmr.dinosaurs.core.model.dto.ProviderPageDto;
 import com.rmr.dinosaurs.core.service.CourseProviderService;
 import com.rmr.dinosaurs.core.utils.mapper.CourseProviderEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.CourseProviderRepository;
@@ -30,21 +30,21 @@ public class CourseProviderServiceImpl implements CourseProviderService {
   private final CourseProviderRepository providerRepo;
 
   @Override
-  public CourseProviderDto createProvider(CourseProviderDto dto) {
+  public ProviderDto createProvider(ProviderDto dto) {
     CourseProvider newProvider = mapper.toEntity(dto);
     CourseProvider savedProvider = providerRepo.saveAndFlush(newProvider);
     return mapper.toDto(savedProvider);
   }
 
   @Override
-  public CourseProviderDto getProviderById(long id) {
+  public ProviderDto getProviderById(long id) {
     CourseProvider provider = providerRepo.findById(id)
         .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
     return mapper.toDto(provider);
   }
 
   @Override
-  public CourseProviderDto updateProviderById(long id, CourseProviderDto dto) {
+  public ProviderDto updateProviderById(long id, ProviderDto dto) {
     CourseProvider provider = providerRepo.findById(id)
         .orElseThrow(() -> new ServiceException(COURSE_PROVIDER_NOT_FOUND));
 
@@ -58,13 +58,13 @@ public class CourseProviderServiceImpl implements CourseProviderService {
   }
 
   @Override
-  public List<CourseProviderDto> getAllProviders() {
+  public List<ProviderDto> getAllProviders() {
     return providerRepo.findAll()
         .stream().map(mapper::toDto).toList();
   }
 
   @Override
-  public CourseProviderPageDto getProviderPage(int pageNum) {
+  public ProviderPageDto getProviderPage(int pageNum) {
     --pageNum;
     if (pageNum < 0) {
       throw new ServiceException(NEGATIVE_PAGE_NUMBER);
@@ -75,7 +75,7 @@ public class CourseProviderServiceImpl implements CourseProviderService {
     Page<CourseProvider> page = providerRepo
         .findByOrderByNameAsc(pageable);
 
-    CourseProviderPageDto pageDto = new CourseProviderPageDto();
+    ProviderPageDto pageDto = new ProviderPageDto();
     pageDto.setTotalElements(page.getTotalElements());
     pageDto.setTotalPages(page.getTotalPages());
     pageDto.setPageSize(page.getSize());

@@ -1,15 +1,15 @@
 package com.rmr.dinosaurs.core.service;
 
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
-import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
-import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyCreateDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyReadDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyResponseDto;
 
 public interface SurveyService {
 
-  CreateSurveyDto createSurvey(CreateSurveyDto survey);
+  SurveyCreateDto createSurvey(SurveyCreateDto survey);
 
-  ReadSurveyDto getSurvey();
+  SurveyReadDto getSurvey();
 
   ProfessionDto resultSurvey(SurveyResponseDto response, String email);
 

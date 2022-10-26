@@ -1,19 +1,19 @@
 package com.rmr.dinosaurs.core.service;
 
-import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderDto;
-import com.rmr.dinosaurs.core.model.dto.provider.CourseProviderPageDto;
+import com.rmr.dinosaurs.core.model.dto.ProviderDto;
+import com.rmr.dinosaurs.core.model.dto.ProviderPageDto;
 import java.util.List;
 
 public interface CourseProviderService {
 
-  CourseProviderDto createProvider(CourseProviderDto provider);
+  ProviderDto createProvider(ProviderDto provider);
 
-  CourseProviderDto getProviderById(long id);
+  ProviderDto getProviderById(long id);
 
-  CourseProviderDto updateProviderById(long id, CourseProviderDto dto);
+  ProviderDto updateProviderById(long id, ProviderDto dto);
 
-  List<CourseProviderDto> getAllProviders();
+  List<ProviderDto> getAllProviders();
 
-  CourseProviderPageDto getProviderPage(int pageNum);
+  ProviderPageDto getProviderPage(int pageNum);
 
 }

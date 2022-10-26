@@ -9,15 +9,15 @@ import com.rmr.dinosaurs.core.model.Survey;
 import com.rmr.dinosaurs.core.model.SurveyQuestion;
 import com.rmr.dinosaurs.core.model.SurveyQuestionAnswer;
 import com.rmr.dinosaurs.core.model.UserInfo;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.survey.CreateAnswerDto;
-import com.rmr.dinosaurs.core.model.dto.survey.CreateQuestionDto;
-import com.rmr.dinosaurs.core.model.dto.survey.CreateSurveyDto;
-import com.rmr.dinosaurs.core.model.dto.survey.ReadAnswerDto;
-import com.rmr.dinosaurs.core.model.dto.survey.ReadQuestionDto;
-import com.rmr.dinosaurs.core.model.dto.survey.ReadSurveyDto;
-import com.rmr.dinosaurs.core.model.dto.survey.SurveyQuestionResponseDto;
-import com.rmr.dinosaurs.core.model.dto.survey.SurveyResponseDto;
+import com.rmr.dinosaurs.core.model.dto.AnswerCreateDto;
+import com.rmr.dinosaurs.core.model.dto.AnswerReadDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.QuestionCreateDto;
+import com.rmr.dinosaurs.core.model.dto.QuestionReadDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyCreateDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyReadDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyResponseDto;
+import com.rmr.dinosaurs.core.model.dto.SurveyResponseQuestionDto;
 import com.rmr.dinosaurs.core.service.SurveyService;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.core.utils.mapper.SurveyEntityDtoMapper;
@@ -55,7 +55,7 @@ public class SurveyServiceImpl implements SurveyService {
 
   @Override
   @Transactional
-  public CreateSurveyDto createSurvey(CreateSurveyDto dto) {
+  public SurveyCreateDto createSurvey(SurveyCreateDto dto) {
     Survey savedSurvey = saveAndFlushSurvey(dto);
     saveAndFlushSurveyQuestionsAndTheirsAnswers(savedSurvey, dto.getSurvey());
     singletonSurveyId = savedSurvey.getId();
@@ -64,7 +64,7 @@ public class SurveyServiceImpl implements SurveyService {
 
   @Override
   @Transactional
-  public ReadSurveyDto getSurvey() {
+  public SurveyReadDto getSurvey() {
     Survey s;
     if (singletonSurveyId == null) {
       s = surveyRepo.findTop1By();
@@ -73,9 +73,9 @@ public class SurveyServiceImpl implements SurveyService {
           .orElseThrow(() -> new ServiceException(SURVEY_NOT_FOUND));
     }
 
-    ReadSurveyDto dto = toReadSurveyDto(s);
-    List<ReadQuestionDto> sortedSurveyByQuestionId = dto.getSurvey().stream()
-        .sorted(Comparator.comparingLong(ReadQuestionDto::getQuestionId))
+    SurveyReadDto dto = toReadSurveyDto(s);
+    List<QuestionReadDto> sortedSurveyByQuestionId = dto.getSurvey().stream()
+        .sorted(Comparator.comparingLong(QuestionReadDto::getQuestionId))
         .toList();
     dto.setSurvey(sortedSurveyByQuestionId);
     return dto;
@@ -85,7 +85,7 @@ public class SurveyServiceImpl implements SurveyService {
   @Transactional
   public ProfessionDto resultSurvey(SurveyResponseDto response, String email) {
     List<Long> answerIds = response.getSurvey().stream()
-        .map(SurveyQuestionResponseDto::getAnswerId)
+        .map(SurveyResponseQuestionDto::getAnswerId)
         .toList();
     List<SurveyQuestionAnswer> answers = answerRepo.findAllById(answerIds);
 
@@ -95,7 +95,7 @@ public class SurveyServiceImpl implements SurveyService {
     return professionMapper.toDto(recommendedProfession);
   }
 
-  private Survey saveAndFlushSurvey(CreateSurveyDto dto) {
+  private Survey saveAndFlushSurvey(SurveyCreateDto dto) {
     Survey s = surveyMapper.toSurvey(dto);
     Survey savedSurvey = surveyRepo.saveAndFlush(s);
     dto.setSurveyId(savedSurvey.getId());
@@ -103,16 +103,16 @@ public class SurveyServiceImpl implements SurveyService {
   }
 
   private void saveAndFlushSurveyQuestionsAndTheirsAnswers(
-      Survey survey, List<CreateQuestionDto> qdtoList) {
+      Survey survey, List<QuestionCreateDto> qdtoList) {
 
     Map<Long, Profession> professionCache = new HashMap<>();
-    for (CreateQuestionDto qdto : qdtoList) {
+    for (QuestionCreateDto qdto : qdtoList) {
       SurveyQuestion savedQuestion = saveAndFlushSurveyQuestion(survey, qdto);
       saveAndFlushSurveyQuestionAnswers(savedQuestion, qdto.getAnswers(), professionCache);
     }
   }
 
-  private SurveyQuestion saveAndFlushSurveyQuestion(Survey survey, CreateQuestionDto qdto) {
+  private SurveyQuestion saveAndFlushSurveyQuestion(Survey survey, QuestionCreateDto qdto) {
     SurveyQuestion q = surveyMapper.toSurveyQuestion(qdto);
     q.setSurvey(survey);
     SurveyQuestion savedQuestion = questionRepo.saveAndFlush(q);
@@ -122,10 +122,10 @@ public class SurveyServiceImpl implements SurveyService {
 
   private void saveAndFlushSurveyQuestionAnswers(
       SurveyQuestion question,
-      List<CreateAnswerDto> adtoList,
+      List<AnswerCreateDto> adtoList,
       Map<Long, Profession> professionCache) {
 
-    for (CreateAnswerDto adto : adtoList) {
+    for (AnswerCreateDto adto : adtoList) {
       Long professionId = adto.getProfessionId();
       Profession profession = cacheProfessionOrGet(professionId, professionCache);
       saveAndFlushSurveyQuestionAnswer(question, profession, adto);
@@ -146,7 +146,7 @@ public class SurveyServiceImpl implements SurveyService {
 
   private void saveAndFlushSurveyQuestionAnswer(
       SurveyQuestion question, Profession profession,
-      CreateAnswerDto adto) {
+      AnswerCreateDto adto) {
 
     SurveyQuestionAnswer a = surveyMapper.toSurveyQuestionAnswer(adto);
     a.setQuestion(question);
@@ -155,23 +155,23 @@ public class SurveyServiceImpl implements SurveyService {
     adto.setAnswerId(savedAnswer.getId());
   }
 
-  private ReadSurveyDto toReadSurveyDto(Survey survey) {
+  private SurveyReadDto toReadSurveyDto(Survey survey) {
     Set<SurveyQuestion> sqSet = survey.getQuestions();
-    List<ReadQuestionDto> qdtoList = new ArrayList<>(sqSet.size());
+    List<QuestionReadDto> qdtoList = new ArrayList<>(sqSet.size());
     for (SurveyQuestion sq : sqSet) {
 
       Set<SurveyQuestionAnswer> sqaSet = sq.getAnswers();
-      List<ReadAnswerDto> adtoList = new ArrayList<>(sqaSet.size());
+      List<AnswerReadDto> adtoList = new ArrayList<>(sqaSet.size());
       for (SurveyQuestionAnswer sqa : sqaSet) {
         adtoList.add(surveyMapper.toReadAnswerDto(sqa));
       }
 
-      ReadQuestionDto qdto = surveyMapper.toReadQuestionDto(sq);
+      QuestionReadDto qdto = surveyMapper.toReadQuestionDto(sq);
       qdto.setAnswers(adtoList);
       qdtoList.add(qdto);
     }
 
-    ReadSurveyDto surveyDto = new ReadSurveyDto();
+    SurveyReadDto surveyDto = new SurveyReadDto();
     surveyDto.setSurveyId(survey.getId());
     surveyDto.setTitle(survey.getTitle());
     surveyDto.setDescription(survey.getDescription());

@@ -11,7 +11,7 @@ import com.rmr.dinosaurs.core.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.core.auth.security.JwtTokenProvider;
 import com.rmr.dinosaurs.core.model.Profession;
 import com.rmr.dinosaurs.core.model.User;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
 import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.UserRepository;

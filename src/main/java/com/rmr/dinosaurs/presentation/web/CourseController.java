@@ -1,10 +1,10 @@
 package com.rmr.dinosaurs.presentation.web;
 
 import com.rmr.dinosaurs.core.auth.security.permission.ModeratorPermission;
+import com.rmr.dinosaurs.core.model.dto.CourseCreateUpdateDto;
+import com.rmr.dinosaurs.core.model.dto.CourseReadDto;
+import com.rmr.dinosaurs.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
-import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
-import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
-import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import com.rmr.dinosaurs.core.service.CourseService;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -30,10 +30,10 @@ public class CourseController {
 
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<CreateUpdateCourseDto> createCourse(
-      @RequestBody CreateUpdateCourseDto course) {
+  public ResponseEntity<CourseCreateUpdateDto> createCourse(
+      @RequestBody CourseCreateUpdateDto course) {
 
-    CreateUpdateCourseDto createdCourse = courseService.createCourse(course);
+    CourseCreateUpdateDto createdCourse = courseService.createCourse(course);
     URI createdCourseUri = URI.create("/api/v1/courses/" + createdCourse.getId());
     return ResponseEntity
         .created(createdCourseUri)
@@ -41,8 +41,8 @@ public class CourseController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ReadCourseDto> getCourseById(@PathVariable long id) {
-    ReadCourseDto course = courseService.getCourseById(id);
+  public ResponseEntity<CourseReadDto> getCourseById(@PathVariable long id) {
+    CourseReadDto course = courseService.getCourseById(id);
     return ResponseEntity
         .ok()
         .body(course);
@@ -50,25 +50,25 @@ public class CourseController {
 
   @PutMapping("/{id}")
   @ModeratorPermission
-  public ResponseEntity<CreateUpdateCourseDto> updateCourseById(
-      @PathVariable long id, @RequestBody CreateUpdateCourseDto dto) {
+  public ResponseEntity<CourseCreateUpdateDto> updateCourseById(
+      @PathVariable long id, @RequestBody CourseCreateUpdateDto dto) {
 
-    CreateUpdateCourseDto course = courseService.updateCourseById(id, dto);
+    CourseCreateUpdateDto course = courseService.updateCourseById(id, dto);
     return ResponseEntity
         .ok()
         .body(course);
   }
 
   @GetMapping("/all")
-  public ResponseEntity<List<ReadCourseDto>> getAllCourses() {
-    List<ReadCourseDto> courses = courseService.getAllCourses();
+  public ResponseEntity<List<CourseReadDto>> getAllCourses() {
+    List<CourseReadDto> courses = courseService.getAllCourses();
     return ResponseEntity
         .ok()
         .body(courses);
   }
 
   @GetMapping
-  public ResponseEntity<ReadCoursePageDto> getFilteredCoursesPage(
+  public ResponseEntity<CourseReadPageDto> getFilteredCoursesPage(
       @RequestParam(name = "page", required = false, defaultValue = "1") int pageNum,
       @RequestParam(name = "search", required = false) String search,
       @RequestParam(name = "isAdvanced", required = false) Boolean isAdvanced,
@@ -83,7 +83,7 @@ public class CourseController {
         search, isAdvanced, professionId, startsAt, endsAt
     );
 
-    ReadCoursePageDto coursePage = courseService.getFilteredCoursePage(pageNum, sortBy, filter);
+    CourseReadPageDto coursePage = courseService.getFilteredCoursePage(pageNum, sortBy, filter);
     return ResponseEntity
         .ok()
         .body(coursePage);

@@ -1,21 +1,21 @@
 package com.rmr.dinosaurs.core.service;
 
+import com.rmr.dinosaurs.core.model.dto.CourseCreateUpdateDto;
+import com.rmr.dinosaurs.core.model.dto.CourseReadDto;
+import com.rmr.dinosaurs.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.core.model.dto.FilterParamsDto;
-import com.rmr.dinosaurs.core.model.dto.course.CreateUpdateCourseDto;
-import com.rmr.dinosaurs.core.model.dto.course.ReadCourseDto;
-import com.rmr.dinosaurs.core.model.dto.course.ReadCoursePageDto;
 import java.util.List;
 
 public interface CourseService {
 
-  CreateUpdateCourseDto createCourse(CreateUpdateCourseDto course);
+  CourseCreateUpdateDto createCourse(CourseCreateUpdateDto course);
 
-  ReadCourseDto getCourseById(long id);
+  CourseReadDto getCourseById(long id);
 
-  CreateUpdateCourseDto updateCourseById(long id, CreateUpdateCourseDto dto);
+  CourseCreateUpdateDto updateCourseById(long id, CourseCreateUpdateDto dto);
 
-  List<ReadCourseDto> getAllCourses();
+  List<CourseReadDto> getAllCourses();
 
-  ReadCoursePageDto getFilteredCoursePage(int pageNum, String sortBy, FilterParamsDto filter);
+  CourseReadPageDto getFilteredCoursePage(int pageNum, String sortBy, FilterParamsDto filter);
 
 }

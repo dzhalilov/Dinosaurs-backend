@@ -1,7 +1,7 @@
 package com.rmr.dinosaurs.core.utils.mapper;
 
 import com.rmr.dinosaurs.core.model.Profession;
-import com.rmr.dinosaurs.core.model.dto.profession.ProfessionDto;
+import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
