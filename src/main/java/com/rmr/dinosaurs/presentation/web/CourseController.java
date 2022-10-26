@@ -72,7 +72,7 @@ public class CourseController {
       @ApiResponse(responseCode = "404", description = "course profile not found",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
-  @GetMapping("/{id}")
+  @GetMapping("/{courseId}")
   public ResponseEntity<CourseReadDto> getCourseById(@PathVariable long courseId) {
     CourseReadDto course = courseService.getCourseById(courseId);
     return ResponseEntity
@@ -101,7 +101,7 @@ public class CourseController {
           description = "current user has no permissions to edit provided course",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
-  @PutMapping("/{id}")
+  @PutMapping("/{courseId}")
   @ModeratorPermission
   public ResponseEntity<CourseCreateUpdateDto> editCourseById(
       @PathVariable long courseId, @RequestBody CourseCreateUpdateDto courseDto) {
