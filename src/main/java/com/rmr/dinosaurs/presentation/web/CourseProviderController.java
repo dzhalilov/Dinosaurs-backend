@@ -56,12 +56,27 @@ public class CourseProviderController {
         .body(provider);
   }
 
+  @Operation(description = "edit course provider profile data using its id and dto")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got edited provider data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProviderDto.class))}),
+      @ApiResponse(responseCode = "404", description = "provider profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "current user has no permissions to edit provided provider",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @PutMapping("/{id}")
   @ModeratorPermission
-  public ResponseEntity<ProviderDto> updateProviderById(
-      @PathVariable long id, @RequestBody ProviderDto dto) {
+  public ResponseEntity<ProviderDto> editProviderById(
+      @PathVariable long providerId, @RequestBody ProviderDto providerDto) {
 
-    ProviderDto provider = providerService.editProviderById(id, dto);
+    ProviderDto provider = providerService.editProviderById(providerId, providerDto);
     return ResponseEntity
         .ok()
         .body(provider);

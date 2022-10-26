@@ -62,12 +62,33 @@ public class CourseController {
         .body(course);
   }
 
+  @Operation(description = "edit course profile data using its id and dto")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got edited course data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseCreateUpdateDto.class))}),
+      @ApiResponse(responseCode = "404", description = "course profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "404", description = "profession profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "404", description = "provider profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "current user has no permissions to edit provided course",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @PutMapping("/{id}")
   @ModeratorPermission
-  public ResponseEntity<CourseCreateUpdateDto> updateCourseById(
-      @PathVariable long id, @RequestBody CourseCreateUpdateDto dto) {
+  public ResponseEntity<CourseCreateUpdateDto> editCourseById(
+      @PathVariable long courseId, @RequestBody CourseCreateUpdateDto courseDto) {
 
-    CourseCreateUpdateDto course = courseService.editCourseById(id, dto);
+    CourseCreateUpdateDto course = courseService.editCourseById(courseId, courseDto);
     return ResponseEntity
         .ok()
         .body(course);

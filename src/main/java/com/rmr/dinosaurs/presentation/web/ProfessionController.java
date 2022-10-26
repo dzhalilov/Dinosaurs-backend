@@ -56,12 +56,27 @@ public class ProfessionController {
         .body(profession);
   }
 
+  @Operation(description = "edit profession profile data using its id and dto")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got edited profession data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProfessionDto.class))}),
+      @ApiResponse(responseCode = "404", description = "profession profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "current user has no permissions to edit provided profession",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @PutMapping("/{id}")
   @ModeratorPermission
-  public ResponseEntity<ProfessionDto> updateProfessionById(
-      @PathVariable long id, @RequestBody ProfessionDto dto) {
+  public ResponseEntity<ProfessionDto> editProfessionById(
+      @PathVariable long professionId, @RequestBody ProfessionDto professionDto) {
 
-    ProfessionDto profession = professionService.editProfessionById(id, dto);
+    ProfessionDto profession = professionService.editProfessionById(professionId, professionDto);
     return ResponseEntity
         .ok()
         .body(profession);
