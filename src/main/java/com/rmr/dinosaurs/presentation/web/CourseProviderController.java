@@ -30,9 +30,21 @@ public class CourseProviderController {
 
   private final CourseProviderService providerService;
 
+  @Operation(description = "create course provider profile data using dto")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "got created provider data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProviderDto.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "current user has no permissions to create provided provider",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<ProviderDto> createProvider(@RequestBody ProviderDto provider) {
+  public ResponseEntity<ProviderDto> addProvider(@RequestBody ProviderDto provider) {
     ProviderDto createdProvider = providerService.addProvider(provider);
     URI createdProviderUri = URI.create("/api/v1/providers/" + createdProvider.getId());
     return ResponseEntity

@@ -30,9 +30,21 @@ public class ProfessionController {
 
   private final ProfessionService professionService;
 
+  @Operation(description = "create profession profile data using dto")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "got created profession data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProfessionDto.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "current user has no permissions to create provided profession",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<ProfessionDto> createProfession(@RequestBody ProfessionDto profession) {
+  public ResponseEntity<ProfessionDto> addProfession(@RequestBody ProfessionDto profession) {
     ProfessionDto createdProfession = professionService.addProfession(profession);
     URI createdProfessionUri = URI.create("/api/v1/professions/" + createdProfession.getId());
     return ResponseEntity

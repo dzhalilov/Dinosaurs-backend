@@ -34,9 +34,28 @@ public class CourseController {
 
   private final CourseService courseService;
 
+  @Operation(description = "create course profile data using dto")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "got created course data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseCreateUpdateDto.class))}),
+      @ApiResponse(responseCode = "404", description = "profession profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "404", description = "provider profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "current user has no permissions to create provided course",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @PutMapping("/{id}")
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<CourseCreateUpdateDto> createCourse(
+  public ResponseEntity<CourseCreateUpdateDto> addCourse(
       @RequestBody CourseCreateUpdateDto course) {
 
     CourseCreateUpdateDto createdCourse = courseService.addCourse(course);

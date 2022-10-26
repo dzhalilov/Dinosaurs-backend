@@ -31,9 +31,27 @@ public class SurveyController {
   private final SurveyService surveyService;
   private final UserService userService;
 
+  @Operation(description = "create survey data using dto")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "got created survey data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = SurveyCreateDto.class))}),
+      @ApiResponse(responseCode = "404", description = "profession profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "404", description = "provider profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "current user has no permissions to create provided survey",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<SurveyCreateDto> createSurvey(@RequestBody SurveyCreateDto survey) {
+  public ResponseEntity<SurveyCreateDto> addSurvey(@RequestBody SurveyCreateDto survey) {
     SurveyCreateDto createdSurvey = surveyService.addSurvey(survey);
     URI createdSurveyUri = URI.create("/api/v1/survey");
     return ResponseEntity
