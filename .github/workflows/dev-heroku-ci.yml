@@ -27,5 +27,5 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           branch: "dev"
         env:
-          EMAIL_ADDRESS: ${{secrets.EMAIL_ADDRESS}}
-          EMAIL_PASSWORD: ${{secrets.EMAIL_PASSWORD}}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
