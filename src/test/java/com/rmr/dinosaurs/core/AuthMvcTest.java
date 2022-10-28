@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.core;
 
+import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,11 +12,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.rmr.dinosaurs.core.auth.security.JwtTokenPair;
-import com.rmr.dinosaurs.core.model.LoginRequest;
-import com.rmr.dinosaurs.core.model.SignupRequest;
-import com.rmr.dinosaurs.core.service.AuthService;
-import com.rmr.dinosaurs.presentation.web.AuthController;
+import com.rmr.dinosaurs.domain.auth.model.dto.UserDto;
+import com.rmr.dinosaurs.domain.auth.model.requests.LoginRequest;
+import com.rmr.dinosaurs.domain.auth.model.requests.SignupRequest;
+import com.rmr.dinosaurs.domain.auth.security.JwtTokenPair;
+import com.rmr.dinosaurs.domain.auth.service.AuthService;
+import com.rmr.dinosaurs.presentation.web.auth.AuthController;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,20 +57,20 @@ class AuthMvcTest {
   void shouldLogin() throws Exception {
     // given
     var loginRequest = new LoginRequest("super@email.com", "p4sSwoRd");
-    var jwtToken = new JwtTokenPair("ttttttttto.ke.n", "mokkk.eee.n");
+    var jwtTokenPair = new JwtTokenPair("ttttttttto.ke.n", "mokkk.eee.n");
     var loginRequestAsString = objectMapper.writeValueAsString(loginRequest);
     given(authServiceMock.login(loginRequest))
-        .willReturn(jwtToken);
+        .willReturn(jwtTokenPair);
 
     // when
     mockMvc.perform(post("/api/v1/auth/login")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(loginRequestAsString))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(loginRequestAsString))
 
         // then
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(objectMapper.writeValueAsString(jwtToken)));
+        .andExpect(content().json(objectMapper.writeValueAsString(jwtTokenPair)));
 
     verify(authServiceMock, times(1)).login(loginRequest);
     verifyNoMoreInteractions(authServiceMock);
@@ -83,20 +86,21 @@ class AuthMvcTest {
         "My",
         "Name"
     );
-    var jwtToken = new JwtTokenPair("ttttttttto.ke.n", "mokkk.eee.n");
+    UserDto userDto = new UserDto(1L, signupRequest.email(), ROLE_REGULAR,
+        false, LocalDateTime.now(), false, null);
     var signupRequestAsString = objectMapper.writeValueAsString(signupRequest);
     given(authServiceMock.signup(signupRequest))
-        .willReturn(jwtToken);
+        .willReturn(userDto);
 
     // when
     mockMvc.perform(post("/api/v1/auth/signup")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(signupRequestAsString))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(signupRequestAsString))
 
         // then
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(objectMapper.writeValueAsString(jwtToken)));
+        .andExpect(content().json(objectMapper.writeValueAsString(userDto)));
 
     verify(authServiceMock).signup(signupRequest);
     verifyNoMoreInteractions(authServiceMock);

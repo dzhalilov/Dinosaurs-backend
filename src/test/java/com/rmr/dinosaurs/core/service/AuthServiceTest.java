@@ -1,10 +1,10 @@
 package com.rmr.dinosaurs.core.service;
 
-import static com.rmr.dinosaurs.core.exception.errorcode.AuthErrorCode.INCORRECT_CREDENTIALS;
-import static com.rmr.dinosaurs.core.exception.errorcode.AuthErrorCode.INVALID_TOKEN_PROVIDED;
-import static com.rmr.dinosaurs.core.exception.errorcode.UserErrorCode.USER_ALREADY_EXISTS;
-import static com.rmr.dinosaurs.core.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
-import static com.rmr.dinosaurs.core.model.Authority.ROLE_REGULAR;
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.INCORRECT_CREDENTIALS;
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.INVALID_TOKEN_PROVIDED;
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_ALREADY_EXISTS;
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,20 +15,24 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import com.rmr.dinosaurs.core.auth.security.DinoAuthentication;
-import com.rmr.dinosaurs.core.auth.security.JwtTokenPair;
-import com.rmr.dinosaurs.core.auth.security.JwtTokenService;
-import com.rmr.dinosaurs.core.exception.ServiceException;
-import com.rmr.dinosaurs.core.model.LoginRequest;
-import com.rmr.dinosaurs.core.model.RefreshToken;
-import com.rmr.dinosaurs.core.model.RefreshTokenRequest;
-import com.rmr.dinosaurs.core.model.SignupRequest;
-import com.rmr.dinosaurs.core.model.User;
-import com.rmr.dinosaurs.core.model.UserInfo;
-import com.rmr.dinosaurs.core.service.impl.AuthServiceImpl;
-import com.rmr.dinosaurs.infrastucture.database.RefreshTokenRepository;
-import com.rmr.dinosaurs.infrastucture.database.UserInfoRepository;
-import com.rmr.dinosaurs.infrastucture.database.UserRepository;
+import com.rmr.dinosaurs.domain.auth.model.RefreshToken;
+import com.rmr.dinosaurs.domain.auth.model.User;
+import com.rmr.dinosaurs.domain.auth.model.dto.UserDto;
+import com.rmr.dinosaurs.domain.auth.model.requests.LoginRequest;
+import com.rmr.dinosaurs.domain.auth.model.requests.RefreshTokenRequest;
+import com.rmr.dinosaurs.domain.auth.model.requests.SignupRequest;
+import com.rmr.dinosaurs.domain.auth.security.JwtTokenPair;
+import com.rmr.dinosaurs.domain.auth.security.model.DinoAuthentication;
+import com.rmr.dinosaurs.domain.auth.security.service.JwtTokenService;
+import com.rmr.dinosaurs.domain.auth.service.impl.AuthServiceImpl;
+import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
+import com.rmr.dinosaurs.domain.core.exception.ServiceException;
+import com.rmr.dinosaurs.domain.notification.email.model.EmailMessage;
+import com.rmr.dinosaurs.domain.notification.email.service.EmailSenderService;
+import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
+import com.rmr.dinosaurs.infrastucture.database.auth.RefreshTokenRepository;
+import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
+import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +47,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class AuthServiceTest {
 
   @Mock
+  private EmailSenderService emailSenderServiceMock;
+
+  @Mock
   private UserRepository userRepositoryMock;
 
   @Mock
@@ -50,6 +57,9 @@ class AuthServiceTest {
 
   @Mock
   private RefreshTokenRepository refreshTokenRepositoryMock;
+
+  @Mock
+  private UserConverter userConverterMock;
 
   @Mock
   private PasswordEncoder passwordEncoderMock;
@@ -60,11 +70,11 @@ class AuthServiceTest {
   @InjectMocks
   private AuthServiceImpl authService;
 
-  private final UserInfo testUserInfo = new UserInfo(2L, "Test", "Usersky", LocalDateTime.now(),
-      true, null, null, null);
+  private final UserInfo testUserInfo = new UserInfo(2L, "Test", "Usersky", null, null);
 
   private final User testUser = new User(1L, "super@email.com", "stR4nGeRp4Ssw0rDHaHa",
-      ROLE_REGULAR, testUserInfo);
+      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+
 
   @Test
   @DisplayName("should login successfully")
@@ -139,36 +149,37 @@ class AuthServiceTest {
   @DisplayName("sign up successfully")
   void shouldSignup() {
     // given
-    RefreshToken testRefreshToken = new RefreshToken(10L, "refreshToken", testUser.getId());
-    JwtTokenPair testJwtTokenPair = new JwtTokenPair("accessToken", testRefreshToken.getValue());
+    UserDto testUserDto = UserDto.builder()
+        .id(1L)
+        .email(testUser.getEmail())
+        .role(ROLE_REGULAR)
+        .isConfirmed(true)
+        .registeredAt(LocalDateTime.now())
+        .isArchived(false)
+        .archivedAt(null)
+        .build();
     given(userRepositoryMock.findByEmailIgnoreCase(anyString())).willReturn(Optional.empty());
-    given(userRepositoryMock.save(any(User.class))).willReturn(testUser);
-    given(userInfoRepositoryMock.save(any(UserInfo.class))).willReturn(testUserInfo);
-    given(jwtTokenServiceMock.generateJwtTokenPair(any(DinoAuthentication.class))).willReturn(
-        testJwtTokenPair);
-    given(refreshTokenRepositoryMock.findByUserId(anyLong())).willReturn(Optional.empty());
-    given(refreshTokenRepositoryMock.save(any(RefreshToken.class))).willReturn(testRefreshToken);
-    given(passwordEncoderMock.encode(anyString())).willReturn(anyString());
+    given(userRepositoryMock.saveAndFlush(any(User.class))).willReturn(testUser);
+    given(userInfoRepositoryMock.saveAndFlush(any(UserInfo.class))).willReturn(testUserInfo);
+    given(passwordEncoderMock.encode(testUser.getPassword())).willReturn("p4sswOrD");
+    given(userConverterMock.toUserDto(any(User.class))).willReturn(testUserDto);
 
     // when
-    JwtTokenPair actual = authService.signup(
+    var actual = authService.signup(
         new SignupRequest(testUser.getEmail(), testUser.getPassword(), "testName", "testSurname"));
 
     // then
     assertThat(actual).isNotNull();
-    assertThat(actual.getAccessToken()).isNotNull().isNotEmpty();
-    assertThat(actual.getRefreshToken()).isNotNull().isNotEmpty();
+    assertThat(actual.getEmail()).isNotNull().isEqualTo(testUser.getEmail());
 
     verify(userRepositoryMock).findByEmailIgnoreCase(anyString());
-    verify(userRepositoryMock).save(any(User.class));
-    verify(userInfoRepositoryMock).save(any(UserInfo.class));
-    verify(jwtTokenServiceMock).generateJwtTokenPair(any(DinoAuthentication.class));
-    verify(refreshTokenRepositoryMock).findByUserId(anyLong());
-    verify(refreshTokenRepositoryMock).save(any(RefreshToken.class));
+    verify(userRepositoryMock).saveAndFlush(any(User.class));
+    verify(userInfoRepositoryMock).saveAndFlush(any(UserInfo.class));
     verify(passwordEncoderMock).encode(anyString());
+    verify(emailSenderServiceMock).sendEmail(any(EmailMessage.class));
 
     verifyNoMoreInteractions(userRepositoryMock, userInfoRepositoryMock, refreshTokenRepositoryMock,
-        jwtTokenServiceMock, passwordEncoderMock);
+        jwtTokenServiceMock, passwordEncoderMock, emailSenderServiceMock);
   }
 
   @Test

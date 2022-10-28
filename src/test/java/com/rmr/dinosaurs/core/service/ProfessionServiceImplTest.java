@@ -1,20 +1,20 @@
 package com.rmr.dinosaurs.core.service;
 
-import static com.rmr.dinosaurs.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 
-import com.rmr.dinosaurs.core.configuration.properties.ProfessionServiceProperties;
-import com.rmr.dinosaurs.core.exception.ServiceException;
-import com.rmr.dinosaurs.core.model.Profession;
-import com.rmr.dinosaurs.core.model.dto.ProfessionDto;
-import com.rmr.dinosaurs.core.model.dto.ProfessionPageDto;
-import com.rmr.dinosaurs.core.service.impl.ProfessionServiceImpl;
-import com.rmr.dinosaurs.core.utils.mapper.ProfessionEntityDtoMapper;
-import com.rmr.dinosaurs.infrastucture.database.ProfessionRepository;
+import com.rmr.dinosaurs.domain.core.configuration.properties.ProfessionServiceProperties;
+import com.rmr.dinosaurs.domain.core.exception.ServiceException;
+import com.rmr.dinosaurs.domain.core.model.Profession;
+import com.rmr.dinosaurs.domain.core.model.dto.ProfessionDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ProfessionPageDto;
+import com.rmr.dinosaurs.domain.core.service.impl.ProfessionServiceImpl;
+import com.rmr.dinosaurs.domain.core.utils.mapper.ProfessionEntityDtoMapper;
+import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;

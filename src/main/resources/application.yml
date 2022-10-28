@@ -8,6 +8,8 @@ server:
 spring:
   application:
     name: dinosaurs-service
+  profiles:
+    active: emailEnable
   jackson:
     serialization:
       indent_output: true
@@ -19,7 +21,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -29,6 +31,23 @@ spring:
       matching-strategy: ant_path_matcher
   flyway:
     enabled: false
+  mail:
+    host: smtp.yandex.com
+    port: 465
+    username: ${EMAIL_ADDRESS}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    protocol: smtps
+    test-connection: true
+
 
 role:
   hierarchy: |
@@ -39,10 +58,22 @@ jwt:
   ttl: 86400
   secretKey: k+r/JkFxq9lO+iqf3zY+/Wgr2bu31LoiUwIb26amlB9/VAsFEyK7vi7ubzP1RJQn
 
-endpoints:
-  health:
-    id: healthcheck
-    enabled: true
+
+notification:
+  email:
+    confirmUrl: https://bootcamp-team2.herokuapp.com/confirm
+
+
+management:
+  endpoint:
+    info:
+      enabled: true
+    health:
+      enabled: true
+      show-details: when_authorized
+    loggers:
+      enabled: true
+
 
 services:
   course:
