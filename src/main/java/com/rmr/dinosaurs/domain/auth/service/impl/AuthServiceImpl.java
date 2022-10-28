@@ -91,6 +91,7 @@ public class AuthServiceImpl implements AuthService {
     var user = userRepository.findById(tmpConfirmation.getUser().getId())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     user.setConfirmed(true);
+    userRepository.saveAndFlush(user);
     sendMailByType(WELCOME_MAIL, user);
     return generateTokenPairAndSaveRefreshToken(user);
   }

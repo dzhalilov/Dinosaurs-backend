@@ -71,7 +71,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
       message.setFrom(new InternetAddress(SENDER_ADDRESS));
       message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient.getEmail()));
       message.setSubject("Добро пожаловать в дино-клуб!");
-      message.setText("Мы очень рады, что Вы присоендинились в наш уютный клуб!");
+      message.setContent("<h3>Рады приветствовать Вас на сервисе IT Dinosaurs</h3>",
+          "text/html;charset=UTF-8");
     } catch (MessagingException e) {
       log.debug("Cant send welcome email", e);
       throw new RuntimeException(e);
