@@ -79,7 +79,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
   }
 
-  // TODO: could be refactored to another type of message to sent html
   private void configureEmailConfirmation(MimeMessage message, User recipient) {
     var tempConfirmation = tempConfirmationService.createTempConfirmationFor(recipient);
     try {
@@ -91,6 +90,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
           "text/html;charset=UTF-8"
       );
     } catch (MessagingException e) {
+      log.debug("Cant send confirmation email", e);
       throw new RuntimeException(e);
     }
   }
