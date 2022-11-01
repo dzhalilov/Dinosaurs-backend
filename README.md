@@ -11,9 +11,9 @@ docker compose up -d
 
 ### Prod stage
 
-[App link](https://dinos-be.herokuapp.com/)
+[App link](https://itdinos.herokuapp.com/)
 
-[Swagger link](https://dinos-be.herokuapp.com/swagger-ui/index.html)
+[Swagger link](https://itdinos.herokuapp.com/swagger-ui/index.html)
 
 ### Dev Stage
 
