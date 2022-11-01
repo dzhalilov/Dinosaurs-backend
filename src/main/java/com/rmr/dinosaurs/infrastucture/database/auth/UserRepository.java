@@ -12,8 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   Optional<User> findByEmailIgnoreCase(String email);
 
-  Optional<User> findByEmailIgnoreCaseAndIsConfirmedTrue(String email);
-
   List<User> findAllByIsConfirmedTrue();
 
   void deleteAllByIsConfirmedIsFalseAndRegisteredAtIsBefore(LocalDateTime before);
