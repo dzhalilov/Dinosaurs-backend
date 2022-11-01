@@ -46,7 +46,7 @@ class UserServiceTest {
   @Test
   void testGetAllUsers() {
     // given
-    given(userRepositoryMock.findAll()).willReturn(List.of(testUser));
+    given(userRepositoryMock.findAllByIsConfirmedTrue()).willReturn(List.of(testUser));
     given(userConverterMock.toUserDto(any(User.class))).willReturn(testUserDto);
 
     // when
@@ -55,7 +55,7 @@ class UserServiceTest {
     // then
     assertThat(actual).isNotNull().isNotEmpty().hasSameElementsAs(List.of(testUserDto));
 
-    verify(userRepositoryMock).findAll();
+    verify(userRepositoryMock).findAllByIsConfirmedTrue();
     verify(userConverterMock).toUserDto(any(User.class));
     verifyNoMoreInteractions(userRepositoryMock, userConverterMock);
   }
