@@ -63,15 +63,10 @@ public class UserServiceImpl implements UserService {
     return userConverter.toUserDto(user);
   }
 
-  // TODO: optimise to a query
   @Scheduled(cron = "midnight")
   private void deleteNotConfirmedEmailUsers() {
-    List<User> notActivatedEmailUsers = userRepository.findAll()
-        .stream()
-        .filter(user -> !user.isConfirmed()
-            && LocalDateTime.now().minus(24, ChronoUnit.HOURS).isBefore(user.getRegisteredAt()))
-        .toList();
-    userRepository.deleteAll(notActivatedEmailUsers);
+    userRepository.deleteAllByIsConfirmedIsFalseAndRegisteredAtIsBefore(
+        LocalDateTime.now().minus(12, ChronoUnit.HOURS));
   }
 
   private User getUserFromRepositoryById(Long id) {
