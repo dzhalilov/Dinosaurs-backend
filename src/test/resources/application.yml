@@ -8,6 +8,8 @@ server:
 spring:
   application:
     name: dinosaurs-service
+  profiles:
+    active: test, emailDisable
   main:
     banner-mode: off
   jackson:
@@ -31,6 +33,23 @@ spring:
       matching-strategy: ant_path_matcher
   flyway:
     enabled: false
+  mail:
+    host: smtp.yandex.com
+    port: 465
+    username: ${EMAIL_ADDRESS:test}
+    password: ${EMAIL_PASSWORD:test}
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    protocol: smtps
+    test-connection: true
+
 
 role:
   hierarchy: |

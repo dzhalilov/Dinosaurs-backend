@@ -8,6 +8,8 @@ server:
 spring:
   application:
     name: dinosaurs-service
+  profiles:
+    active: test, emailDisable
   jackson:
     serialization:
       indent_output: true
@@ -28,6 +30,28 @@ spring:
       matching-strategy: ant_path_matcher
   flyway:
     enabled: false
+  mail:
+    host: smtp.yandex.com
+    port: 465
+    username: ${EMAIL_ADDRESS:test}
+    password: ${EMAIL_PASSWORD:test}
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    protocol: smtps
+    test-connection: true
+
+
+notification:
+  email:
+    confirmUrl: https://bootcamp-team2.herokuapp.com/confirm
+
 
 role:
   hierarchy: |

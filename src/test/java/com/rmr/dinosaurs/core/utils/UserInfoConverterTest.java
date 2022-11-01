@@ -1,13 +1,13 @@
 package com.rmr.dinosaurs.core.utils;
 
-import static com.rmr.dinosaurs.core.model.Authority.ROLE_REGULAR;
+import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.rmr.dinosaurs.core.model.User;
-import com.rmr.dinosaurs.core.model.UserInfo;
-import com.rmr.dinosaurs.core.model.dto.ShortUserInfoDto;
-import com.rmr.dinosaurs.core.model.dto.UserInfoDto;
-import com.rmr.dinosaurs.core.utils.converters.impl.UserInfoConverterImpl;
+import com.rmr.dinosaurs.domain.auth.model.User;
+import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
+import com.rmr.dinosaurs.domain.userinfo.model.dto.ShortUserInfoDto;
+import com.rmr.dinosaurs.domain.userinfo.model.dto.UserInfoDto;
+import com.rmr.dinosaurs.domain.userinfo.utils.converter.impl.UserInfoConverterImpl;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UserInfoConverterTest {
 
   private final User testUser = new User(1L, "super@email.com", "stR4nGeRp4Ssw0rDHaHa",
-      ROLE_REGULAR, null);
+      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
 
   @InjectMocks
   private UserInfoConverterImpl userInfoConverter;
@@ -26,8 +26,7 @@ class UserInfoConverterTest {
   @Test
   void testToUserInfoDto() {
     // given
-    UserInfo testUserInfo = new UserInfo(2L, "James", "Gosling", LocalDateTime.now(), true, null,
-        testUser, null);
+    UserInfo testUserInfo = new UserInfo(2L, "James", "Gosling", testUser, null);
 
     // when
     UserInfoDto actual = userInfoConverter.toUserInfoDto(testUserInfo);
@@ -39,8 +38,8 @@ class UserInfoConverterTest {
     assertThat(actual.getRole()).isNotNull().isEqualTo(testUser.getRole());
     assertThat(actual.getName()).isNotNull().isEqualTo(testUserInfo.getName());
     assertThat(actual.getSurname()).isNotNull().isEqualTo(testUserInfo.getSurname());
-    assertThat(actual.getIsConfirmed()).isNotNull().isEqualTo(testUserInfo.getIsConfirmedUser());
-    assertThat(actual.getRegisteredAt()).isNotNull().isEqualTo(testUserInfo.getRegisteredAt());
+    assertThat(actual.getIsConfirmed()).isNotNull().isEqualTo(testUser.getIsConfirmed());
+    assertThat(actual.getRegisteredAt()).isNotNull().isEqualTo(testUser.getRegisteredAt());
     assertThat(actual.getArchivedAt()).isNull();
     assertThat(actual.getUserId()).isNotNull().isEqualTo(testUser.getId());
     assertThat(actual.getProfessionId()).isNull();
@@ -49,8 +48,7 @@ class UserInfoConverterTest {
   @Test
   void testToShortUserInfoDto() {
     // given
-    UserInfo testUserInfo = new UserInfo(2L, "James", "Gosling", LocalDateTime.now(), true, null,
-        testUser, null);
+    UserInfo testUserInfo = new UserInfo(2L, "James", "Gosling", testUser, null);
 
     // when
     ShortUserInfoDto actual = userInfoConverter.toShortUserInfoDto(testUserInfo);

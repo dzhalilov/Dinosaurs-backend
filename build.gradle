@@ -1,9 +1,9 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.4'
-	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
-	id 'java'
-	id 'jacoco'
-	id 'checkstyle'
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'java'
+    id 'jacoco'
+    id 'checkstyle'
 }
 
 group = 'com.rmr.dinosaurs'
@@ -13,121 +13,123 @@ sourceCompatibility = '17'
 targetCompatibility = '17'
 
 repositories {
-	mavenLocal()
-	mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
 
 jar {
-	enabled = false
+    enabled = false
 }
 
 ext {
-	set('testcontainersVersion', "1.17.5")
-	jjwtVersion = '0.11.5'
-	junitBomVersion = '5.9.0'
+    set('testcontainersVersion', "1.17.5")
+    jjwtVersion = '0.11.5'
+    junitBomVersion = '5.9.0'
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
-	}
+    imports {
+        mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+    }
 }
 
 sourceSets {
-	integrationTest {
-		compileClasspath += main.output + test.output
-		runtimeClasspath += main.output + test.output
-	}
+    integrationTest {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
 }
 
 configurations {
-	integrationTestImplementation.extendsFrom implementation, testImplementation
-	integrationTestCompileOnly.extendsFrom compileOnly
-	integrationTestAnnotationProcessor.extendsFrom annotationProcessor
-	integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+    integrationTestImplementation.extendsFrom implementation, testImplementation
+    integrationTestCompileOnly.extendsFrom compileOnly
+    integrationTestAnnotationProcessor.extendsFrom annotationProcessor
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'io.swagger.core.v3:swagger-annotations:2.2.4'
-	implementation "org.springdoc:springdoc-openapi-ui:1.6.11"
-	implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
-	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.4'
+    implementation "org.springdoc:springdoc-openapi-ui:1.6.11"
+    implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-	compileOnly 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
 
-	runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
-	runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
-	runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
+    runtimeOnly 'org.postgresql:postgresql'
 
-	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-	testImplementation(platform("org.junit:junit-bom:$junitBomVersion"))
-	testImplementation 'org.junit.jupiter:junit-jupiter'
-	testImplementation 'org.junit.jupiter:junit-jupiter-engine'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation "org.testcontainers:testcontainers"
-	testImplementation "org.testcontainers:junit-jupiter"
-	testImplementation "org.testcontainers:postgresql"
+    testImplementation(platform("org.junit:junit-bom:$junitBomVersion"))
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.testcontainers:testcontainers"
+    testImplementation "org.testcontainers:junit-jupiter"
+    testImplementation "org.testcontainers:postgresql"
 
-	integrationTestImplementation 'org.springframework.security:spring-security-test'
+    integrationTestImplementation 'org.springframework.security:spring-security-test'
 }
 
 
 task integrationTest(type: Test) {
-	description = 'Running the integration tests'
-	group = 'verification'
-	testClassesDirs = sourceSets.integrationTest.output.classesDirs
-	classpath = sourceSets.integrationTest.runtimeClasspath
-	testLogging {
-		exceptionFormat = 'full'
-	}
+    description = 'Running the integration tests'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
 
 check.dependsOn integrationTest
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 integrationTest {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 clean.doFirst {
-	delete "${rootDir}\\out"
-	println "delete ${rootDir}\\out"
+    delete "${rootDir}\\out"
+    println "delete ${rootDir}\\out"
 }
 
 checkstyle {
-	showViolations = true
-	toolVersion '10.3.4'
-	maxWarnings = 0
-	maxErrors = 0
-	configFile file("config/checkstyle/google_checks.xml")
+    showViolations = true
+    toolVersion '10.3.4'
+    maxWarnings = 0
+    maxErrors = 0
+    configFile file("config/checkstyle/google_checks.xml")
 }
 
 jacoco {
-	toolVersion = '0.8.8'
-	reportsDirectory = layout.buildDirectory.dir('jacocoReports')
+    toolVersion = '0.8.8'
+    reportsDirectory = layout.buildDirectory.dir('jacocoReports')
 }
 
 jacocoTestReport {
-	group = 'Reporting'
-	reports {
-		xml.required = true
-		csv.required = false
-		html.outputLocation = layout.buildDirectory.dir('jacocoReports')
-	}
+    group = 'Reporting'
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoReports')
+    }
 }
 
 springBoot {
-	buildInfo()
+    buildInfo()
 }
