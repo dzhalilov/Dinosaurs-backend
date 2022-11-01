@@ -75,7 +75,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
           "text/html;charset=UTF-8");
     } catch (MessagingException e) {
       log.debug("Cant send welcome email", e);
-      throw new RuntimeException(e);
+      throw new ServiceException(FAILED_EMAIL_SEND);
     }
   }
 
@@ -91,7 +91,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
       );
     } catch (MessagingException e) {
       log.debug("Cant send confirmation email", e);
-      throw new RuntimeException(e);
+      throw new ServiceException(FAILED_EMAIL_SEND);
     }
   }
 
