@@ -33,6 +33,7 @@ import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
   public JwtTokenPair login(LoginRequest loginRequest) {
     var user = userRepository.findByEmailIgnoreCase(loginRequest.email())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-    if (!user.getIsConfirmed()) {
+    if (Objects.isNull(user.getIsConfirmed()) || Boolean.TRUE.equals(!user.getIsConfirmed())) {
       throw new ServiceException(USER_NOT_CONFIRMED);
     }
     validatePasswordOrThrowException(loginRequest, user.getPassword());
