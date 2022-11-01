@@ -28,7 +28,7 @@ class UserServiceTest {
       ROLE_ADMIN, true, LocalDateTime.now(), false, null, null, null);
 
   private final UserDto testUserDto = new UserDto(testUser.getId(), testUser.getEmail(),
-      testUser.getRole(), testUser.isConfirmed(), testUser.getRegisteredAt(),
+      testUser.getRole(), testUser.getIsConfirmed(), testUser.getRegisteredAt(),
       testUser.getIsArchived(), null);
 
   @Mock

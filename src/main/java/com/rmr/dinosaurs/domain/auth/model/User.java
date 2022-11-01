@@ -40,7 +40,7 @@ public class User {
   Authority role;
 
   @Column(name = "isConfirmed", nullable = false)
-  boolean isConfirmed;
+  Boolean isConfirmed;
 
   @Column(name = "regesteredAt")
   LocalDateTime registeredAt;

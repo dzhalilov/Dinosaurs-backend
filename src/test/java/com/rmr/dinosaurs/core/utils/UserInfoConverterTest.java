@@ -38,7 +38,7 @@ class UserInfoConverterTest {
     assertThat(actual.getRole()).isNotNull().isEqualTo(testUser.getRole());
     assertThat(actual.getName()).isNotNull().isEqualTo(testUserInfo.getName());
     assertThat(actual.getSurname()).isNotNull().isEqualTo(testUserInfo.getSurname());
-    assertThat(actual.getIsConfirmed()).isNotNull().isEqualTo(testUser.isConfirmed());
+    assertThat(actual.getIsConfirmed()).isNotNull().isEqualTo(testUser.getIsConfirmed());
     assertThat(actual.getRegisteredAt()).isNotNull().isEqualTo(testUser.getRegisteredAt());
     assertThat(actual.getArchivedAt()).isNull();
     assertThat(actual.getUserId()).isNotNull().isEqualTo(testUser.getId());

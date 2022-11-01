@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
   public JwtTokenPair login(LoginRequest loginRequest) {
     var user = userRepository.findByEmailIgnoreCase(loginRequest.email())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-    if (!user.isConfirmed()) {
+    if (!user.getIsConfirmed()) {
       throw new ServiceException(USER_NOT_CONFIRMED);
     }
     validatePasswordOrThrowException(loginRequest, user.getPassword());
@@ -90,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
         .orElseThrow(() -> new ServiceException(INVALID_CONFIRMATION_CODE));
     var user = userRepository.findById(tmpConfirmation.getUser().getId())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-    user.setConfirmed(true);
+    user.setIsConfirmed(true);
     userRepository.saveAndFlush(user);
     sendMailByType(WELCOME_MAIL, user);
     return generateTokenPairAndSaveRefreshToken(user);
@@ -119,10 +119,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   private void sendMailByType(MailType mailType, User user) {
-    emailSenderService.sendEmail(EmailMessage.builder()
-        .mailType(mailType)
-        .recipients(Collections.singletonList(user))
-        .build());
+    emailSenderService.sendEmail(new EmailMessage(mailType, Collections.singletonList(user)));
   }
 
   private JwtTokenPair generateTokenPairAndSaveRefreshToken(User user) {

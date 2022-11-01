@@ -20,7 +20,7 @@ public class UserInfoConverterImpl implements UserInfoConverter {
         .role(user.getRole())
         .name(userInfo.getName())
         .surname(userInfo.getSurname())
-        .isConfirmed(user.isConfirmed())
+        .isConfirmed(user.getIsConfirmed())
         .registeredAt(user.getRegisteredAt())
         .isArchived(user.getIsArchived())
         .archivedAt(Objects.isNull(user.getArchivedAt()) ? null

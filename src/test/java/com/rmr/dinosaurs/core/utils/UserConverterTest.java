@@ -33,7 +33,7 @@ class UserConverterTest {
     assertThat(actual.getId()).isNotNull().isEqualTo(testUser.getId());
     assertThat(actual.getEmail()).isNotNull().isEqualTo(testUser.getEmail());
     assertThat(actual.getRole()).isNotNull().isEqualTo(testUser.getRole());
-    assertThat(actual.getIsConfirmed()).isNotNull().isEqualTo(testUser.isConfirmed());
+    assertThat(actual.getIsConfirmed()).isNotNull().isEqualTo(testUser.getIsConfirmed());
     assertThat(actual.getRegisteredAt()).isNotNull()
         .isBetween(LocalDateTime.now().minus(1, ChronoUnit.MINUTES), LocalDateTime.now());
     assertThat(actual.getIsArchived()).isNotNull().isEqualTo(testUser.getIsArchived());

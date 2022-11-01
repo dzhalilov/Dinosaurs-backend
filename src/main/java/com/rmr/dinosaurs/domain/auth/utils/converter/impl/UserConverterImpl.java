@@ -15,7 +15,7 @@ public class UserConverterImpl implements UserConverter {
         .id(user.getId())
         .email(user.getEmail())
         .role(user.getRole())
-        .isConfirmed(user.isConfirmed())
+        .isConfirmed(user.getIsConfirmed())
         .registeredAt(user.getRegisteredAt())
         .isArchived(user.getIsArchived())
         .archivedAt(Objects.nonNull(user.getArchivedAt())
