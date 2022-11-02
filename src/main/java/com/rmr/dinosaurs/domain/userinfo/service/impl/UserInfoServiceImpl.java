@@ -2,6 +2,7 @@ package com.rmr.dinosaurs.domain.userinfo.service.impl;
 
 import static com.rmr.dinosaurs.domain.auth.service.impl.UserServiceImpl.NO_USER_FOUND_EXCEPTION_SUPPLIER;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
+import static com.rmr.dinosaurs.domain.userinfo.exception.errorcode.UserInfoErrorCode.NO_PERMISSIONS_TO_DELETE;
 import static com.rmr.dinosaurs.domain.userinfo.exception.errorcode.UserInfoErrorCode.NO_PERMISSIONS_TO_EDIT;
 
 import com.rmr.dinosaurs.domain.auth.model.User;
@@ -81,8 +82,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         .findByIdAndIsConfirmedTrueAndIsArchivedFalse(getCurrentUserPrincipal().getId())
         .orElseThrow(NO_USER_FOUND_EXCEPTION_SUPPLIER);
     if (!ROLE_REGULAR.equals(currentUser.getRole())) {
-      // TODO: implement custom exception (response 403 forbidden)
-      throw new RuntimeException("Only regular user can delete profile");
+      throw new ServiceException(NO_PERMISSIONS_TO_DELETE);
     }
     var currentUserInfo = userInfoRepository.findByUser(currentUser)
         .orElseThrow(USER_PROFILE_NOT_FOUND_EXCEPTION_SUPPLIER);
