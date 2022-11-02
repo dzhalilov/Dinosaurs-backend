@@ -1,14 +1,13 @@
 package com.rmr.dinosaurs.domain.userinfo.service.impl;
 
 import static com.rmr.dinosaurs.domain.auth.service.impl.UserServiceImpl.NO_USER_FOUND_EXCEPTION_SUPPLIER;
+import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static com.rmr.dinosaurs.domain.userinfo.exception.errorcode.UserInfoErrorCode.NO_PERMISSIONS_TO_DELETE;
-import static com.rmr.dinosaurs.domain.userinfo.exception.errorcode.UserInfoErrorCode.NO_PERMISSIONS_TO_EDIT;
 
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoPrincipal;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
-import com.rmr.dinosaurs.domain.core.model.Authority;
 import com.rmr.dinosaurs.domain.userinfo.exception.errorcode.UserInfoErrorCode;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.domain.userinfo.model.dto.ShortUserInfoDto;
@@ -19,7 +18,6 @@ import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
@@ -40,27 +38,25 @@ public class UserInfoServiceImpl implements UserInfoService {
 
   @Override
   public UserInfoDto getMyProfile() {
-    return userInfoConverter.toUserInfoDto(
-        getUserInfoFromRepositoryByUserId(getCurrentUserPrincipal().getId()));
+    var currentUserInfo = getCurrentUserInfoFromRepository();
+    return userInfoConverter.toUserInfoDto(currentUserInfo);
   }
 
   @Override
   public UserInfoDto editMyProfile(UserInfoDto userInfoDto) {
-    var currentUserInfo = getUserInfoFromRepositoryByUserId(
-        getCurrentUserPrincipal().getId());
-    checkUserCanEditProfileOrThrow(userInfoDto, currentUserInfo);
+    var currentUserInfo = getCurrentUserInfoFromRepository();
     Optional.of(userInfoDto.getName())
         .ifPresent(currentUserInfo::setName);
     Optional.of(userInfoDto.getSurname())
         .ifPresent(currentUserInfo::setSurname);
-    var savedUserInfo = userInfoRepository.save(currentUserInfo);
-    return userInfoConverter.toUserInfoDto(savedUserInfo);
+    currentUserInfo = userInfoRepository.saveAndFlush(currentUserInfo);
+    return userInfoConverter.toUserInfoDto(currentUserInfo);
   }
 
   @Override
   public UserInfoDto getUserInfoById(Long id) {
-    return userInfoConverter.toUserInfoDto(
-        userInfoRepository.findById(id).orElseThrow(USER_PROFILE_NOT_FOUND_EXCEPTION_SUPPLIER));
+    return userInfoConverter.toUserInfoDto(userInfoRepository.findById(id)
+        .orElseThrow(USER_PROFILE_NOT_FOUND_EXCEPTION_SUPPLIER));
   }
 
   @Override
@@ -72,7 +68,7 @@ public class UserInfoServiceImpl implements UserInfoService {
   @Override
   public List<ShortUserInfoDto> getAllModerators() {
     return userInfoRepository.findAll().stream()
-        .filter(userInfo -> Authority.ROLE_MODERATOR.equals(userInfo.getUser().getRole()))
+        .filter(userInfo -> ROLE_MODERATOR.equals(userInfo.getUser().getRole()))
         .map(userInfoConverter::toShortUserInfoDto).toList();
   }
 
@@ -98,17 +94,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     return userInfoConverter.toUserInfoDto(currentUserInfo);
   }
 
-  private void checkUserCanEditProfileOrThrow(UserInfoDto userInfoDto, UserInfo currentUserInfo) {
-    if (Objects.isNull(userInfoDto.getUserId())
-        || !userInfoDto.getUserId().equals(currentUserInfo.getUser().getId())) {
-      throw new ServiceException(NO_PERMISSIONS_TO_EDIT);
-    }
-  }
+  private UserInfo getCurrentUserInfoFromRepository() {
+    var currentUserId = getCurrentUserPrincipal().getId();
+    var currentUser = getUserFromRepositoryByUserIdOrThrow(currentUserId);
 
-  private UserInfo getUserInfoFromRepositoryByUserId(Long id) {
-    var user = getUserFromRepositoryByUserIdOrThrow(id);
-
-    return userInfoRepository.findByUser(user)
+    return userInfoRepository.findByUser(currentUser)
         .orElseThrow(USER_PROFILE_NOT_FOUND_EXCEPTION_SUPPLIER);
   }
 
