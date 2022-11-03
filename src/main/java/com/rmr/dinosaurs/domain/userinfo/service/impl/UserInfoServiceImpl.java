@@ -80,13 +80,13 @@ public class UserInfoServiceImpl implements UserInfoService {
     if (!ROLE_REGULAR.equals(currentUser.getRole())) {
       throw new ServiceException(NO_PERMISSIONS_TO_DELETE);
     }
-    var currentUserInfo = userInfoRepository.findByUser(currentUser)
-        .orElseThrow(USER_PROFILE_NOT_FOUND_EXCEPTION_SUPPLIER);
 
     currentUser.setIsArchived(true);
     currentUser.setArchivedAt(LocalDateTime.now());
     userRepository.saveAndFlush(currentUser);
 
+    var currentUserInfo = userInfoRepository.findByUser(currentUser)
+        .orElseThrow(USER_PROFILE_NOT_FOUND_EXCEPTION_SUPPLIER);
     currentUserInfo.setName("Динозаврик");
     currentUserInfo.setSurname("Спрятался");
     currentUserInfo.setRecommendedProfession(null);
