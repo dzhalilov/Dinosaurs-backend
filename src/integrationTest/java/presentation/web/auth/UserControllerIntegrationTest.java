@@ -138,6 +138,29 @@ class UserControllerIntegrationTest {
   }
 
   @Test
+  void whenGetUserByEmailAsAdministratorThenUserWithSuchEmailReturn() {
+    // given
+    var currentUser = userRepository.findByEmailIgnoreCase(adminUser.getEmail()).orElseThrow();
+    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
+    var userToBeFound = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
+    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    var requestEntity = new HttpEntity<>(requestHeaders);
+    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/find")
+        .queryParam("email", userToBeFound.getEmail());
+    var expectedUserDto = userConverter.toUserDto(userToBeFound);
+
+    // when
+    var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET,
+        requestEntity, UserDto.class);
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    var actual = responseEntity.getBody();
+    assertNotNull(actual);
+    assertThat(actual).isEqualTo(expectedUserDto);
+  }
+
+  @Test
   void whenGetAllUsersThenAllUsersFromReturn() {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(moderatorUser.getEmail()).orElseThrow();
