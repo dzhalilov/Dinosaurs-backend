@@ -56,6 +56,22 @@ public class UserController {
     return userService.getUserById(id);
   }
 
+  @Operation(description = "get user auth data by email")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "get user auth data by email",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = UserDto.class))}),
+      @ApiResponse(responseCode = "404", description = "user not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "403", description = "forbidden")})
+  @GetMapping("/find")
+  @AdminPermission
+  UserDto getUserByEmail(
+      @Parameter(name = "email", description = "user email") @RequestParam String email) {
+    return userService.getUserByEmail(email);
+  }
+
   @Operation(description = "get all users auth data")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get list of all users auth data",
