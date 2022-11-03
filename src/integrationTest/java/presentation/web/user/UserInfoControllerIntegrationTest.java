@@ -186,24 +186,6 @@ public class UserInfoControllerIntegrationTest {
   }
 
   @Test
-  void shouldResponseWithErrorOnEditAnotherUserInfoDto() {
-    // given
-    var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
-    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
-    requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
-    UserInfo anotherUserInfo = userInfoRepository.findByUser(moderatorUser).orElseThrow();
-    var requestEntity = new HttpEntity<>(anotherUserInfo, requestHeaders);
-    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/my");
-
-    // when
-    var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST,
-        requestEntity, UserInfoDto.class);
-
-    // then
-    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
-  }
-
-  @Test
   void shouldGetUserInfoDtoByIdWithModeratorPermission() {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(moderatorUser.getEmail()).orElseThrow();
