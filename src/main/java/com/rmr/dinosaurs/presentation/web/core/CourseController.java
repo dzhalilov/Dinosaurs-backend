@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/courses")
 @RequiredArgsConstructor
@@ -55,7 +57,7 @@ public class CourseController {
   @PostMapping
   @ModeratorPermission
   public ResponseEntity<CourseCreateUpdateDto> addCourse(
-      @RequestBody CourseCreateUpdateDto course) {
+      @RequestBody @Valid CourseCreateUpdateDto course) {
 
     CourseCreateUpdateDto createdCourse = courseService.addCourse(course);
     URI createdCourseUri = URI.create("/api/v1/courses/" + createdCourse.getId());

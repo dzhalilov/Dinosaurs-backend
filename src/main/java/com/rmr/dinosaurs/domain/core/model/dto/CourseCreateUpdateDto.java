@@ -1,35 +1,40 @@
 package com.rmr.dinosaurs.domain.core.model.dto;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourseCreateUpdateDto {
 
-  Long id;
+    Long id;
 
-  String title;
+    @Length(max = 255)
+    String title;
 
-  String url;
+    @Length(max = 255)
+    String url;
 
-  String coverUrl;
+    @Length(max = 255)
+    String coverUrl;
 
-  String description;
+    @Length(max = 4096)
+    String description;
 
-  LocalDateTime startsAt;
+    LocalDateTime startsAt;
 
-  LocalDateTime endsAt;
+    LocalDateTime endsAt;
 
-  Boolean isAdvanced;
+    Boolean isAdvanced;
 
-  Long providerId;
+    Long providerId;
 
-  Long professionId;
+    Long professionId;
 
-  String[] tags;
-
+    String[] tags;
 }
