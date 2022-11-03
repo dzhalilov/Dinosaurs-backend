@@ -43,4 +43,11 @@ public interface UserInfoService {
    */
   List<ShortUserInfoDto> getAllModerators();
 
+  /**
+   * delete current user profile
+   *
+   * @return updated UserInfoDto
+   */
+  UserInfoDto deleteMyProfile();
+
 }
