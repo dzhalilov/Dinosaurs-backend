@@ -61,7 +61,7 @@ jwt:
 
 notification:
   email:
-    confirmUrl: https://itdinosaurs.herokuapp.com/confirm
+    confirmUrl: ${CONFIRM_URL:https://itdinosaurs.herokuapp.com/confirm}
 
 
 management:
