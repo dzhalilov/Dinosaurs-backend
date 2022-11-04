@@ -50,7 +50,7 @@ spring:
 
 notification:
   email:
-    confirmUrl: https://itdinosaurs.herokuapp.com/confirm
+    confirmUrl: ${CONFIRM_URL:test}
 
 
 role:
