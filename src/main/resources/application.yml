@@ -61,7 +61,7 @@ jwt:
 
 notification:
   email:
-    confirmUrl: https://bootcamp-team2.herokuapp.com/confirm
+    confirmUrl: https://itdinosaurs.herokuapp.com/confirm
 
 
 management:
