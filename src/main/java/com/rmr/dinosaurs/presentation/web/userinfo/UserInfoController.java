@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,23 @@ public class UserInfoController {
   @PostMapping("/my")
   UserInfoDto editMyProfile(@RequestBody @NotNull UserInfoDto userInfoDto) {
     return userInfoService.editMyProfile(userInfoDto);
+  }
+
+  @Operation(description = "delete current user profile data")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "get updated personal user data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = UserInfoDto.class))}),
+      @ApiResponse(responseCode = "404", description = "user not found or user profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "403",
+          description = "current user has no permissions to delete profile",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @DeleteMapping("/my")
+  UserInfoDto deleteMyProfile() {
+    return userInfoService.deleteMyProfile();
   }
 
   @Operation(description = "get user profile data by id")

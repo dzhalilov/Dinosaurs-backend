@@ -3,6 +3,7 @@ package presentation.web.user;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,7 +22,9 @@ import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import com.rmr.dinosaurs.presentation.web.userinfo.UserInfoController;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -157,21 +160,29 @@ public class UserInfoControllerIntegrationTest {
   }
 
   @Test
-  void shouldResponseWithErrorOnEditAnotherUserInfoDto() {
+  void shouldDeleteCurrentUserInfoDto() {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
     requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
-    UserInfo anotherUserInfo = userInfoRepository.findByUser(moderatorUser).orElseThrow();
-    var requestEntity = new HttpEntity<>(anotherUserInfo, requestHeaders);
+    var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/my");
 
     // when
-    var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST,
+    var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.DELETE,
         requestEntity, UserInfoDto.class);
 
     // then
-    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    var actual = responseEntity.getBody();
+    assertNotNull(actual);
+    assertThat(actual.getIsArchived()).isNotNull().isEqualTo(Boolean.TRUE);
+    assertThat(actual.getArchivedAt()).isNotNull()
+        .isBetween(LocalDateTime.now().minus(2, ChronoUnit.MINUTES), LocalDateTime.now());
+    User updatedUser = userRepository.findByEmailIgnoreCase(currentUser.getEmail()).orElseThrow();
+    assertTrue(updatedUser.getIsArchived());
+    assertThat(updatedUser.getArchivedAt())
+        .isBetween(LocalDateTime.now().minus(2, ChronoUnit.MINUTES), LocalDateTime.now());
   }
 
   @Test

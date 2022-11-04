@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,7 @@ public class CourseController {
   @PostMapping
   @ModeratorPermission
   public ResponseEntity<CourseCreateUpdateDto> addCourse(
-      @RequestBody CourseCreateUpdateDto course) {
+      @RequestBody @Valid CourseCreateUpdateDto course) {
 
     CourseCreateUpdateDto createdCourse = courseService.addCourse(course);
     URI createdCourseUri = URI.create("/api/v1/courses/" + createdCourse.getId());

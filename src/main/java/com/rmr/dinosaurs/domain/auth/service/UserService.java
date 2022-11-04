@@ -36,4 +36,12 @@ public interface UserService {
    */
   UserDto setUserModerator(Long id, Boolean isModerator);
 
+  /**
+   * get user by email
+   *
+   * @param email of user to be found
+   * @return UserDto of requested user
+   */
+  UserDto getUserByEmail(String email);
+
 }
