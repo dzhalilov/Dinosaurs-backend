@@ -6,6 +6,7 @@ import com.rmr.dinosaurs.domain.auth.security.service.JwtTokenProvider;
 import com.rmr.dinosaurs.domain.core.service.impl.CourseServiceImpl;
 import com.rmr.dinosaurs.domain.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
@@ -15,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,9 +29,7 @@ import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 @Testcontainers
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = DinosaursApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql({"classpath:sql/init.sql", "classpath:sql/profession.sql", "classpath:sql/course_provider.sql",
-    "classpath:sql/course.sql", "classpath:sql/course_and_profession.sql"})
-public abstract class AbstractControllerIntegrationTest {
+public class AbstractControllerIntegrationTest {
 
   @Container
   protected static final CustomPostgresContainer container = CustomPostgresContainer.getInstance();
@@ -64,6 +62,8 @@ public abstract class AbstractControllerIntegrationTest {
   protected CourseRepository courseRepository;
   @Autowired
   protected CourseProviderRepository courseProviderRepository;
+  @Autowired
+  protected CourseAndProfessionRepository courseAndProfessionRepository;
   @Autowired
   protected ProfessionEntityDtoMapper professionMapper;
   @Autowired
