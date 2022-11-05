@@ -1,16 +1,22 @@
 package presentation.web.core;
 
 import com.rmr.dinosaurs.DinosaursApplication;
+import com.rmr.dinosaurs.domain.auth.model.User;
+import com.rmr.dinosaurs.domain.auth.security.JwtTokenPair;
+import com.rmr.dinosaurs.domain.auth.security.model.DinoAuthentication;
+import com.rmr.dinosaurs.domain.auth.security.model.DinoPrincipal;
+import com.rmr.dinosaurs.domain.auth.security.service.JwtTokenProvider;
 import com.rmr.dinosaurs.domain.core.model.Course;
 import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.domain.core.model.CourseProvider;
 import com.rmr.dinosaurs.domain.core.model.Profession;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
-import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionRepository;
-import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
-import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
-import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewDto;
+import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
+import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.*;
+import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +39,9 @@ import testcontainers.CustomPostgresContainer;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -47,6 +55,15 @@ class CourseControllerIntegrationTest {
 
   private static final String BASE_URL = "http://localhost";
   private static final LocalDateTime NOW_TIME = LocalDateTime.now();
+
+  private final User regularUser = new User(null, "regular@email.com", "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO",
+      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+  private final UserInfo userInfo = UserInfo.builder()
+      .name("Hero")
+      .id(null)
+      .surname("GOD")
+      .user(regularUser)
+      .build();
 
   private final TestRestTemplate testRestTemplate = new TestRestTemplate();
 
@@ -130,12 +147,22 @@ class CourseControllerIntegrationTest {
   private CourseProviderRepository courseProviderRepository;
   @Autowired
   private CourseAndProfessionRepository courseAndProfessionRepository;
+  @Autowired
+  private UserRepository userRepository;
+  @Autowired
+  private UserInfoRepository userInfoRepository;
+  @Autowired
+  private ReviewRepository reviewRepository;
+  @Autowired
+  private JwtTokenProvider jwtTokenProvider;
   private String endpointUrl;
 
   @BeforeEach
   void setUp() {
     endpointUrl = BASE_URL + ":" + port + "/api/v1/courses";
     requestHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+    userRepository.saveAndFlush(regularUser);
+    userInfoRepository.saveAndFlush(userInfo);
     professionRepository.saveAndFlush(profession);
     courseProviderRepository.saveAndFlush(provider);
     courseRepository.saveAll(List.of(course1, course2, startedCourse));
@@ -149,10 +176,13 @@ class CourseControllerIntegrationTest {
 
   @AfterEach
   void cleanDb() {
+    reviewRepository.deleteAll();
     courseAndProfessionRepository.deleteAll();
     courseRepository.deleteAll();
     courseProviderRepository.deleteAll();
     professionRepository.deleteAll();
+    userRepository.deleteAll();
+    userInfoRepository.deleteAll();
   }
 
   @Test
@@ -198,6 +228,47 @@ class CourseControllerIntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
     assert result != null;
     assertThat(result.size()).isEqualTo(3L);
+  }
+
+  @Test
+  void addCourseReview_201() {
+    // given
+    Optional<Course> courseForUpdate = courseRepository.findAll().stream().findAny();
+    assert courseForUpdate.isPresent();
+    Long courseId = courseForUpdate.get().getId();
+    ReviewDto reviewDto = new ReviewDto(null, 4, "Some review");
+
+    var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
+    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
+
+    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+
+    var requestEntity = new HttpEntity<>(reviewDto, requestHeaders);
+    var uriBuilder = UriComponentsBuilder
+        .fromHttpUrl(endpointUrl + "/" + courseId + "/review");
+    ParameterizedTypeReference<ReviewDto> parameterizedTypeReference =
+        new ParameterizedTypeReference<>() {
+        };
+
+    // when
+    var responseEntity = testRestTemplate.exchange(
+        uriBuilder.toUriString(), HttpMethod.POST,
+        requestEntity, parameterizedTypeReference
+    );
+
+    // then
+    Optional<Course> courseOptional = courseRepository.findById(courseId);
+    assert courseOptional.isPresent();
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CREATED);
+    assertThat(courseOptional.get().getAverageRating()).isEqualTo(4.0);
+  }
+
+  private DinoAuthentication getDinoAuthentication(User user) {
+    return new DinoAuthentication(new DinoPrincipal(user.getId(), user.getEmail(), user.getRole()));
+  }
+
+  private JwtTokenPair getJwtTokenPairForUser(User user) {
+    return jwtTokenProvider.generateJwtTokenPair(getDinoAuthentication(user));
   }
 
 }

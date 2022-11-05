@@ -169,7 +169,6 @@ public class CourseController {
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping("/{courseId}/review")
-  @ModeratorPermission
   public ResponseEntity<ReviewDto> addCourseReview(
       @PathVariable Long courseId,
       @RequestBody @Valid ReviewDto reviewDto,
