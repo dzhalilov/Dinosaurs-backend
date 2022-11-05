@@ -245,12 +245,18 @@ class CourseControllerIntegrationTest {
   @Test
   void getAllReviewsByCourseId_200() {
     // given
+    var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
+    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
+
+    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+
     var requestEntity = new HttpEntity<>(requestHeaders);
     Optional<Review> reviewOptional = reviewRepository.findAll().stream().findFirst();
     assert reviewOptional.isPresent();
     Optional<Course> courseOptional = courseRepository.findById(reviewOptional.get().getCourse().getId());
     assert courseOptional.isPresent();
     Long courseId = courseOptional.get().getId();
+
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/" + courseId +"/reviews");
     ParameterizedTypeReference<List<ReviewResponseDto>> parameterizedTypeReference =
         new ParameterizedTypeReference<>() {

@@ -6,17 +6,21 @@ import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface ReviewEntityDtoMapper {
 
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "created", ignore = true)
+  @Mapping(target = "course", ignore = true)
+  @Mapping(target = "userInfo", ignore = true)
   Review toEntity(ReviewCreateDto reviewDto);
 
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "rating", source = "rating")
+  @Mapping(target = "textReview", source = "textReview")
   @Mapping(target = "userInfoName", source = "userInfo.name")
   @Mapping(target = "userInfoSurname", source = "userInfo.surname")
   @Mapping(target = "created", source = "created")
   ReviewResponseDto toReviewResponseDto(Review review);
 
-  List<ReviewResponseDto> toReviewResponseDtoList(List<Review> reviewList);
 }
