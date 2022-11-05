@@ -1,33 +1,65 @@
 package presentation.web.core;
 
+import com.rmr.dinosaurs.DinosaursApplication;
 import com.rmr.dinosaurs.domain.core.model.Course;
 import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.domain.core.model.CourseProvider;
 import com.rmr.dinosaurs.domain.core.model.Profession;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
-import presentation.web.AbstractControllerIntegrationTest;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import testcontainers.CustomPostgresContainer;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CourseControllerIntegrationTest extends AbstractControllerIntegrationTest {
+@Testcontainers
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = DinosaursApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class CourseControllerIntegrationTest {
+
+  @Container
+  private static final CustomPostgresContainer container = CustomPostgresContainer.getInstance();
+
+  @Autowired
+  private ProfessionRepository professionRepo;
+  @Autowired
+  private CourseRepository courseRepository;
+  @Autowired
+  private CourseProviderRepository courseProviderRepository;
+  @Autowired
+  private CourseAndProfessionRepository courseAndProfessionRepository;
+
+  @LocalServerPort
+  private int port;
+
+  private String endpointUrl;
+  private final TestRestTemplate testRestTemplate = new TestRestTemplate();
+  private final HttpHeaders requestHeaders = new HttpHeaders();
 
   @BeforeEach
   void setUp() {
+    String baseUrl = "http://localhost";
+    String COURSES_API_URL = "/api/v1/courses";
     endpointUrl = baseUrl + ":" + port + COURSES_API_URL;
     requestHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
     Profession profession = Profession.builder()
@@ -122,11 +154,6 @@ public class CourseControllerIntegrationTest extends AbstractControllerIntegrati
     ParameterizedTypeReference<CourseReadPageDto> parameterizedTypeReference =
         new ParameterizedTypeReference<>() {
         };
-    //
-    Pageable pageable = PageRequest.of(1, 9, Sort.by(Sort.Order.asc("startsAt")));
-    var expectedCourseReadPageDto = courseService.toReadCoursePageDto(courseRepository
-        .findByFilter("", null, null, null, null,
-            LocalDateTime.of(2022, 11, 4, 0, 0), pageable));
 
     // when
     var responseEntity = testRestTemplate.exchange(
@@ -138,6 +165,27 @@ public class CourseControllerIntegrationTest extends AbstractControllerIntegrati
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
     assert result != null;
     assertThat(result.getTotalElements()).isEqualTo(2L);
+  }
+
+  @Test
+  void getAllCourses_200() throws Exception {
+
+    var requestEntity = new HttpEntity<>(requestHeaders);
+    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/all");
+    ParameterizedTypeReference<List<CourseReadDto>> parameterizedTypeReference =
+        new ParameterizedTypeReference<>() {
+        };
+
+    // when
+    var responseEntity = testRestTemplate.exchange(
+        uriBuilder.toUriString(), HttpMethod.GET,
+        requestEntity, parameterizedTypeReference
+    );
+    // then
+    var result = responseEntity.getBody();
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    assert result != null;
+    assertThat(result.size()).isEqualTo(3L);
   }
 
 }

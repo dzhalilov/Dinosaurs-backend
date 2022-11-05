@@ -237,7 +237,7 @@ public class CourseServiceImpl implements CourseService {
     return courseReadDto;
   }
 
-  public CourseReadPageDto toReadCoursePageDto(Page<Course> page) {
+  private CourseReadPageDto toReadCoursePageDto(Page<Course> page) {
     CourseReadPageDto pageDto = new CourseReadPageDto();
     pageDto.setTotalElements(page.getTotalElements());
     pageDto.setTotalPages(page.getTotalPages());
