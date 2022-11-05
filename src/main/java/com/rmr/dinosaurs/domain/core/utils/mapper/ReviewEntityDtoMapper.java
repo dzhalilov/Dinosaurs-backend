@@ -15,6 +15,7 @@ public interface ReviewEntityDtoMapper {
 
   @Mapping(target = "userInfoName", source = "userInfo.name")
   @Mapping(target = "userInfoSurname", source = "userInfo.surname")
+  @Mapping(target = "created", source = "created")
   ReviewResponseDto toReviewResponseDto(Review review);
 
   List<ReviewResponseDto> toReviewResponseDtoList(List<Review> reviewList);

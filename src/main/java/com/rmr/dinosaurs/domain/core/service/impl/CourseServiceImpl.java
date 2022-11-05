@@ -162,7 +162,7 @@ public class CourseServiceImpl implements CourseService {
       course.setVotes(newQuantityOfVotes);
       course.setAverageRating(newAverageRating);
     }
-    Review createdReview = reviewRepository.save(review);
+    Review createdReview = reviewRepository.saveAndFlush(review);
     return reviewEntityDtoMapper.toReviewResponseDto(createdReview);
   }
 
