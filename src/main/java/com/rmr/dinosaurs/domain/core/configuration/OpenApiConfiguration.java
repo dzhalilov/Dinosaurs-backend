@@ -2,6 +2,7 @@ package com.rmr.dinosaurs.domain.core.configuration;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
@@ -28,7 +29,7 @@ public class OpenApiConfiguration {
         )
         .info(new Info()
             .title("IT Dinosaurs Swagger API")
-            .description("Spring Boot RESTful Web Application")
+            .description("Динозаврики в IT")
             .version("1.0")
         );
   }

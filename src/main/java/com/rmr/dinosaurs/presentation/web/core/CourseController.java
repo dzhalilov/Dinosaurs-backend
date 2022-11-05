@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,13 +24,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/courses")
+@Tag(name = "Course controller")
 @RequiredArgsConstructor
 @Slf4j
 public class CourseController {
 
   private final CourseService courseService;
 
-  @Operation(description = "create course profile data using dto")
+  @Operation(summary = "Create course profile data using dto")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "got created course data",
           content = {@Content(mediaType = "application/json",
@@ -59,7 +61,7 @@ public class CourseController {
         .body(createdCourse);
   }
 
-  @Operation(description = "get course profile data by its id")
+  @Operation(summary = "Get course profile data by its id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got course profile by id",
           content = {@Content(mediaType = "application/json",
@@ -75,7 +77,7 @@ public class CourseController {
         .body(course);
   }
 
-  @Operation(description = "edit course profile data using its id and dto")
+  @Operation(summary = "Edit course profile data using its id and dto")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got edited course data",
           content = {@Content(mediaType = "application/json",
@@ -107,7 +109,7 @@ public class CourseController {
         .body(course);
   }
 
-  @Operation(description = "get all course profiles")
+  @Operation(summary = "Get all course profiles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got list of course profiles",
           content = {@Content(mediaType = "application/json",
@@ -120,7 +122,7 @@ public class CourseController {
         .body(courses);
   }
 
-  @Operation(description = "get page of filtered course profiles")
+  @Operation(summary = "Get page of filtered course profiles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got page of course profiles",
           content = {@Content(mediaType = "application/json",
@@ -150,7 +152,7 @@ public class CourseController {
         .body(coursePage);
   }
 
-  @Operation(description = "create course review")
+  @Operation(summary = "Create course review")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "got created course review data",
           content = {@Content(mediaType = "application/json",
@@ -182,7 +184,7 @@ public class CourseController {
         .body(createdReview);
   }
 
-  @Operation(description = "get all reviews for current course")
+  @Operation(summary = "Get all reviews for current course")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got course review data",
           content = {@Content(mediaType = "application/json",

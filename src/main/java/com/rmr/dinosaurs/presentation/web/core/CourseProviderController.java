@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/providers")
+@Tag(name = "Course provider controller")
 @RequiredArgsConstructor
 public class CourseProviderController {
 
   private final CourseProviderService providerService;
 
-  @Operation(description = "create course provider profile data using dto")
+  @Operation(summary = "Create course provider profile data using dto")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "got created provider data",
           content = {@Content(mediaType = "application/json",
@@ -52,7 +55,7 @@ public class CourseProviderController {
         .body(createdProvider);
   }
 
-  @Operation(description = "get course provider profile data by its id")
+  @Operation(summary = "Get course provider profile data by its id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got provider profile by id",
           content = {@Content(mediaType = "application/json",
@@ -68,7 +71,7 @@ public class CourseProviderController {
         .body(provider);
   }
 
-  @Operation(description = "edit course provider profile data using its id and dto")
+  @Operation(summary = "Edit course provider profile data using its id and dto")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got edited provider data",
           content = {@Content(mediaType = "application/json",
@@ -94,7 +97,7 @@ public class CourseProviderController {
         .body(provider);
   }
 
-  @Operation(description = "get all course provider profiles")
+  @Operation(summary = "Get all course provider profiles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got list of provider profiles",
           content = {@Content(mediaType = "application/json",
@@ -107,7 +110,7 @@ public class CourseProviderController {
         .body(providers);
   }
 
-  @Operation(description = "get page of course provider profiles")
+  @Operation(summary = "Get page of course provider profiles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got page of provider profiles",
           content = {@Content(mediaType = "application/json",
