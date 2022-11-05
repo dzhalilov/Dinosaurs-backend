@@ -25,6 +25,7 @@ import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.TagRepository;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -222,6 +223,7 @@ public class CourseServiceImpl implements CourseService {
         filter.getProfessionId(),
         filter.getStartsAt(),
         filter.getEndsAt(),
+        LocalDateTime.now(),
         pageable);
 
     return toReadCoursePageDto(page);

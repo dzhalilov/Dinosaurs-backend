@@ -24,13 +24,15 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
       + " and ("
       + "((cast(:startsAt as timestamp) is null) or (:startsAt <= c.startsAt))"
       + " and ((cast(:endsAt as timestamp) is null) or (:endsAt <= c.endsAt))"
-      + ")")
+      + ")"
+      + " and cast(:currentDateTime as timestamp) <= c.startsAt")
   Page<Course> findByFilter(
       @Param("search") String loweredSearch,
       @Param("isAdvanced") Boolean isAdvanced,
       @Param("professionId") Long professionId,
       @Param("startsAt") LocalDateTime startsAt,
       @Param("endsAt") LocalDateTime endsAt,
+      @Param("currentDateTime") LocalDateTime currentDateTime,
       Pageable page);
 
 }

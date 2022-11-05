@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/courses")
 @RequiredArgsConstructor
+@Slf4j
 public class CourseController {
 
   private final CourseService courseService;
@@ -149,7 +151,7 @@ public class CourseController {
     FilterParamsDto filter = new FilterParamsDto(
         search, isAdvanced, professionId, startsAt, endsAt
     );
-
+    log.info("Get all courses with filter={}", filter);
     CourseReadPageDto coursePage = courseService.getFilteredCoursePage(pageNum, sortBy, filter);
     return ResponseEntity
         .ok()
