@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "review")
@@ -24,7 +25,8 @@ public class Review {
   Long id;
 
   @Column(name = "rating", nullable = false)
-  @Size(min = 1, max = 5)
+  @Min(1)
+  @Max(5)
   Integer rating;
 
   @Column(name = "text_review")
