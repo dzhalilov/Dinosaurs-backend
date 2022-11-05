@@ -11,8 +11,7 @@ import javax.validation.constraints.Min;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewDto {
-  Long id;
+public class ReviewCreateDto {
   @Min(1)
   @Max(5)
   Integer rating;

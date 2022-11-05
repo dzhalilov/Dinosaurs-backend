@@ -49,6 +49,8 @@ public interface CourseService {
    */
   CourseReadPageDto getFilteredCoursePage(int pageNum, String sortBy, FilterParamsDto filter);
 
-  ReviewDto addReview(Long courseId, ReviewDto reviewDto, Principal principal);
+  ReviewResponseDto addReview(Long courseId, ReviewCreateDto reviewDto, Principal principal);
+
+  List<ReviewResponseDto> getReviewsByCourseId(Long courseId);
 
 }

@@ -154,7 +154,7 @@ public class CourseController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "got created course review data",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = ReviewDto.class))}),
+              schema = @Schema(implementation = ReviewResponseDto.class))}),
       @ApiResponse(responseCode = "404", description = "course not found",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))}),
@@ -168,18 +168,36 @@ public class CourseController {
           description = "current user already made review for this course id",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
-  @PostMapping("/{courseId}/review")
-  public ResponseEntity<ReviewDto> addCourseReview(
+  @PostMapping("/{courseId}/reviews")
+  public ResponseEntity<ReviewResponseDto> addCourseReview(
       @PathVariable Long courseId,
-      @RequestBody @Valid ReviewDto reviewDto,
+      @RequestBody @Valid ReviewCreateDto reviewCreateDto,
       Principal principal) {
     String email = principal.getName();
     log.info("Make review for course id={} by user={}", courseId, email);
-    ReviewDto createdReview = courseService.addReview(courseId, reviewDto, principal);
+    ReviewResponseDto createdReview = courseService.addReview(courseId, reviewCreateDto, principal);
     URI createdCourseUri = URI.create("/api/v1/courses/" + courseId + "/review" + createdReview.getId());
     return ResponseEntity
         .created(createdCourseUri)
         .body(createdReview);
+  }
+
+  @Operation(description = "get all reviews for current course")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got course review data",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ReviewResponseDto.class))}),
+      @ApiResponse(responseCode = "404", description = "course not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @GetMapping("/{courseId}/reviews")
+  public ResponseEntity<List<ReviewResponseDto>> addCourseReview(@PathVariable Long courseId) {
+    log.info("Get all reviews for course id={}", courseId);
+    List<ReviewResponseDto> reviewDtoList = courseService.getReviewsByCourseId(courseId);
+    return ResponseEntity.ok().body(reviewDtoList);
   }
 
 }

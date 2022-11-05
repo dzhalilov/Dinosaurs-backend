@@ -6,13 +6,11 @@ import com.rmr.dinosaurs.domain.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoAuthentication;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoPrincipal;
 import com.rmr.dinosaurs.domain.auth.security.service.JwtTokenProvider;
-import com.rmr.dinosaurs.domain.core.model.Course;
-import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
-import com.rmr.dinosaurs.domain.core.model.CourseProvider;
-import com.rmr.dinosaurs.domain.core.model.Profession;
+import com.rmr.dinosaurs.domain.core.model.*;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
-import com.rmr.dinosaurs.domain.core.model.dto.ReviewDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.*;
@@ -137,6 +135,19 @@ class CourseControllerIntegrationTest {
       .votes(0L)
       .averageRating(5.0)
       .build();
+  private final Review review1 = Review.builder()
+      .id(null)
+      .rating(4)
+      .textReview("Some review1")
+      .course(course1)
+      .build();
+  private final Review review2 = Review.builder()
+      .id(null)
+      .rating(4)
+      .textReview("Some review2")
+      .course(course1)
+      .build();
+
   @LocalServerPort
   private int port;
   @Autowired
@@ -172,6 +183,7 @@ class CourseControllerIntegrationTest {
         profession);
     courseAndProfessionRepository.saveAll(
         List.of(courseAndProfession1, courseAndProfession2, courseAndProfession3));
+    reviewRepository.saveAll(List.of(review1, review2));
   }
 
   @AfterEach
@@ -231,12 +243,39 @@ class CourseControllerIntegrationTest {
   }
 
   @Test
+  void getAllReviewsByCourseId_200() {
+    // given
+    var requestEntity = new HttpEntity<>(requestHeaders);
+    Optional<Review> reviewOptional = reviewRepository.findAll().stream().findFirst();
+    assert reviewOptional.isPresent();
+    Optional<Course> courseOptional = courseRepository.findById(reviewOptional.get().getCourse().getId());
+    assert courseOptional.isPresent();
+    Long courseId = courseOptional.get().getId();
+    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/" + courseId +"/reviews");
+    ParameterizedTypeReference<List<ReviewResponseDto>> parameterizedTypeReference =
+        new ParameterizedTypeReference<>() {
+        };
+
+    // when
+    var responseEntity = testRestTemplate.exchange(
+        uriBuilder.toUriString(), HttpMethod.GET,
+        requestEntity, parameterizedTypeReference
+    );
+
+    // then
+    var result = responseEntity.getBody();
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    assert result != null;
+    assertThat(result.size()).isEqualTo(2L);
+  }
+
+  @Test
   void addCourseReview_201() {
     // given
     Optional<Course> courseForUpdate = courseRepository.findAll().stream().findAny();
     assert courseForUpdate.isPresent();
     Long courseId = courseForUpdate.get().getId();
-    ReviewDto reviewDto = new ReviewDto(null, 4, "Some review");
+    ReviewCreateDto reviewDto = new ReviewCreateDto(4, "Some review");
 
     var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
     var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
@@ -245,8 +284,8 @@ class CourseControllerIntegrationTest {
 
     var requestEntity = new HttpEntity<>(reviewDto, requestHeaders);
     var uriBuilder = UriComponentsBuilder
-        .fromHttpUrl(endpointUrl + "/" + courseId + "/review");
-    ParameterizedTypeReference<ReviewDto> parameterizedTypeReference =
+        .fromHttpUrl(endpointUrl + "/" + courseId + "/reviews");
+    ParameterizedTypeReference<ReviewResponseDto> parameterizedTypeReference =
         new ParameterizedTypeReference<>() {
         };
 

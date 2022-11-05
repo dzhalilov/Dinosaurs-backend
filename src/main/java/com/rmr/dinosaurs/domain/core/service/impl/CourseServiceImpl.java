@@ -139,7 +139,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public ReviewDto addReview(Long courseId, ReviewDto reviewDto, Principal principal) {
+  public ReviewResponseDto addReview(Long courseId, ReviewCreateDto reviewDto, Principal principal) {
     User user = userRepository.findByEmailIgnoreCase(principal.getName())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     UserInfo userInfo = userInfoRepository.findByUser(user)
@@ -162,10 +162,17 @@ public class CourseServiceImpl implements CourseService {
       course.setVotes(newQuantityOfVotes);
       course.setAverageRating(newAverageRating);
     }
-
     Review createdReview = reviewRepository.save(review);
-    reviewDto.setId(createdReview.getId());
-    return reviewDto;
+    return reviewEntityDtoMapper.toReviewResponseDto(createdReview);
+  }
+
+  @Override
+  public List<ReviewResponseDto> getReviewsByCourseId(Long courseId) {
+    courseRepo.findById(courseId).orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
+    List<Review> reviewList = reviewRepository.findByCourseId(courseId);
+    return reviewList.stream()
+        .map(reviewEntityDtoMapper::toReviewResponseDto)
+        .toList();
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
