@@ -2,7 +2,6 @@ package com.rmr.dinosaurs.domain.core.model;
 
 import lombok.*;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -54,9 +53,9 @@ public class Course {
   Boolean isArchived;
 
   @Column(name = "average_rating", nullable = false)
-  double averageRating;
+  Double averageRating;
 
-  @Column(name = "votes")
+  @Column(name = "votes", nullable = false)
   Long votes;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -79,11 +78,5 @@ public class Course {
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
   Set<Review> reviews;
-
-  @PostConstruct
-  void init() {
-    votes = 0L;
-    averageRating = 5.0;
-  }
 
 }

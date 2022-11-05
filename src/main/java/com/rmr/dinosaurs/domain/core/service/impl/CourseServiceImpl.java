@@ -139,6 +139,8 @@ public class CourseServiceImpl implements CourseService {
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
     course.setProvider(provider);
+    course.setAverageRating(5.0);
+    course.setVotes(0L);
 
     course.setInternalRating(props.getDefaultInternalRating());
     course.setIsIndefinite(props.getDefaultIsIndefinite());

@@ -1,7 +1,5 @@
 package presentation.web.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.rmr.dinosaurs.DinosaursApplication;
 import com.rmr.dinosaurs.domain.core.model.Course;
 import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
@@ -13,8 +11,6 @@ import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionReposito
 import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,16 +24,17 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import testcontainers.CustomPostgresContainer;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @Testcontainers
@@ -49,6 +46,7 @@ class CourseControllerIntegrationTest {
   private static final CustomPostgresContainer container = CustomPostgresContainer.getInstance();
 
   private static final String BASE_URL = "http://localhost";
+  private static final LocalDateTime NOW_TIME = LocalDateTime.now();
 
   private final TestRestTemplate testRestTemplate = new TestRestTemplate();
 
@@ -73,48 +71,54 @@ class CourseControllerIntegrationTest {
       .coverUrl(
           "https://248006.selcdn.ru/LandGen/desktop_2_103cf52042897badbad23dc0b52adb121c2c92e0.webp")
       .description("Бизнес-аналитик изучает процессы...")
-      .endsAt(LocalDateTime.of(2023, 5, 30, 0, 0))
+      .endsAt(NOW_TIME.plusDays(100))
       .internalRating(100)
       .isAdvanced(false)
       .isArchived(false)
       .isIndefinite(true)
       .shortDescription(null)
-      .startsAt(LocalDateTime.of(2022, 11, 30, 0, 0))
+      .startsAt(NOW_TIME.plusDays(10))
       .title("Профессия Бизнес-аналитик")
       .url("https://skillbox.ru/course/profession-business-analyst/")
       .provider(provider)
+      .votes(0L)
+      .averageRating(5.0)
       .build();
   private final Course course2 = Course.builder()
       .id(null)
       .coverUrl(
           "https://248006.selcdn.ru/LandGen/desktop_2_103cf52042897badbad23dc0b52adb121c2c92e0.webp")
       .description("Бизнес-аналитик изучает процессы и не только")
-      .endsAt(LocalDateTime.of(2023, 5, 30, 0, 0))
+      .endsAt(NOW_TIME.plusDays(100))
       .internalRating(100)
       .isAdvanced(true)
       .isArchived(false)
       .isIndefinite(true)
       .shortDescription(null)
-      .startsAt(LocalDateTime.of(2022, 11, 30, 0, 0))
+      .startsAt(NOW_TIME.plusDays(30))
       .title("Профессия Бизнес-аналитик PRO")
       .url("https://skillbox.ru/course/profession-business-analyst/")
       .provider(provider)
+      .votes(0L)
+      .averageRating(5.0)
       .build();
   private final Course startedCourse = Course.builder()
       .id(null)
       .coverUrl(
           "https://248006.selcdn.ru/LandGen/desktop_2_103cf52042897badbad23dc0b52adb121c2c92e0.webp")
       .description("Бизнес-аналитик изучает процессы...")
-      .endsAt(LocalDateTime.of(2023, 5, 30, 0, 0))
+      .endsAt(NOW_TIME.plusDays(100))
       .internalRating(100)
       .isAdvanced(false)
       .isArchived(false)
       .isIndefinite(true)
       .shortDescription(null)
-      .startsAt(LocalDateTime.of(2022, 11, 1, 0, 0))
+      .startsAt(NOW_TIME.minusDays(2))
       .title("Профессия Бизнес-аналитик")
       .url("https://skillbox.ru/course/profession-business-analyst/")
       .provider(provider)
+      .votes(0L)
+      .averageRating(5.0)
       .build();
   @LocalServerPort
   private int port;
