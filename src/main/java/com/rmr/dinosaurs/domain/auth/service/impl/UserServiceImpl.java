@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.domain.auth.service.impl;
 
-import com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode;
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
+
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.auth.model.dto.UserDto;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoPrincipal;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   public static final Supplier<RuntimeException> NO_USER_FOUND_EXCEPTION_SUPPLIER = () ->
-      new ServiceException(UserErrorCode.USER_NOT_FOUND);
+      new ServiceException(USER_NOT_FOUND);
 
   private final UserRepository userRepository;
   private final UserConverter userConverter;
@@ -60,6 +61,13 @@ public class UserServiceImpl implements UserService {
       }
     }
     user = userRepository.save(user);
+    return userConverter.toUserDto(user);
+  }
+
+  @Override
+  public UserDto getUserByEmail(String email) {
+    var user = userRepository.findByEmailIgnoreCase(email)
+        .orElseThrow(NO_USER_FOUND_EXCEPTION_SUPPLIER);
     return userConverter.toUserDto(user);
   }
 

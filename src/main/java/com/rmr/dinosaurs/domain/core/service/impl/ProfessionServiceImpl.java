@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.domain.core.service.impl;
 
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_ALREADY_EXISTS;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 
 import com.rmr.dinosaurs.domain.core.configuration.properties.ProfessionServiceProperties;
@@ -31,6 +32,9 @@ public class ProfessionServiceImpl implements ProfessionService {
 
   @Override
   public ProfessionDto addProfession(ProfessionDto dto) {
+    if (repo.findByName(dto.getName()).isPresent()) {
+      throw new ServiceException(PROFESSION_ALREADY_EXISTS);
+    }
     Profession newProfession = mapper.toEntity(dto);
     Profession savedProfession = repo.saveAndFlush(newProfession);
     return mapper.toDto(savedProfession);

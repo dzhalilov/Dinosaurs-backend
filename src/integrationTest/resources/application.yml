@@ -50,7 +50,7 @@ spring:
 
 notification:
   email:
-    confirmUrl: https://bootcamp-team2.herokuapp.com/confirm
+    confirmUrl: ${CONFIRM_URL:test}
 
 
 role:
