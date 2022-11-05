@@ -1,15 +1,34 @@
 package com.rmr.dinosaurs.domain.core.service.impl;
 
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
+
 import com.rmr.dinosaurs.domain.core.configuration.properties.CourseServiceProperties;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
-import com.rmr.dinosaurs.domain.core.model.*;
+import com.rmr.dinosaurs.domain.core.model.Course;
+import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
+import com.rmr.dinosaurs.domain.core.model.CourseAndTag;
+import com.rmr.dinosaurs.domain.core.model.CourseProvider;
+import com.rmr.dinosaurs.domain.core.model.Profession;
+import com.rmr.dinosaurs.domain.core.model.Tag;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseEntityDtoMapper;
-import com.rmr.dinosaurs.infrastucture.database.core.*;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseAndTagRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.TagRepository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,16 +37,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
-import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
-import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
-import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 
 @Service
 @Slf4j
