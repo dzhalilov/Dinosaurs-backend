@@ -2,7 +2,12 @@ package com.rmr.dinosaurs.presentation.web.core;
 
 import com.rmr.dinosaurs.domain.auth.security.permission.ModeratorPermission;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
-import com.rmr.dinosaurs.domain.core.model.dto.*;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,17 +15,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.net.URI;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/courses")
@@ -178,7 +189,8 @@ public class CourseController {
     String email = principal.getName();
     log.info("Make review for course id={} by user={}", courseId, email);
     ReviewResponseDto createdReview = courseService.addReview(courseId, reviewCreateDto, principal);
-    URI createdCourseUri = URI.create("/api/v1/courses/" + courseId + "/review" + createdReview.getId());
+    URI createdCourseUri = URI.create(
+        "/api/v1/courses/" + courseId + "/review" + createdReview.getId());
     return ResponseEntity
         .created(createdCourseUri)
         .body(createdReview);

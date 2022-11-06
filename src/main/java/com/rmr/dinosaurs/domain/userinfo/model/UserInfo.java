@@ -3,6 +3,18 @@ package com.rmr.dinosaurs.domain.userinfo.model;
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.core.model.Profession;
 import com.rmr.dinosaurs.domain.core.model.Review;
+import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +23,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "user_info")
@@ -48,7 +57,8 @@ public class UserInfo {
   @ToString.Exclude
   Set<Review> reviews;
 
-  public UserInfo(Long id, String name, String surname, User user, Profession recommendedProfession) {
+  public UserInfo(Long id, String name, String surname, User user,
+      Profession recommendedProfession) {
     this.id = id;
     this.name = name;
     this.surname = surname;

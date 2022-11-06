@@ -46,35 +46,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-  @Mock
-  private EmailSenderService emailSenderServiceMock;
-
-  @Mock
-  private UserRepository userRepositoryMock;
-
-  @Mock
-  private UserInfoRepository userInfoRepositoryMock;
-
-  @Mock
-  private RefreshTokenRepository refreshTokenRepositoryMock;
-
-  @Mock
-  private UserConverter userConverterMock;
-
-  @Mock
-  private PasswordEncoder passwordEncoderMock;
-
-  @Mock
-  private JwtTokenService jwtTokenServiceMock;
-
-  @InjectMocks
-  private AuthServiceImpl authService;
-
   private final UserInfo testUserInfo = new UserInfo(2L, "Test", "Usersky", null, null);
-
   private final User testUser = new User(1L, "super@email.com", "stR4nGeRp4Ssw0rDHaHa",
       ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
-
+  @Mock
+  private EmailSenderService emailSenderServiceMock;
+  @Mock
+  private UserRepository userRepositoryMock;
+  @Mock
+  private UserInfoRepository userInfoRepositoryMock;
+  @Mock
+  private RefreshTokenRepository refreshTokenRepositoryMock;
+  @Mock
+  private UserConverter userConverterMock;
+  @Mock
+  private PasswordEncoder passwordEncoderMock;
+  @Mock
+  private JwtTokenService jwtTokenServiceMock;
+  @InjectMocks
+  private AuthServiceImpl authService;
 
   @Test
   @DisplayName("should login successfully")
