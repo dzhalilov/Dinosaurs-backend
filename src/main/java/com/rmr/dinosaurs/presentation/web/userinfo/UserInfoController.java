@@ -31,7 +31,7 @@ public class UserInfoController {
 
   private final UserInfoService userInfoService;
 
-  @Operation(description = "get current user profile data")
+  @Operation(summary = "Get current user profile data")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get personal user data",
           content = {@Content(mediaType = "application/json",
@@ -44,7 +44,7 @@ public class UserInfoController {
     return userInfoService.getMyProfile();
   }
 
-  @Operation(description = "edit current user profile data")
+  @Operation(summary = "Edit current user profile data")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get edited personal user data",
           content = {@Content(mediaType = "application/json",
@@ -61,7 +61,7 @@ public class UserInfoController {
     return userInfoService.editMyProfile(userInfoDto);
   }
 
-  @Operation(description = "delete current user profile data")
+  @Operation(summary = "Delete current user profile data")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get updated personal user data",
           content = {@Content(mediaType = "application/json",
@@ -78,7 +78,7 @@ public class UserInfoController {
     return userInfoService.deleteMyProfile();
   }
 
-  @Operation(description = "get user profile data by id")
+  @Operation(summary = "Get user profile data by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get personal user data by id",
           content = {@Content(mediaType = "application/json",
@@ -94,7 +94,7 @@ public class UserInfoController {
     return userInfoService.getUserInfoById(id);
   }
 
-  @Operation(description = "get all users profiles")
+  @Operation(summary = "Get all users profiles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get personal users data",
           content = {@Content(mediaType = "application/json",
@@ -106,7 +106,7 @@ public class UserInfoController {
     return userInfoService.getAllUserInfos();
   }
 
-  @Operation(description = "get all moderators profiles")
+  @Operation(summary = "Get all moderators profiles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get personal moderators data",
           content = {@Content(mediaType = "application/json",

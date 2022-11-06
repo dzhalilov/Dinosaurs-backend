@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,13 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/survey")
+@Tag(name = "Survey controller")
 @RequiredArgsConstructor
 public class SurveyController {
 
   private final SurveyService surveyService;
   private final UserService userService;
 
-  @Operation(description = "create survey data using dto")
+  @Operation(summary = "Create survey data using dto")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "got created survey data",
           content = {@Content(mediaType = "application/json",
@@ -59,7 +62,7 @@ public class SurveyController {
         .body(createdSurvey);
   }
 
-  @Operation(description = "get survey data")
+  @Operation(summary = "Get survey data")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got survey data",
           content = {@Content(mediaType = "application/json",
@@ -75,7 +78,7 @@ public class SurveyController {
         .body(survey);
   }
 
-  @Operation(description = "post survey response using dto")
+  @Operation(summary = "Post survey response using dto")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got recommended profession data",
           content = {@Content(mediaType = "application/json",

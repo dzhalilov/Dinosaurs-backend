@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,12 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Auth controller")
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
   private final AuthService authService;
 
-  @Operation(description = "log in")
+  @Operation(summary = "Log in")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "JWT tokens pair given",
           content = {@Content(mediaType = "application/json",
@@ -48,7 +51,7 @@ public class AuthController {
     return authService.login(loginRequest);
   }
 
-  @Operation(description = "sign up")
+  @Operation(summary = "Sign up")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "UserDto given",
           content = {@Content(mediaType = "application/json",
@@ -63,7 +66,7 @@ public class AuthController {
     return authService.signup(signupRequest);
   }
 
-  @Operation(description = "confirm email")
+  @Operation(summary = "Confirm email")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "JWT tokens pair given",
           content = {@Content(mediaType = "application/json",
@@ -78,7 +81,7 @@ public class AuthController {
     return authService.confirmEmail(confirmCode);
   }
 
-  @Operation(description = "refresh tokens")
+  @Operation(summary = "Refresh tokens")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "JWT tokens pair given",
           content = {@Content(mediaType = "application/json",

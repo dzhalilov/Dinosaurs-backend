@@ -39,6 +39,10 @@ public class CourseReadDto {
 
   String professionName;
 
+  Double averageRating;
+
+  Long votes;
+
   List<String> tags;
 
 }
