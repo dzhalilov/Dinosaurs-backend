@@ -14,7 +14,10 @@ import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "review")
+@Table(name = "review", uniqueConstraints = {
+  @UniqueConstraint(name = "one_vote_for_user_per_course",
+      columnNames = {"course_id", "user_info_id"})},
+    indexes = {@Index(name = "fn_course_id", columnList = "course_id")})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
