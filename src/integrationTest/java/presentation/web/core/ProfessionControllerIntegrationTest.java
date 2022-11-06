@@ -45,12 +45,11 @@ public class ProfessionControllerIntegrationTest {
 
   @Container
   private static final CustomPostgresContainer container = CustomPostgresContainer.getInstance();
-
-  private final String baseUrl = "http://localhost";
-  private final String professionApiUrl = "/api/v1/professions";
   // encrypted "pAssw0rd"
   private static final String ENCRYPTED_PASSWORD =
       "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO";
+  private final String baseUrl = "http://localhost";
+  private final String professionApiUrl = "/api/v1/professions";
   private final User regularUser = new User(null, "regular@email.com", ENCRYPTED_PASSWORD,
       ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
   private final User moderatorUser = new User(null, "moder@email.com", ENCRYPTED_PASSWORD,

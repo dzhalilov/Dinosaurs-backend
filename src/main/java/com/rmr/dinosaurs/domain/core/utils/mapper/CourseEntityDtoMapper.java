@@ -17,6 +17,9 @@ public interface CourseEntityDtoMapper {
   @Mapping(target = "provider", ignore = true)
   @Mapping(target = "courseAndProfessionRefs", ignore = true)
   @Mapping(target = "courseAndTagRefs", ignore = true)
+  @Mapping(target = "averageRating", ignore = true)
+  @Mapping(target = "votes", ignore = true)
+  @Mapping(target = "reviews", ignore = true)
   Course toEntity(CourseCreateUpdateDto dto);
 
   @Mapping(target = "professionId", ignore = true)

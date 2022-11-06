@@ -35,12 +35,10 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(classes = AuthController.class)
 class AuthMvcTest {
 
-  private MockMvc mockMvc;
-
   private final ObjectMapper objectMapper = new ObjectMapper()
       .registerModule(new JavaTimeModule())
       .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-
+  private MockMvc mockMvc;
   @MockBean
   private AuthService authServiceMock;
 

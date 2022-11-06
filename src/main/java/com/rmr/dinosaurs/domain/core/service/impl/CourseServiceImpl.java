@@ -1,10 +1,13 @@
 package com.rmr.dinosaurs.domain.core.service.impl;
 
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.ReviewErrorCode.DOUBLE_VOTE_ERROR;
 
+import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.core.configuration.properties.CourseServiceProperties;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.Course;
@@ -12,19 +15,29 @@ import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.domain.core.model.CourseAndTag;
 import com.rmr.dinosaurs.domain.core.model.CourseProvider;
 import com.rmr.dinosaurs.domain.core.model.Profession;
+import com.rmr.dinosaurs.domain.core.model.Review;
 import com.rmr.dinosaurs.domain.core.model.Tag;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseEntityDtoMapper;
+import com.rmr.dinosaurs.domain.core.utils.mapper.ReviewEntityDtoMapper;
+import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
+import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseAndTagRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.ReviewRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.TagRepository;
+import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
+import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +57,7 @@ public class CourseServiceImpl implements CourseService {
 
   private final CourseServiceProperties props;
   private final CourseEntityDtoMapper courseMapper;
+  private final ReviewEntityDtoMapper reviewEntityDtoMapper;
 
   private final CourseRepository courseRepo;
   private final CourseProviderRepository providerRepo;
@@ -51,6 +65,9 @@ public class CourseServiceImpl implements CourseService {
   private final TagRepository tagRepo;
   private final CourseAndProfessionRepository capRefRepo;
   private final CourseAndTagRepository catRefRepo;
+  private final UserRepository userRepository;
+  private final UserInfoRepository userInfoRepository;
+  private final ReviewRepository reviewRepository;
 
   @Override
   @Transactional
@@ -136,8 +153,49 @@ public class CourseServiceImpl implements CourseService {
     return findPagedFilteredCourses(filter, pageable);
   }
 
+  @Override
+  @Transactional
+  public ReviewResponseDto addReview(Long courseId, ReviewCreateDto reviewDto,
+      Principal principal) {
+    User user = userRepository.findByEmailIgnoreCase(principal.getName())
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    UserInfo userInfo = userInfoRepository.findByUser(user)
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+
+    Course course = courseRepo.findById(courseId)
+        .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
+    Optional<Review> optionalReview = reviewRepository
+        .findReviewByCourseAndUserInfoId(courseId, userInfo.getId());
+    if (optionalReview.isPresent()) {
+      throw new ServiceException(DOUBLE_VOTE_ERROR);
+    }
+    Review review = reviewEntityDtoMapper.toEntity(reviewDto);
+    review.setCourse(course);
+    review.setUserInfo(userInfo);
+    if (review.getRating() != null) {
+      long newQuantityOfVotes = course.getVotes() + 1L;
+      Double sumOfAllRatings = course.getVotes() * course.getAverageRating();
+      Double newAverageRating = (sumOfAllRatings + review.getRating()) / newQuantityOfVotes;
+      course.setVotes(newQuantityOfVotes);
+      course.setAverageRating(newAverageRating);
+    }
+    Review createdReview = reviewRepository.saveAndFlush(review);
+    return reviewEntityDtoMapper.toReviewResponseDto(createdReview);
+  }
+
+  @Override
+  public List<ReviewResponseDto> getReviewsByCourseId(Long courseId) {
+    courseRepo.findById(courseId).orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
+    List<Review> reviewList = reviewRepository.findByCourseId(courseId);
+    return reviewList.stream()
+        .map(reviewEntityDtoMapper::toReviewResponseDto)
+        .toList();
+  }
+
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
     course.setProvider(provider);
+    course.setAverageRating(5.0);
+    course.setVotes(0L);
 
     course.setInternalRating(props.getDefaultInternalRating());
     course.setIsIndefinite(props.getDefaultIsIndefinite());
@@ -222,6 +280,7 @@ public class CourseServiceImpl implements CourseService {
         filter.getProfessionId(),
         filter.getStartsAt(),
         filter.getEndsAt(),
+        LocalDateTime.now(),
         pageable);
 
     return toReadCoursePageDto(page);

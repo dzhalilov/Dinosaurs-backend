@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Course {
 
   @Id
@@ -63,6 +65,12 @@ public class Course {
   @Column(name = "is_archived", nullable = false)
   Boolean isArchived;
 
+  @Column(name = "average_rating", nullable = false)
+  Double averageRating;
+
+  @Column(name = "votes", nullable = false)
+  Long votes;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "c_course_provider_id", nullable = false, updatable = true)
   CourseProvider provider;
@@ -78,5 +86,10 @@ public class Course {
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
   Set<CourseAndTag> courseAndTagRefs;
+
+  @OneToMany(fetch = FetchType.LAZY)
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
+  Set<Review> reviews;
 
 }

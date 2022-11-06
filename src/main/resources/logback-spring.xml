@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/app.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <charset>UTF-8</charset>
-            <Pattern>%d{yy-MM-dd HH:mm:ss} %-2level %msg%n</Pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize>
-            <maxHistory>60</maxHistory>
-            <totalSizeCap>500MB</totalSizeCap>
-        </rollingPolicy>
-    </appender>
+  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ROLLING">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>%d{yy-MM-dd HH:mm:ss} %-2level %msg%n</Pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+    <file>logs/app.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>logs/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxFileSize>10MB</maxFileSize>
+      <maxHistory>60</maxHistory>
+      <totalSizeCap>500MB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %-5level %logger{35} - %msg %n</pattern>
-        </encoder>
-    </appender>
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT">
+    <encoder>
+      <charset>UTF-8</charset>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} - %-5level %logger{35} - %msg %n</pattern>
+    </encoder>
+  </appender>
 
-    <root level="INFO">
-        <appender-ref ref="ROLLING"/>
-        <appender-ref ref="STDOUT"/>
-    </root>
+  <logger level="WARN" name="com"/>
 
-    <logger name="com" level="WARN"/>
-    <logger name="org" level="WARN"/>
-    <logger name="net" level="WARN"/>
+  <logger level="WARN" name="org"/>
+  <logger level="WARN" name="net"/>
+  <logger level="WARN" name="org.springframework"/>
 
-    <logger name="org.springframework" level="WARN"/>
+  <logger additivity="false" level="INFO" name="com.rmr.dinosaurs">
+    <appender-ref ref="ROLLING"/>
+    <appender-ref ref="STDOUT"/>
+  </logger>
 
-    <logger name="com.rmr.dinosaurs" level="INFO" additivity="false">
-        <appender-ref ref="ROLLING"/>
-        <appender-ref ref="STDOUT"/>
-    </logger>
+  <root level="INFO">
+    <appender-ref ref="ROLLING"/>
+    <appender-ref ref="STDOUT"/>
+  </root>
 </configuration>

@@ -4,6 +4,9 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import java.security.Principal;
 import java.util.List;
 
 public interface CourseService {
@@ -49,5 +52,9 @@ public interface CourseService {
    * @return page of filtered course profile data
    */
   CourseReadPageDto getFilteredCoursePage(int pageNum, String sortBy, FilterParamsDto filter);
+
+  ReviewResponseDto addReview(Long courseId, ReviewCreateDto reviewDto, Principal principal);
+
+  List<ReviewResponseDto> getReviewsByCourseId(Long courseId);
 
 }

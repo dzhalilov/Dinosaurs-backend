@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/professions")
+@Tag(name = "Profession controller")
 @RequiredArgsConstructor
 public class ProfessionController {
 
   private final ProfessionService professionService;
 
-  @Operation(description = "create profession profile data using dto")
+  @Operation(summary = "Create profession profile data using dto")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "got created profession data",
           content = {@Content(mediaType = "application/json",
@@ -52,7 +54,7 @@ public class ProfessionController {
         .body(createdProfession);
   }
 
-  @Operation(description = "get profession profile data by its id")
+  @Operation(summary = "Get profession profile data by its id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got profession profile by id",
           content = {@Content(mediaType = "application/json",
@@ -68,7 +70,7 @@ public class ProfessionController {
         .body(profession);
   }
 
-  @Operation(description = "edit profession profile data using its id and dto")
+  @Operation(summary = "Edit profession profile data using its id and dto")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got edited profession data",
           content = {@Content(mediaType = "application/json",
@@ -94,7 +96,7 @@ public class ProfessionController {
         .body(profession);
   }
 
-  @Operation(description = "get all profession profiles")
+  @Operation(summary = "Get all profession profiles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got list of profession profiles",
           content = {@Content(mediaType = "application/json",
@@ -107,7 +109,7 @@ public class ProfessionController {
         .body(professions);
   }
 
-  @Operation(description = "get page of profession profiles")
+  @Operation(summary = "Get page of profession profiles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got page of profession profiles",
           content = {@Content(mediaType = "application/json",

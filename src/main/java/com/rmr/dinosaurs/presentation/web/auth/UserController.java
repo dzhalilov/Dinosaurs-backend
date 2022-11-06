@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "User controller")
 @RequiredArgsConstructor
 public class UserController {
 
   private final UserService userService;
 
-  @Operation(description = "get current user auth data")
+  @Operation(summary = "Get current user auth data")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get user auth data",
           content = {@Content(mediaType = "application/json",
@@ -41,7 +43,7 @@ public class UserController {
     return userService.getCurrentUserDto();
   }
 
-  @Operation(description = "get user auth data by id")
+  @Operation(summary = "Get user auth data by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get user auth data by id",
           content = {@Content(mediaType = "application/json",
@@ -56,7 +58,7 @@ public class UserController {
     return userService.getUserById(id);
   }
 
-  @Operation(description = "get user auth data by email")
+  @Operation(summary = "Get user auth data by email")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get user auth data by email",
           content = {@Content(mediaType = "application/json",
@@ -72,7 +74,7 @@ public class UserController {
     return userService.getUserByEmail(email);
   }
 
-  @Operation(description = "get all users auth data")
+  @Operation(summary = "Get all users auth data")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get list of all users auth data",
           content = {@Content(mediaType = "application/json",
@@ -84,7 +86,7 @@ public class UserController {
     return userService.getAllUsers();
   }
 
-  @Operation(description = "set/unset user as moderator")
+  @Operation(summary = "Set/unset user as moderator")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "set user role to moderator/regular",
           content = {@Content(mediaType = "application/json",

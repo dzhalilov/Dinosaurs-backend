@@ -28,7 +28,7 @@ public class OpenApiConfiguration {
         )
         .info(new Info()
             .title("IT Dinosaurs Swagger API")
-            .description("Spring Boot RESTful Web Application")
+            .description("Динозаврики в IT")
             .version("1.0")
         );
   }
