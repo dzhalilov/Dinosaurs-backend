@@ -1,8 +1,6 @@
 package com.rmr.dinosaurs.presentation.web.core;
 
-import com.rmr.dinosaurs.domain.auth.model.dto.UserDto;
 import com.rmr.dinosaurs.domain.auth.security.permission.ModeratorPermission;
-import com.rmr.dinosaurs.domain.auth.service.UserService;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.dto.ProfessionDto;
 import com.rmr.dinosaurs.domain.core.model.dto.SurveyCreateDto;
@@ -16,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SurveyController {
 
   private final SurveyService surveyService;
-  private final UserService userService;
 
   @Operation(summary = "Create survey data using dto")
   @ApiResponses(value = {
@@ -93,12 +91,9 @@ public class SurveyController {
               schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping("/result")
   public ResponseEntity<ProfessionDto> resultSurvey(
-      @RequestBody SurveyResponseDto surveyResponseDto) {
+      @RequestBody @Valid SurveyResponseDto surveyResponseDto) {
 
-    UserDto currentUser = userService.getCurrentUserDto();
-    String userProfileEmail = currentUser.getEmail();
-
-    ProfessionDto result = surveyService.resultSurvey(surveyResponseDto, userProfileEmail);
+    ProfessionDto result = surveyService.resultSurvey(surveyResponseDto);
     return ResponseEntity
         .ok()
         .body(result);
