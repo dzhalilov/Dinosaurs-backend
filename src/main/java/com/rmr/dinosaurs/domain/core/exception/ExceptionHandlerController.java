@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.domain.core.exception;
 
+import javax.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,8 @@ public class ExceptionHandlerController {
 
   @ExceptionHandler(value = {
       MethodArgumentTypeMismatchException.class,
-      MethodArgumentNotValidException.class})
+      MethodArgumentNotValidException.class,
+      ValidationException.class})
   public ResponseEntity<ServiceException> methodArgumentException(
       Exception exception) {
     log.debug(exception.getMessage(), exception);
