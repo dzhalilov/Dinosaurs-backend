@@ -2,9 +2,12 @@ name: gradle check
 
 on:
   pull_request:
-    - opened
-    - reopened
-    - review_requested
+    types:
+      - opened
+      - reopened
+      - review_requested
+    branches:
+      - dev
 
 jobs:
   check:
