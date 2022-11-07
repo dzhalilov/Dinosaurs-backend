@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.domain.core.model.dto;
 
+import com.rmr.dinosaurs.domain.core.utils.validator.UrlConstraintValidator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ public class ProfessionDto {
 
   String name;
 
+  @UrlConstraintValidator
   String coverUrl;
 
   String description;

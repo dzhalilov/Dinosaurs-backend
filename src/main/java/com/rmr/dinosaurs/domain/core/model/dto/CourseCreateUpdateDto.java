@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.domain.core.model.dto;
 
+import com.rmr.dinosaurs.domain.core.utils.validator.UrlConstraintValidator;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,7 @@ public class CourseCreateUpdateDto {
   @Length(max = 255)
   String title;
 
-  @Length(max = 255)
+  @UrlConstraintValidator
   String url;
 
   @Length(max = 255)

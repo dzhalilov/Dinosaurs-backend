@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +47,7 @@ public class ProfessionController {
               schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<ProfessionDto> addProfession(@RequestBody ProfessionDto profession) {
+  public ResponseEntity<ProfessionDto> addProfession(@RequestBody @Valid ProfessionDto profession) {
     ProfessionDto createdProfession = professionService.addProfession(profession);
     URI createdProfessionUri = URI.create("/api/v1/professions/" + createdProfession.getId());
     return ResponseEntity
@@ -88,7 +89,7 @@ public class ProfessionController {
   @PutMapping("/{professionId}")
   @ModeratorPermission
   public ResponseEntity<ProfessionDto> editProfessionById(
-      @PathVariable long professionId, @RequestBody ProfessionDto professionDto) {
+      @PathVariable long professionId, @RequestBody @Valid ProfessionDto professionDto) {
 
     ProfessionDto profession = professionService.editProfessionById(professionId, professionDto);
     return ResponseEntity

@@ -11,7 +11,9 @@ public enum SurveyErrorCode implements ErrorCode {
 
   SURVEY_NOT_FOUND("ITD_SEC_1", "No such survey found", HttpStatus.NOT_FOUND),
   SURVEY_QUESTION_ANSWER_WITH_NO_PROFESSION_ID(
-      "ITD_SEC_2", "Survey question answer with no profession id", HttpStatus.BAD_REQUEST);
+      "ITD_SEC_2", "Survey question answer with no profession id", HttpStatus.BAD_REQUEST),
+  SURVEY_RESPONSE_NOT_MATCHING_ACTUAL_SURVEY("ITD_SEC_3",
+      "Sent SurveyResponse is not matching actual survey data", HttpStatus.BAD_REQUEST);
 
   private final String errorName;
   private final String message;

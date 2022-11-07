@@ -26,9 +26,8 @@ public interface SurveyService {
    * get recommended profession profile by survey response
    *
    * @param surveyResponseDto survey response
-   * @param userProfileEmail  user profile getting recommended profession
    * @return recommended profession profile
    */
-  ProfessionDto resultSurvey(SurveyResponseDto surveyResponseDto, String userProfileEmail);
+  ProfessionDto resultSurvey(SurveyResponseDto surveyResponseDto);
 
 }

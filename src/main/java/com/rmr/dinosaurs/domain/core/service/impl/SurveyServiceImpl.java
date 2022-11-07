@@ -3,7 +3,9 @@ package com.rmr.dinosaurs.domain.core.service.impl;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.SurveyErrorCode.SURVEY_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.SurveyErrorCode.SURVEY_QUESTION_ANSWER_WITH_NO_PROFESSION_ID;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.SurveyErrorCode.SURVEY_RESPONSE_NOT_MATCHING_ACTUAL_SURVEY;
 
+import com.rmr.dinosaurs.domain.auth.security.model.DinoPrincipal;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.Profession;
 import com.rmr.dinosaurs.domain.core.model.Survey;
@@ -21,7 +23,6 @@ import com.rmr.dinosaurs.domain.core.model.dto.SurveyResponseQuestionDto;
 import com.rmr.dinosaurs.domain.core.service.SurveyService;
 import com.rmr.dinosaurs.domain.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.domain.core.utils.mapper.SurveyEntityDtoMapper;
-import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.SurveyQuestionAnswerRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.SurveyQuestionRepository;
@@ -33,8 +34,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,16 +91,39 @@ public class SurveyServiceImpl implements SurveyService {
 
   @Override
   @Transactional
-  public ProfessionDto resultSurvey(SurveyResponseDto response, String email) {
-    List<Long> answerIds = response.getSurvey().stream()
+  public ProfessionDto resultSurvey(SurveyResponseDto surveyResponseDto) {
+    var survey = surveyRepo.findById(surveyResponseDto.getSurveyId()).orElseThrow(
+        () -> new ServiceException(SURVEY_NOT_FOUND));
+    var providedAnswerIds = surveyResponseDto.getSurvey().stream()
         .map(SurveyResponseQuestionDto::getAnswerId)
         .toList();
-    List<SurveyQuestionAnswer> answers = answerRepo.findAllById(answerIds);
+    var answers = answerRepo.findAllById(providedAnswerIds);
+
+    checkValidSurveyResponseContentProvided(surveyResponseDto, survey, providedAnswerIds);
 
     Profession recommendedProfession = recommendProfession(answers);
-    attachRecommendedProfessionToUser(email, recommendedProfession);
+    attachRecommendedProfessionToCurrentUser(recommendedProfession);
 
     return professionMapper.toDto(recommendedProfession);
+  }
+
+  private void checkValidSurveyResponseContentProvided(SurveyResponseDto surveyResponseDto,
+      Survey survey, List<Long> providedAnswerIds) {
+    var providedQuestionsIds = surveyResponseDto.getSurvey().stream()
+        .map(SurveyResponseQuestionDto::getQuestionId)
+        .collect(Collectors.toSet());
+    if (survey.getQuestions().stream().map(SurveyQuestion::getId)
+        .noneMatch(providedQuestionsIds::contains)) {
+      throw new ServiceException(SURVEY_RESPONSE_NOT_MATCHING_ACTUAL_SURVEY);
+    }
+
+    var surveyAnswersIds = survey.getQuestions().stream()
+        .flatMap(surveyQuestion -> surveyQuestion.getAnswers().stream())
+        .map(SurveyQuestionAnswer::getId)
+        .collect(Collectors.toSet());
+    if (!surveyAnswersIds.containsAll(providedAnswerIds)) {
+      throw new ServiceException(SURVEY_RESPONSE_NOT_MATCHING_ACTUAL_SURVEY);
+    }
   }
 
   private Survey saveAndFlushSurvey(SurveyCreateDto dto) {
@@ -212,12 +238,14 @@ public class SurveyServiceImpl implements SurveyService {
     return result;
   }
 
-  private void attachRecommendedProfessionToUser(String email, Profession recommendedProfession) {
-    UserInfo userInfo = userInfoRepo.findByUser_Email(email).orElse(null);
-    if (userInfo != null) {
-      userInfo.setRecommendedProfession(recommendedProfession);
-      userInfoRepo.save(userInfo);
-    }
+  private void attachRecommendedProfessionToCurrentUser(Profession recommendedProfession) {
+    var currentUserPrincipal = getCurrentUserPrincipal();
+    userInfoRepo.findByUser_Email(currentUserPrincipal.getEmail())
+        .ifPresent(user -> {
+              user.setRecommendedProfession(recommendedProfession);
+              userInfoRepo.save(user);
+            }
+        );
   }
 
   private void validateSurveyCreateDto(SurveyCreateDto dto) {
@@ -228,6 +256,13 @@ public class SurveyServiceImpl implements SurveyService {
         }
       }
     }
+  }
+
+  private DinoPrincipal getCurrentUserPrincipal() {
+    return (DinoPrincipal) SecurityContextHolder
+        .getContext()
+        .getAuthentication()
+        .getPrincipal();
   }
 
 }
