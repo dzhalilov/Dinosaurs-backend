@@ -1,4 +1,5 @@
 name: gradle check
+run-name: ${{ github.triggering_actor }} gradle check task
 
 on:
   pull_request:
