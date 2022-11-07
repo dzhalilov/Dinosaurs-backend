@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.ACCESS_DENIED_EXCEPTION;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.ApplicationErrorCode.*;
+
 @Slf4j
 @ControllerAdvice
 public class ExceptionHandlerController {
@@ -30,15 +33,18 @@ public class ExceptionHandlerController {
   public ResponseEntity<Exception> notSupportedHttpMediaFormatExceptionHandler(
       Exception exception) {
     log.error(exception.getMessage(), exception);
-    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+    return ResponseEntity
+            .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+            .body(new ServiceException(UNSUPPORTED_MEDIA_TYPE));
   }
 
   @ExceptionHandler(value = Exception.class)
   public ResponseEntity<Exception> exceptionResponseEntity(
       Exception exception) {
     log.error(exception.getMessage(), exception);
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .build();
+    return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ServiceException(INTERNAL_SERVER_ERROR));
   }
 
   @ExceptionHandler(value = {
@@ -50,14 +56,18 @@ public class ExceptionHandlerController {
   public ResponseEntity<ServiceException> methodArgumentException(
       Exception exception) {
     log.debug(exception.getMessage(), exception);
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(new ServiceException(WRONG_DATA_FORMAT));
   }
 
   @ExceptionHandler(value = AccessDeniedException.class)
   public ResponseEntity<ServiceException> accessDeniedExceptionErrorHandler(
       Exception exception) {
     log.debug(exception.getMessage(), exception);
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(new ServiceException(ACCESS_DENIED_EXCEPTION));
   }
 
 }
