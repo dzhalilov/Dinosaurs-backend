@@ -7,8 +7,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 @JsonPropertyOrder({"code", "message", "time"})
 @JsonIgnoreProperties({"cause", "stackTrace", "localizedMessage", "suppressed"})
 public class ServiceException extends RuntimeException {
@@ -16,13 +18,13 @@ public class ServiceException extends RuntimeException {
   public static final String DATE_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
 
   @JsonIgnore
-  private final ErrorCode errorCode;
+  private ErrorCode errorCode;
 
   @JsonProperty("code")
-  private final String code;
+  private String code;
 
   @JsonProperty("time")
-  private final String causedAt;
+  private String causedAt;
 
   public ServiceException(ErrorCode errorCode) {
     this.errorCode = errorCode;

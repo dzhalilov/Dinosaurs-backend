@@ -1,5 +1,6 @@
 package presentation.web.user;
 
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.ACCESS_DENIED_EXCEPTION;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,6 +14,7 @@ import com.rmr.dinosaurs.domain.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoAuthentication;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoPrincipal;
 import com.rmr.dinosaurs.domain.auth.security.service.JwtTokenProvider;
+import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.domain.userinfo.model.dto.ShortUserInfoDto;
 import com.rmr.dinosaurs.domain.userinfo.model.dto.UserInfoDto;
@@ -269,12 +271,13 @@ public class UserInfoControllerIntegrationTest {
 
     // when
     var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET,
-        requestEntity, UserInfoDto.class);
+        requestEntity, ServiceException.class);
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.FORBIDDEN);
     var actual = responseEntity.getBody();
-    assertNull(actual);
+    assertNotNull(actual);
+    assertThat(actual.getCode()).isEqualTo(ACCESS_DENIED_EXCEPTION.getErrorName());
   }
 
   @Test
@@ -285,18 +288,16 @@ public class UserInfoControllerIntegrationTest {
     requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl);
-    ParameterizedTypeReference<List<ShortUserInfoDto>> parameterizedTypeReference =
-        new ParameterizedTypeReference<>() {
-        };
 
     // when
     var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET,
-        requestEntity, parameterizedTypeReference);
+        requestEntity, ServiceException.class);
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.FORBIDDEN);
     var actual = responseEntity.getBody();
-    assertNull(actual);
+    assertNotNull(actual);
+    assertThat(actual.getCode()).isEqualTo(ACCESS_DENIED_EXCEPTION.getErrorName());
   }
 
   @Test
@@ -307,18 +308,16 @@ public class UserInfoControllerIntegrationTest {
     requestHeaders.add(USER_TOKEN_HEADER, jwtTokenPairFor.getAccessToken());
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/moderators");
-    ParameterizedTypeReference<List<ShortUserInfoDto>> parameterizedTypeReference =
-        new ParameterizedTypeReference<>() {
-        };
 
     // when
     var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET,
-        requestEntity, parameterizedTypeReference);
+        requestEntity, ServiceException.class);
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.FORBIDDEN);
     var actual = responseEntity.getBody();
-    assertNull(actual);
+    assertNotNull(actual);
+    assertThat(actual.getCode()).isEqualTo(ACCESS_DENIED_EXCEPTION.getErrorName());
   }
 
 

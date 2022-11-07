@@ -1,5 +1,6 @@
 package presentation.web.auth;
 
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.ACCESS_DENIED_EXCEPTION;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_ADMIN;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
@@ -15,6 +16,8 @@ import com.rmr.dinosaurs.domain.auth.security.model.DinoAuthentication;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoPrincipal;
 import com.rmr.dinosaurs.domain.auth.security.service.JwtTokenProvider;
 import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
+import com.rmr.dinosaurs.domain.core.exception.ErrorCode;
+import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.presentation.web.auth.UserController;
 import java.time.LocalDateTime;
@@ -256,13 +259,14 @@ class UserControllerIntegrationTest {
 
     // when
     var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.PUT,
-        requestEntity, UserDto.class);
+        requestEntity, ServiceException.class);
 
     // then
     assertThat(responseEntity).isNotNull();
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.FORBIDDEN);
     var actual = responseEntity.getBody();
-    assertNull(actual);
+    assertNotNull(actual);
+    assertThat(actual.getCode()).isEqualTo(ACCESS_DENIED_EXCEPTION.getErrorName());
   }
 
 
