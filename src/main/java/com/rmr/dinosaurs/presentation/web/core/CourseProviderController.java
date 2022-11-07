@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +47,7 @@ public class CourseProviderController {
               schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping
   @ModeratorPermission
-  public ResponseEntity<ProviderDto> addProvider(@RequestBody ProviderDto provider) {
+  public ResponseEntity<ProviderDto> addProvider(@RequestBody @Valid ProviderDto provider) {
     ProviderDto createdProvider = providerService.addProvider(provider);
     URI createdProviderUri = URI.create("/api/v1/providers/" + createdProvider.getId());
     return ResponseEntity
@@ -88,7 +89,7 @@ public class CourseProviderController {
   @PutMapping("/{providerId}")
   @ModeratorPermission
   public ResponseEntity<ProviderDto> editProviderById(
-      @PathVariable long providerId, @RequestBody ProviderDto providerDto) {
+      @PathVariable long providerId, @RequestBody @Valid ProviderDto providerDto) {
 
     ProviderDto provider = providerService.editProviderById(providerId, providerDto);
     return ResponseEntity
