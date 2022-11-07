@@ -1,5 +1,10 @@
 package com.rmr.dinosaurs.domain.core.exception;
 
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.ACCESS_DENIED_EXCEPTION;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.ApplicationErrorCode.INTERNAL_SERVER_ERROR;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.ApplicationErrorCode.UNSUPPORTED_MEDIA_TYPE;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.ApplicationErrorCode.WRONG_DATA_FORMAT;
+
 import javax.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,9 +17,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.ACCESS_DENIED_EXCEPTION;
-import static com.rmr.dinosaurs.domain.core.exception.errorcode.ApplicationErrorCode.*;
 
 @Slf4j
 @ControllerAdvice

@@ -6,7 +6,6 @@ import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.rmr.dinosaurs.DinosaursApplication;
 import com.rmr.dinosaurs.domain.auth.model.User;
@@ -16,7 +15,6 @@ import com.rmr.dinosaurs.domain.auth.security.model.DinoAuthentication;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoPrincipal;
 import com.rmr.dinosaurs.domain.auth.security.service.JwtTokenProvider;
 import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
-import com.rmr.dinosaurs.domain.core.exception.ErrorCode;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.presentation.web.auth.UserController;
