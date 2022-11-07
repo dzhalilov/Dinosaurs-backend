@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,7 +45,8 @@ public class ExceptionHandlerController {
       MethodArgumentTypeMismatchException.class,
       MethodArgumentNotValidException.class,
       ValidationException.class,
-      HttpMessageNotReadableException.class})
+      HttpMessageNotReadableException.class,
+      HttpRequestMethodNotSupportedException.class})
   public ResponseEntity<ServiceException> methodArgumentException(
       Exception exception) {
     log.debug(exception.getMessage(), exception);
