@@ -5,6 +5,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
@@ -63,4 +64,6 @@ public interface CourseService {
       CourseStudyCreateDto courseStudyCreateDto);
 
   List<CourseStudyResponseDto> getMyCourseStudy(Principal principal);
+
+  CourseStudyResponseDto finishCourseStudy(Long courseId, CourseStudyUpdateDto courseStudyUpdateDto);
 }
