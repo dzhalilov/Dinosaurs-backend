@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum CourseStudyErrorCode implements ErrorCode {
 
   DUPLICATE_STUDY_ERROR("ITD_CSE_1", "Duplicate course study creation error",
-      HttpStatus.BAD_REQUEST);
+      HttpStatus.BAD_REQUEST),
+  USER_ROLE_ERROR("ITD_CSE_2", "Just regular users can study", HttpStatus.BAD_REQUEST);
 
   private final String errorName;
   private final String message;

@@ -4,6 +4,7 @@ import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.US
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseStudyErrorCode.DUPLICATE_STUDY_ERROR;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseStudyErrorCode.USER_ROLE_ERROR;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ReviewErrorCode.DOUBLE_VOTE_ERROR;
@@ -12,6 +13,7 @@ import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.core.configuration.properties.CourseServiceProperties;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
+import com.rmr.dinosaurs.domain.core.model.Authority;
 import com.rmr.dinosaurs.domain.core.model.Course;
 import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.domain.core.model.CourseAndTag;
@@ -208,11 +210,13 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
-  @Transactional
   public CourseStudyResponseDto createCourseStudy(Principal principal, Long courseId,
       CourseStudyCreateDto courseStudyCreateDto) {
     User user = userRepository.findByEmailIgnoreCase(principal.getName())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    if (!user.getRole().equals(Authority.ROLE_REGULAR)) {
+      throw new ServiceException(USER_ROLE_ERROR);
+    }
     UserInfo userInfo = userInfoRepository.findByUser(user)
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     Course course = courseRepo.findById(courseId)
