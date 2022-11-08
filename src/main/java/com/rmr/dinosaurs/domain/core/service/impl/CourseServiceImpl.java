@@ -325,7 +325,7 @@ public class CourseServiceImpl implements CourseService {
   @Scheduled(cron = "0 0 18 * * *")
   void notifyModeratorsAboutEndingTodayCoursesAndSetCoursesAsArchived() {
     int today = LocalDateTime.now().getDayOfMonth();
-    var expiringCourses = courseRepo.findAll()
+    var expiringCourses = courseRepo.findAllByIsArchivedIsFalse()
         .stream()
         .filter(course -> today == course.getEndsAt().getDayOfMonth())
         .peek(course -> course.setIsArchived(true))
