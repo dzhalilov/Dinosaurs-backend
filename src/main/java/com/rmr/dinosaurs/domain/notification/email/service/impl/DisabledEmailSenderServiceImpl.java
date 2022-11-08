@@ -24,7 +24,7 @@ public class DisabledEmailSenderServiceImpl extends EmailSenderServiceImpl {
   public void sendEmail(MimeMessage message, List<String> recipients) {
     log.info("Sending email to {}", recipients.toString());
 
-    if (Objects.isNull(message) && recipients.isEmpty()) {
+    if (Objects.isNull(message) || recipients.isEmpty()) {
       throw new ServiceException(FAILED_EMAIL_SEND);
     }
   }
