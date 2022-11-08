@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.domain.auth.configuration;
+package com.rmr.dinosaurs.domain.core.configuration;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
