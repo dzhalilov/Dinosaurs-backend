@@ -48,11 +48,6 @@ spring:
     test-connection: true
 
 
-notification:
-  email:
-    confirmUrl: ${CONFIRM_URL:test}
-
-
 role:
   hierarchy: |
     ROLE_ADMIN > ROLE_MODERATOR
@@ -61,6 +56,15 @@ role:
 jwt:
   ttl: 86400
   secretKey: k+r/JkFxq9lO+iqf3zY+/Wgr2bu31LoiUwIb26amlB9/VAsFEyK7vi7ubzP1RJQn
+
+notification:
+  email:
+    domainUrl: ${DOMAIN_URL:test}
+
+tempconfirmation:
+  code:
+    ttl: 120
+
 
 endpoints:
   health:

@@ -61,7 +61,11 @@ jwt:
 
 notification:
   email:
-    confirmUrl: ${CONFIRM_URL:https://itdinosaurs.herokuapp.com/confirm}
+    domainUrl: ${DOMAIN_URL:https://itdinosaurs.herokuapp.com}
+
+tempconfirmation:
+  code:
+    ttl: 120
 
 
 management:
