@@ -257,7 +257,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CourseStudyResponseDto finishCourseStudy(Long courseId,
+  public void finishCourseStudy(Long courseId,
       CourseStudyUpdateDto courseStudyUpdateDto) {
     User user = userRepository.findByEmailIgnoreCase(courseStudyUpdateDto.userEmail())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
@@ -274,8 +274,6 @@ public class CourseServiceImpl implements CourseService {
     }
     courseStudy.setEndsAt(courseStudyUpdateDto.endsAt());
     courseStudy.setScore(courseStudyUpdateDto.score());
-    List<String> professions = getProfessionsList(courseStudy.getCourse());
-    return courseStudyDtoMapper.toCourseStudyResponseDto(courseStudy, professions);
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {

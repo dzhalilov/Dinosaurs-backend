@@ -1,5 +1,6 @@
 package presentation.web.core;
 
+import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_REGULAR;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,15 +70,24 @@ class CourseControllerIntegrationTest {
 
   private static final String BASE_URL = "http://localhost";
   private static final LocalDateTime NOW_TIME = LocalDateTime.now();
+  private static final String TEST_PASSWORD_ENCRYPTED =
+      "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO";
 
-  private final User regularUser = new User(null, "regular@email.com",
-      "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO",
+  private final User regularUser = new User(null, "regular@email.com", TEST_PASSWORD_ENCRYPTED,
       ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+  private final User moderatorUser = new User(null, "moder@email.com", TEST_PASSWORD_ENCRYPTED,
+      ROLE_MODERATOR, true, LocalDateTime.now(), false, null, null, null);
   private final UserInfo userInfo = UserInfo.builder()
       .name("Hero")
       .id(null)
       .surname("GOD")
       .user(regularUser)
+      .build();
+  private final UserInfo userInfoModerator = UserInfo.builder()
+      .name("Super Hero")
+      .id(null)
+      .surname("BEST")
+      .user(moderatorUser)
       .build();
 
   private final TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -199,7 +209,7 @@ class CourseControllerIntegrationTest {
     endpointUrl = BASE_URL + ":" + port + "/api/v1/courses";
     endpointUrlForUsersCourseStudy = BASE_URL + ":" + port + "/api/v1/profiles//my/study";
     requestHeaders.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-    userRepository.saveAndFlush(regularUser);
+    userRepository.saveAllAndFlush(List.of(regularUser, moderatorUser));
     userInfoRepository.saveAndFlush(userInfo);
     professionRepository.saveAndFlush(profession);
     courseProviderRepository.saveAndFlush(provider);

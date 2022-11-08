@@ -65,5 +65,5 @@ public interface CourseService {
 
   List<CourseStudyResponseDto> getMyCourseStudy(Principal principal);
 
-  CourseStudyResponseDto finishCourseStudy(Long courseId, CourseStudyUpdateDto courseStudyUpdateDto);
+  void finishCourseStudy(Long courseId, CourseStudyUpdateDto courseStudyUpdateDto);
 }

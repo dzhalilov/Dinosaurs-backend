@@ -246,7 +246,7 @@ public class CourseController {
 
   @Operation(summary = "Finish course study")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "course study data",
+      @ApiResponse(responseCode = "204", description = "Fished course study",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = CourseStudyResponseDto.class))}),
       @ApiResponse(responseCode = "404", description = "course or user not found",
@@ -261,6 +261,7 @@ public class CourseController {
       @RequestBody @Valid CourseStudyUpdateDto courseStudyUpdateDto) {
     log.info("Update course study for course id={} and user email={}",
         courseId, courseStudyUpdateDto.userEmail());
-    return ResponseEntity.ok(courseService.finishCourseStudy(courseId, courseStudyUpdateDto));
+    courseService.finishCourseStudy(courseId, courseStudyUpdateDto);
+    return ResponseEntity.noContent().build();
   }
 }
