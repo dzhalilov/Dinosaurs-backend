@@ -32,8 +32,8 @@ public class EmailServiceImpl implements EmailService {
 
   @Override
   public void sendEmailConfirmationEmail(UUID tempConfirmationId, String recipient) {
-    MimeMessage message = emailSenderService.getMimeMessage();
     try {
+      MimeMessage message = emailSenderService.getMimeMessage();
       message.setSubject("Подтверждение адреса электронной почты");
       message.setContent(String.format("<h2>Для подтверждения перейдите по ссылке: "
               + "%s/%s </h2>", domainUrl + "/confirm", tempConfirmationId),
@@ -48,11 +48,14 @@ public class EmailServiceImpl implements EmailService {
 
   @Override
   public void sendWelcomeRegistrationEmail(String recipient) {
-    MimeMessage message = emailSenderService.getMimeMessage();
     try {
-      message.setSubject("Добро пожаловать в дино-клуб!");
-      message.setContent("<h3>Рады приветствовать Вас на сервисе IT Dinosaurs</h3>",
-          CONTENT_TYPE);
+      MimeMessage message = emailSenderService.getMimeMessage();
+      message.setSubject("Добро пожаловать");
+      message.setContent(String.format(
+              "<h2>Рады приветствовать Вас в нашем уютном %s дино-клубе! </h2> </br>"
+                  + "<h2> Будем всегда рады видеть Вас на %s </h2>", "&#9749;", domainUrl),
+          CONTENT_TYPE
+      );
       emailSenderService.sendEmail(message, Collections.singletonList(recipient));
     } catch (MessagingException e) {
       log.debug("Cant send welcome email", e);
@@ -62,8 +65,8 @@ public class EmailServiceImpl implements EmailService {
 
   @Override
   public void sendChangeRoleEmail(@NotNull Boolean isModerator, String recipient) {
-    MimeMessage message = emailSenderService.getMimeMessage();
     try {
+      MimeMessage message = emailSenderService.getMimeMessage();
       message.setSubject("Уведомление: изменение роли");
       String role = Boolean.TRUE.equals(isModerator) ? "Модератор" : "Пользователь";
       message.setContent("<h4>Ваша роль в IT Dinosaurs изменена.</br>"
@@ -78,8 +81,8 @@ public class EmailServiceImpl implements EmailService {
 
   @Override
   public void sendInvalidCoursesLinksEmail(List<Course> courses, List<String> recipients) {
-    MimeMessage message = emailSenderService.getMimeMessage();
     try {
+      MimeMessage message = emailSenderService.getMimeMessage();
       message.setSubject("Уведомление: Ссылки на курсы недоступны");
       message.setContent("<h3>Список курсов, ссылки на которые недоступны</h3></br>"
               + getHtmlListOfCourses(courses),
@@ -93,8 +96,8 @@ public class EmailServiceImpl implements EmailService {
 
   @Override
   public void sendEndedTodayCoursesEmail(List<Course> courses, List<String> recipients) {
-    MimeMessage message = emailSenderService.getMimeMessage();
     try {
+      MimeMessage message = emailSenderService.getMimeMessage();
       message.setSubject("Уведомление: Курсы заканчиваются сегодня");
       message.setContent("<h3>Список курсов, которые закончились сегодня</h3></br>"
               + getHtmlListOfCourses(courses),
