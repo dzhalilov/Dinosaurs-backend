@@ -25,7 +25,8 @@ public interface CourseStudyDtoMapper {
   @Mapping(target = "endsAt", source = "courseStudy.endsAt")
   @Mapping(target = "courseStudyInfoDto.courseId", source = "courseStudy.course.id")
   @Mapping(target = "courseStudyInfoDto.courseName", source = "courseStudy.course.title")
-  @Mapping(target = "courseStudyInfoDto.courseProviderName", source = "courseStudy.course.provider.name")
+  @Mapping(target = "courseStudyInfoDto.courseProviderName",
+      source = "courseStudy.course.provider.name")
   @Mapping(target = "courseStudyInfoDto.score", source = "courseStudy.score")
   @Mapping(target = "courseStudyInfoDto.professionNameSet",
       source = "professions")

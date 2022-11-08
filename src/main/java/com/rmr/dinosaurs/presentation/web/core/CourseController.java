@@ -235,11 +235,11 @@ public class CourseController {
       Principal principal, @RequestBody @Valid CourseStudyCreateDto courseStudyCreateDto) {
     String email = principal.getName();
     log.info("Created course study info for user={} and course id={}", email, courseId);
-    CourseStudyResponseDto courseStudyResponseDto = courseService.createCourseStudy(principal, courseId,
-        courseStudyCreateDto);
-    URI CourseStudyUri = URI.create(
+    CourseStudyResponseDto courseStudyResponseDto = courseService.createCourseStudy(principal,
+        courseId, courseStudyCreateDto);
+    URI courseStudyUri = URI.create(
         "/api/v1/profiles/study_info" + courseStudyResponseDto.getId());
-    return ResponseEntity.created(CourseStudyUri).body(courseStudyResponseDto);
+    return ResponseEntity.created(courseStudyUri).body(courseStudyResponseDto);
   }
 
 }
