@@ -129,7 +129,7 @@ public class UserInfoController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "get my course study info",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = UserInfoDto.class))}),
+              schema = @Schema(implementation = CourseStudyResponseDto.class))}),
       @ApiResponse(responseCode = "404", description = "user not found or user profile not found",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
