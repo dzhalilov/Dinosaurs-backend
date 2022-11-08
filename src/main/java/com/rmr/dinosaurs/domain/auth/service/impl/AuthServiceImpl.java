@@ -1,5 +1,6 @@
 package com.rmr.dinosaurs.domain.auth.service.impl;
 
+import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.USER_IS_ARCHIVED;
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.USER_NOT_CONFIRMED;
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.TempConfirmationErrorCode.INVALID_CONFIRMATION_CODE;
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
@@ -30,6 +31,7 @@ import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,8 +60,11 @@ public class AuthServiceImpl implements AuthService {
   public JwtTokenPair login(LoginRequest loginRequest) {
     var user = userRepository.findByEmailIgnoreCase(loginRequest.email())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-    if (Objects.isNull(user.getIsConfirmed()) || !Boolean.TRUE.equals(user.getIsConfirmed())) {
+    if (Objects.isNull(user.getIsConfirmed()) || Boolean.FALSE.equals(user.getIsConfirmed())) {
       throw new ServiceException(USER_NOT_CONFIRMED);
+    }
+    if (Objects.isNull(user.getIsArchived()) || Boolean.TRUE.equals(user.getIsArchived())) {
+      throw new ServiceException(USER_IS_ARCHIVED);
     }
     validatePasswordOrThrowException(loginRequest, user.getPassword());
 
@@ -96,7 +101,8 @@ public class AuthServiceImpl implements AuthService {
     RefreshToken savedRefreshToken = refreshTokenRepository.findByValue(
             refreshTokenRequest.refreshToken())
         .orElseThrow(() -> new ServiceException(AuthErrorCode.INVALID_TOKEN_PROVIDED));
-    var user = userRepository.findById(savedRefreshToken.getUserId())
+    var user = userRepository
+        .findByIdAndIsConfirmedTrueAndIsArchivedFalse(savedRefreshToken.getUserId())
         .orElseThrow(() -> new ServiceException(AuthErrorCode.INVALID_TOKEN_PROVIDED));
 
     checkTokenIsValid(savedRefreshToken.getValue());
