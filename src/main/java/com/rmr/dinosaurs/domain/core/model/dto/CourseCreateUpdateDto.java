@@ -20,7 +20,7 @@ public class CourseCreateUpdateDto {
   @UrlConstraintValidator
   String url;
 
-  @Length(max = 255)
+  @UrlConstraintValidator
   String coverUrl;
 
   @Length(max = 4096)
