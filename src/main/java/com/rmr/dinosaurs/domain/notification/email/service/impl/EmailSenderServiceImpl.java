@@ -1,10 +1,12 @@
 package com.rmr.dinosaurs.domain.notification.email.service.impl;
 
 import static com.rmr.dinosaurs.domain.notification.email.exception.errorcode.MailErrorCode.FAILED_EMAIL_SEND;
+import static com.rmr.dinosaurs.domain.notification.email.exception.errorcode.MailErrorCode.INCORRECT_EMAIL_DATA;
 
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.notification.email.service.EmailSenderService;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.mail.Message;
@@ -30,16 +32,19 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
   @Override
   public void sendEmail(MimeMessage message, List<String> recipients) {
+    if (Objects.isNull(message) || recipients.isEmpty()) {
+      throw new ServiceException(INCORRECT_EMAIL_DATA);
+    }
     executorService.submit(() ->
         recipients.forEach(recipient -> {
-              try {
-                log.info("Sending email to: {}", recipient);
-                message.setFrom(SENDER_ADDRESS);
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
-                javaMailSender.send(message);
-              } catch (Exception e) {
-                log.debug("Failed to send an email", e);
-                throw new ServiceException(FAILED_EMAIL_SEND);
+          try {
+            log.info("Sending email to: {}", recipient);
+            message.setFrom(SENDER_ADDRESS);
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
+            javaMailSender.send(message);
+          } catch (Exception e) {
+            log.debug("Failed to send an email", e);
+            throw new ServiceException(FAILED_EMAIL_SEND);
               }
             }
         )
