@@ -5,6 +5,8 @@ import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
@@ -212,6 +214,32 @@ public class CourseController {
     log.info("Get all reviews for course id={}", courseId);
     List<ReviewResponseDto> reviewDtoList = courseService.getReviewsByCourseId(courseId);
     return ResponseEntity.ok().body(reviewDtoList);
+  }
+
+  @Operation(summary = "Create of starting study course")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "created course study information",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ReviewResponseDto.class))}),
+      @ApiResponse(responseCode = "404", description = "course not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "404", description = "provider profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @PostMapping("/{courseId}/start-study")
+  public ResponseEntity<CourseStudyResponseDto> startCourseStudy(@PathVariable Long courseId,
+      Principal principal, @RequestBody @Valid CourseStudyCreateDto courseStudyCreateDto) {
+    String email = principal.getName();
+    log.info("Created course study info for user={} and course id={}", email, courseId);
+    CourseStudyResponseDto courseStudyResponseDto = courseService.createCourseStudy(principal, courseId,
+        courseStudyCreateDto);
+    URI CourseStudyUri = URI.create(
+        "/api/v1/profiles/study_info" + courseStudyResponseDto.getId());
+    return ResponseEntity.created(CourseStudyUri).body(courseStudyResponseDto);
   }
 
 }

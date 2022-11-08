@@ -15,17 +15,21 @@ import com.rmr.dinosaurs.domain.core.model.Course;
 import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.domain.core.model.CourseAndTag;
 import com.rmr.dinosaurs.domain.core.model.CourseProvider;
+import com.rmr.dinosaurs.domain.core.model.CourseStudy;
 import com.rmr.dinosaurs.domain.core.model.Profession;
 import com.rmr.dinosaurs.domain.core.model.Review;
 import com.rmr.dinosaurs.domain.core.model.Tag;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseEntityDtoMapper;
+import com.rmr.dinosaurs.domain.core.utils.mapper.CourseStudyDtoMapper;
 import com.rmr.dinosaurs.domain.core.utils.mapper.ReviewEntityDtoMapper;
 import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
@@ -34,6 +38,7 @@ import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionReposito
 import com.rmr.dinosaurs.infrastucture.database.core.CourseAndTagRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseStudyRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ReviewRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.TagRepository;
@@ -64,6 +69,7 @@ public class CourseServiceImpl implements CourseService {
   private final CourseServiceProperties props;
   private final CourseEntityDtoMapper courseMapper;
   private final ReviewEntityDtoMapper reviewEntityDtoMapper;
+  private final CourseStudyDtoMapper courseStudyDtoMapper;
   private final NotificationClient notificationClient;
 
   private final CourseRepository courseRepo;
@@ -75,6 +81,7 @@ public class CourseServiceImpl implements CourseService {
   private final UserRepository userRepository;
   private final UserInfoRepository userInfoRepository;
   private final ReviewRepository reviewRepository;
+  private final CourseStudyRepository courseStudyRepository;
 
   @Override
   @Transactional
@@ -197,6 +204,27 @@ public class CourseServiceImpl implements CourseService {
     return reviewList.stream()
         .map(reviewEntityDtoMapper::toReviewResponseDto)
         .toList();
+  }
+
+  @Override
+  @Transactional
+  public CourseStudyResponseDto createCourseStudy(Principal principal, Long courseId,
+      CourseStudyCreateDto courseStudyCreateDto) {
+    User user = userRepository.findByEmailIgnoreCase(principal.getName())
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    UserInfo userInfo = userInfoRepository.findByUser(user)
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    Course course = courseRepo.findById(courseId)
+        .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
+    List<String> professions = course.getCourseAndProfessionRefs()
+        .stream()
+        .map(c -> c.getProfession().getName())
+        .toList();
+    CourseStudy courseStudy = courseStudyDtoMapper.toEntity(courseStudyCreateDto, userInfo,
+        course);
+    CourseStudy createdCourseStudy = courseStudyRepository.saveAndFlush(courseStudy);
+
+    return courseStudyDtoMapper.toCourseStudyResponseDto(createdCourseStudy, professions);
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
