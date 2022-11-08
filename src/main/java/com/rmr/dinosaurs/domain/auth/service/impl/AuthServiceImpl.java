@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
   public JwtTokenPair login(LoginRequest loginRequest) {
     var user = userRepository.findByEmailIgnoreCase(loginRequest.email())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
-    if (Objects.isNull(user.getIsConfirmed()) || Boolean.TRUE.equals(!user.getIsConfirmed())) {
+    if (Objects.isNull(user.getIsConfirmed()) || !Boolean.TRUE.equals(user.getIsConfirmed())) {
       throw new ServiceException(USER_NOT_CONFIRMED);
     }
     validatePasswordOrThrowException(loginRequest, user.getPassword());
