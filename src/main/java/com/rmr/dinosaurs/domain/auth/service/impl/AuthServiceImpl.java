@@ -3,8 +3,6 @@ package com.rmr.dinosaurs.domain.auth.service.impl;
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode.USER_NOT_CONFIRMED;
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.TempConfirmationErrorCode.INVALID_CONFIRMATION_CODE;
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
-import static com.rmr.dinosaurs.domain.notification.email.model.MailType.EMAIL_CONFIRM;
-import static com.rmr.dinosaurs.domain.notification.email.model.MailType.WELCOME_MAIL;
 
 import com.rmr.dinosaurs.domain.auth.exception.errorcode.AuthErrorCode;
 import com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode;
@@ -24,15 +22,12 @@ import com.rmr.dinosaurs.domain.auth.service.TempConfirmationService;
 import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.Authority;
-import com.rmr.dinosaurs.domain.notification.email.model.EmailMessage;
-import com.rmr.dinosaurs.domain.notification.email.model.MailType;
-import com.rmr.dinosaurs.domain.notification.email.service.EmailSenderService;
+import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.infrastucture.database.auth.RefreshTokenRepository;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
   private final PasswordEncoder passwordEncoder;
 
   private final JwtTokenService jwtTokenService;
-  private final EmailSenderService emailSenderService;
+  private final NotificationClient notificationClient;
   private final TempConfirmationService tempConfirmationService;
 
 
@@ -78,9 +73,8 @@ public class AuthServiceImpl implements AuthService {
       throw new ServiceException(UserErrorCode.USER_ALREADY_EXISTS);
     }
     var user = createAndSaveUserFromSignupRequest(signupRequest);
-
-    sendMailByType(EMAIL_CONFIRM, user);
-
+    var tempConfirmation = tempConfirmationService.createTempConfirmationFor(user);
+    notificationClient.emailConfirmationNotification(tempConfirmation.getId(), user.getEmail());
     return userConverter.toUserDto(user);
   }
 
@@ -93,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     user.setIsConfirmed(true);
     userRepository.saveAndFlush(user);
-    sendMailByType(WELCOME_MAIL, user);
+    notificationClient.registrationWelcomeNotification(user.getEmail());
     return generateTokenPairAndSaveRefreshToken(user);
   }
 
@@ -117,10 +111,6 @@ public class AuthServiceImpl implements AuthService {
     if (!jwtTokenService.isTokenValid(value)) {
       throw new ServiceException(AuthErrorCode.INVALID_TOKEN_PROVIDED);
     }
-  }
-
-  private void sendMailByType(MailType mailType, User user) {
-    emailSenderService.sendEmail(new EmailMessage(mailType, Collections.singletonList(user)));
   }
 
   private JwtTokenPair generateTokenPairAndSaveRefreshToken(User user) {

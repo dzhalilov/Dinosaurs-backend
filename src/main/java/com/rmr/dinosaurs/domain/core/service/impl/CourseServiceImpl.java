@@ -6,6 +6,7 @@ import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseProviderEr
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ReviewErrorCode.DOUBLE_VOTE_ERROR;
+import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.core.configuration.properties.CourseServiceProperties;
@@ -26,6 +27,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.domain.core.utils.mapper.ReviewEntityDtoMapper;
+import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionRepository;
@@ -36,6 +38,9 @@ import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ReviewRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.TagRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,6 +52,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +64,7 @@ public class CourseServiceImpl implements CourseService {
   private final CourseServiceProperties props;
   private final CourseEntityDtoMapper courseMapper;
   private final ReviewEntityDtoMapper reviewEntityDtoMapper;
+  private final NotificationClient notificationClient;
 
   private final CourseRepository courseRepo;
   private final CourseProviderRepository providerRepo;
@@ -312,6 +319,55 @@ public class CourseServiceImpl implements CourseService {
     pageDto.setContent(page.getContent().stream()
         .map(this::toReadCourseDto).toList());
     return pageDto;
+  }
+
+  @SuppressWarnings("java:S3864")
+  @Scheduled(cron = "0 0 18 * * *")
+  void notifyModeratorsAboutEndingTodayCoursesAndSetCoursesAsArchived() {
+    int today = LocalDateTime.now().getDayOfMonth();
+    var expiringCourses = courseRepo.findAll()
+        .stream()
+        .filter(course -> today == course.getEndsAt().getDayOfMonth())
+        .peek(course -> course.setIsArchived(true))
+        .toList();
+    if (!expiringCourses.isEmpty()) {
+      courseRepo.saveAll(expiringCourses);
+      var moderatorsEmails = getAllModeratorsEmails();
+      notificationClient.endedTodayCoursesNotification(expiringCourses, moderatorsEmails);
+    }
+  }
+
+  @Scheduled(cron = "0 0 7 * * *")
+  void notifyModeratorsAboutCoursesWithInvalidLink() {
+    var unreachableCourses = courseRepo.findAllByIsArchivedIsFalse()
+        .parallelStream()
+        .filter(course -> !isLinkReachable(course.getUrl()))
+        .toList();
+    if (!unreachableCourses.isEmpty()) {
+      var moderatorsEmails = getAllModeratorsEmails();
+      notificationClient.invalidCoursesLinksNotification(unreachableCourses, moderatorsEmails);
+    }
+  }
+
+  private List<String> getAllModeratorsEmails() {
+    return userRepository.findAllByIsConfirmedTrue().stream()
+        .filter(user -> ROLE_MODERATOR.equals(user.getRole()))
+        .map(User::getEmail)
+        .toList();
+  }
+
+  private boolean isLinkReachable(String url) {
+    try {
+      URL link = new URL(url);
+      HttpURLConnection connection = (HttpURLConnection) link.openConnection();
+      connection.setRequestMethod("GET");
+      connection.setConnectTimeout(2000);
+      connection.connect();
+      return 200 == connection.getResponseCode();
+    } catch (IOException e) {
+      log.info("Something goes wrong with link checking: {}", e.getMessage());
+      throw new RuntimeException(e);
+    }
   }
 
 }

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.rmr.dinosaurs.domain.auth.model.RefreshToken;
+import com.rmr.dinosaurs.domain.auth.model.TempConfirmation;
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.auth.model.dto.UserDto;
 import com.rmr.dinosaurs.domain.auth.model.requests.LoginRequest;
@@ -24,10 +25,11 @@ import com.rmr.dinosaurs.domain.auth.model.requests.SignupRequest;
 import com.rmr.dinosaurs.domain.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.domain.auth.security.model.DinoAuthentication;
 import com.rmr.dinosaurs.domain.auth.security.service.JwtTokenService;
+import com.rmr.dinosaurs.domain.auth.service.TempConfirmationService;
 import com.rmr.dinosaurs.domain.auth.service.impl.AuthServiceImpl;
 import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
-import com.rmr.dinosaurs.domain.notification.email.model.EmailMessage;
+import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.domain.notification.email.service.EmailSenderService;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.infrastucture.database.auth.RefreshTokenRepository;
@@ -57,6 +59,10 @@ class AuthServiceTest {
   private UserInfoRepository userInfoRepositoryMock;
   @Mock
   private RefreshTokenRepository refreshTokenRepositoryMock;
+  @Mock
+  private TempConfirmationService tempConfirmationServiceMock;
+  @Mock
+  private NotificationClient notificationClientMock;
   @Mock
   private UserConverter userConverterMock;
   @Mock
@@ -153,6 +159,8 @@ class AuthServiceTest {
     given(userInfoRepositoryMock.saveAndFlush(any(UserInfo.class))).willReturn(testUserInfo);
     given(passwordEncoderMock.encode(testUser.getPassword())).willReturn("p4sswOrD");
     given(userConverterMock.toUserDto(any(User.class))).willReturn(testUserDto);
+    given(tempConfirmationServiceMock.createTempConfirmationFor(any(User.class)))
+        .willReturn(new TempConfirmation());
 
     // when
     var actual = authService.signup(
@@ -166,7 +174,7 @@ class AuthServiceTest {
     verify(userRepositoryMock).saveAndFlush(any(User.class));
     verify(userInfoRepositoryMock).saveAndFlush(any(UserInfo.class));
     verify(passwordEncoderMock).encode(anyString());
-    verify(emailSenderServiceMock).sendEmail(any(EmailMessage.class));
+    verify(tempConfirmationServiceMock).createTempConfirmationFor(any(User.class));
 
     verifyNoMoreInteractions(userRepositoryMock, userInfoRepositoryMock, refreshTokenRepositoryMock,
         jwtTokenServiceMock, passwordEncoderMock, emailSenderServiceMock);
