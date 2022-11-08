@@ -209,7 +209,8 @@ class AuthServiceTest {
     JwtTokenPair testJwtTokenPair = new JwtTokenPair("accessToken", testRefreshToken.getValue());
     given(refreshTokenRepositoryMock.findByValue(anyString())).willReturn(
         Optional.of(testRefreshToken));
-    given(userRepositoryMock.findById(anyLong())).willReturn(Optional.of(testUser));
+    given(userRepositoryMock.findByIdAndIsConfirmedTrueAndIsArchivedFalse(anyLong()))
+        .willReturn(Optional.of(testUser));
     given(jwtTokenServiceMock.isTokenValid(anyString())).willReturn(true);
     given(jwtTokenServiceMock.generateJwtTokenPair(any(DinoAuthentication.class))).willReturn(
         testJwtTokenPair);
@@ -223,7 +224,7 @@ class AuthServiceTest {
     assertThat(actual.getRefreshToken()).isNotNull().isNotEmpty();
 
     verify(refreshTokenRepositoryMock).findByValue(anyString());
-    verify(userRepositoryMock).findById(anyLong());
+    verify(userRepositoryMock).findByIdAndIsConfirmedTrueAndIsArchivedFalse(anyLong());
     verify(jwtTokenServiceMock).generateJwtTokenPair(any(DinoAuthentication.class));
     verify(jwtTokenServiceMock).isTokenValid(anyString());
 
@@ -261,7 +262,8 @@ class AuthServiceTest {
     RefreshTokenRequest testRefreshTokenRequest = new RefreshTokenRequest("old.refresh.token");
     given(refreshTokenRepositoryMock.findByValue(anyString())).willReturn(
         Optional.of(testRefreshToken));
-    given(userRepositoryMock.findById(anyLong())).willReturn(Optional.empty());
+    given(userRepositoryMock.findByIdAndIsConfirmedTrueAndIsArchivedFalse(anyLong())).willReturn(
+        Optional.empty());
 
     // when
     assertThatThrownBy(() -> authService.refresh(testRefreshTokenRequest))
@@ -271,7 +273,7 @@ class AuthServiceTest {
 
     // then
     verify(refreshTokenRepositoryMock).findByValue(anyString());
-    verify(userRepositoryMock).findById(anyLong());
+    verify(userRepositoryMock).findByIdAndIsConfirmedTrueAndIsArchivedFalse(anyLong());
 
     verifyNoMoreInteractions(refreshTokenRepositoryMock, userRepositoryMock);
     verifyNoInteractions(userInfoRepositoryMock, jwtTokenServiceMock, passwordEncoderMock);
@@ -285,7 +287,8 @@ class AuthServiceTest {
     RefreshTokenRequest testRefreshTokenRequest = new RefreshTokenRequest("old.refresh.token");
     given(refreshTokenRepositoryMock.findByValue(anyString())).willReturn(
         Optional.of(testRefreshToken));
-    given(userRepositoryMock.findById(anyLong())).willReturn(Optional.of(testUser));
+    given(userRepositoryMock.findByIdAndIsConfirmedTrueAndIsArchivedFalse(anyLong()))
+        .willReturn(Optional.of(testUser));
     given(jwtTokenServiceMock.isTokenValid(anyString())).willReturn(false);
 
     // when
@@ -296,7 +299,7 @@ class AuthServiceTest {
 
     // then
     verify(refreshTokenRepositoryMock).findByValue(anyString());
-    verify(userRepositoryMock).findById(anyLong());
+    verify(userRepositoryMock).findByIdAndIsConfirmedTrueAndIsArchivedFalse(anyLong());
     verify(jwtTokenServiceMock).isTokenValid(anyString());
 
     verifyNoMoreInteractions(refreshTokenRepositoryMock, userRepositoryMock, jwtTokenServiceMock);
