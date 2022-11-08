@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.domain.core.service.impl;
 
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_END_DATE_BEFORE_OR_EQUALS_START_DATE;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
@@ -87,6 +88,10 @@ public class CourseServiceImpl implements CourseService {
         .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
     saveNewCapRef(course, profession);
 
+    if (!dto.getEndsAt().isAfter(dto.getStartsAt())) {
+      throw new ServiceException(COURSE_END_DATE_BEFORE_OR_EQUALS_START_DATE);
+    }
+
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
     CourseCreateUpdateDto createdCourse = courseMapper.toDto(course);
@@ -111,6 +116,9 @@ public class CourseServiceImpl implements CourseService {
     Course course = courseRepo.findById(id)
         .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
     setCourseUpdates(dto, course, provider);
+    if (!dto.getEndsAt().isAfter(dto.getStartsAt())) {
+      throw new ServiceException(COURSE_END_DATE_BEFORE_OR_EQUALS_START_DATE);
+    }
     Course updatedCourse = courseRepo.saveAndFlush(course);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
