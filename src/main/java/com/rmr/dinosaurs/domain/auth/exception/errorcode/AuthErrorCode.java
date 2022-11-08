@@ -12,7 +12,8 @@ public enum AuthErrorCode implements ErrorCode {
   INCORRECT_CREDENTIALS("ITD_AEC_1", "Incorrect credentials provided", HttpStatus.BAD_REQUEST),
   INVALID_TOKEN_PROVIDED("ITD_AEC_2", "Invalid token provided", HttpStatus.UNAUTHORIZED),
   USER_NOT_CONFIRMED("ITD_AEC_3", "Email not confirmed", HttpStatus.FORBIDDEN),
-  ACCESS_DENIED_EXCEPTION("ITD_AEC_4", "Access denied", HttpStatus.FORBIDDEN);
+  ACCESS_DENIED_EXCEPTION("ITD_AEC_4", "Access denied", HttpStatus.FORBIDDEN),
+  USER_IS_ARCHIVED("ITD_AEC_5", "User is archived", HttpStatus.FORBIDDEN);
 
   private final String errorName;
   private final String message;
