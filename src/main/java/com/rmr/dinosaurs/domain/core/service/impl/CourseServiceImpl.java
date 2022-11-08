@@ -3,6 +3,7 @@ package com.rmr.dinosaurs.domain.core.service.impl;
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseStudyErrorCode.DUPLICATE_STUDY_ERROR;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ReviewErrorCode.DOUBLE_VOTE_ERROR;
@@ -220,6 +221,11 @@ public class CourseServiceImpl implements CourseService {
         .stream()
         .map(c -> c.getProfession().getName())
         .toList();
+    Optional<CourseStudy> optionalCourseStudy = courseStudyRepository.findByCourseIdAndUserInfoId(
+        courseId, userInfo.getId());
+    if (optionalCourseStudy.isPresent()) {
+      throw new ServiceException(DUPLICATE_STUDY_ERROR);
+    }
     CourseStudy courseStudy = courseStudyDtoMapper.toEntity(courseStudyCreateDto, userInfo,
         course);
     CourseStudy createdCourseStudy = courseStudyRepository.saveAndFlush(courseStudy);
