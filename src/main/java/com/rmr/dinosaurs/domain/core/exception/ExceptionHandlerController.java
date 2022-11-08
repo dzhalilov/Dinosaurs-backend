@@ -36,8 +36,8 @@ public class ExceptionHandlerController {
       Exception exception) {
     log.error(exception.getMessage(), exception);
     return ResponseEntity
-            .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-            .body(new ServiceException(UNSUPPORTED_MEDIA_TYPE));
+        .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+        .body(new ServiceException(UNSUPPORTED_MEDIA_TYPE));
   }
 
   @ExceptionHandler(value = Exception.class)
@@ -45,8 +45,8 @@ public class ExceptionHandlerController {
       Exception exception) {
     log.error(exception.getMessage(), exception);
     return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(new ServiceException(INTERNAL_SERVER_ERROR));
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new ServiceException(INTERNAL_SERVER_ERROR));
   }
 
   @ExceptionHandler(value = {
@@ -59,8 +59,8 @@ public class ExceptionHandlerController {
       Exception exception) {
     log.debug(exception.getMessage(), exception);
     return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(new ServiceException(WRONG_DATA_FORMAT));
+        .status(HttpStatus.BAD_REQUEST)
+        .body(new ServiceException(WRONG_DATA_FORMAT));
   }
 
   @ExceptionHandler(value = AccessDeniedException.class)
@@ -68,8 +68,8 @@ public class ExceptionHandlerController {
       Exception exception) {
     log.debug(exception.getMessage(), exception);
     return ResponseEntity
-            .status(HttpStatus.FORBIDDEN)
-            .body(new ServiceException(ACCESS_DENIED_EXCEPTION));
+        .status(HttpStatus.FORBIDDEN)
+        .body(new ServiceException(ACCESS_DENIED_EXCEPTION));
   }
 
 }
