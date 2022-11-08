@@ -221,10 +221,7 @@ public class CourseServiceImpl implements CourseService {
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
     Course course = courseRepo.findById(courseId)
         .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
-    List<String> professions = course.getCourseAndProfessionRefs()
-        .stream()
-        .map(c -> c.getProfession().getName())
-        .toList();
+    List<String> professions = getProfessionsList(course);
     Optional<CourseStudy> optionalCourseStudy = courseStudyRepository.findByCourseIdAndUserInfoId(
         courseId, userInfo.getId());
     if (optionalCourseStudy.isPresent()) {
@@ -235,6 +232,22 @@ public class CourseServiceImpl implements CourseService {
     CourseStudy createdCourseStudy = courseStudyRepository.saveAndFlush(courseStudy);
 
     return courseStudyDtoMapper.toCourseStudyResponseDto(createdCourseStudy, professions);
+  }
+
+  @Override
+  public List<CourseStudyResponseDto> getMyCourseStudy(Principal principal) {
+    User user = userRepository.findByEmailIgnoreCase(principal.getName())
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    if (!user.getRole().equals(Authority.ROLE_REGULAR)) {
+      throw new ServiceException(USER_ROLE_ERROR);
+    }
+    UserInfo userInfo = userInfoRepository.findByUser(user)
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    return courseStudyRepository.findByUserInfoId(userInfo.getId())
+        .stream()
+        .map(cs -> courseStudyDtoMapper.toCourseStudyResponseDto(cs,
+            getProfessionsList(cs.getCourse())))
+        .toList();
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
@@ -406,6 +419,13 @@ public class CourseServiceImpl implements CourseService {
       log.info("Something goes wrong with link checking: {}", e.getMessage());
       throw new RuntimeException(e);
     }
+  }
+
+  private List<String> getProfessionsList(Course course) {
+    return course.getCourseAndProfessionRefs()
+        .stream()
+        .map(c -> c.getProfession().getName())
+        .toList();
   }
 
 }

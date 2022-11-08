@@ -61,4 +61,6 @@ public interface CourseService {
 
   CourseStudyResponseDto createCourseStudy(Principal principal, Long courseId,
       CourseStudyCreateDto courseStudyCreateDto);
+
+  List<CourseStudyResponseDto> getMyCourseStudy(Principal principal);
 }
