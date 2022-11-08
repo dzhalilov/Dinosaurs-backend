@@ -210,6 +210,7 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
+  @Transactional
   public CourseStudyResponseDto createCourseStudy(Principal principal, Long courseId,
       CourseStudyCreateDto courseStudyCreateDto) {
     User user = userRepository.findByEmailIgnoreCase(principal.getName())
@@ -235,6 +236,7 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
+  @Transactional
   public List<CourseStudyResponseDto> getMyCourseStudy(Principal principal) {
     User user = userRepository.findByEmailIgnoreCase(principal.getName())
         .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
