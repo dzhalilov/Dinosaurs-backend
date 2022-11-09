@@ -131,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   private User createAndSaveUserFromSignupRequest(SignupRequest signupRequest) {
-    var user = new User(null, signupRequest.email().toLowerCase(),
+    var user = new User(null, signupRequest.email().toLowerCase().trim(),
         passwordEncoder.encode(signupRequest.password()), Authority.ROLE_REGULAR,
         false, LocalDateTime.now(), false, null, null, null);
     var savedUser = userRepository.saveAndFlush(user);
