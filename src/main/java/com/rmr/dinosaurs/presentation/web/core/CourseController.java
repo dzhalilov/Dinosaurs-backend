@@ -5,6 +5,9 @@ import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
@@ -25,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -214,4 +218,50 @@ public class CourseController {
     return ResponseEntity.ok().body(reviewDtoList);
   }
 
+  @Operation(summary = "Create of starting study course")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "created course study information",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseStudyResponseDto.class))}),
+      @ApiResponse(responseCode = "404", description = "course not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "404", description = "provider profile not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @PostMapping("/{courseId}/start-study")
+  public ResponseEntity<CourseStudyResponseDto> startCourseStudy(@PathVariable Long courseId,
+      Principal principal, @RequestBody @Valid CourseStudyCreateDto courseStudyCreateDto) {
+    String email = principal.getName();
+    log.info("Created course study info for user={} and course id={}", email, courseId);
+    CourseStudyResponseDto courseStudyResponseDto = courseService.createCourseStudy(principal,
+        courseId, courseStudyCreateDto);
+    URI courseStudyUri = URI.create(
+        "/api/v1/profiles/study_info" + courseStudyResponseDto.getId());
+    return ResponseEntity.created(courseStudyUri).body(courseStudyResponseDto);
+  }
+
+  @Operation(summary = "Finish course study")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204", description = "Fished course study",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseStudyResponseDto.class))}),
+      @ApiResponse(responseCode = "404", description = "course or user not found",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))}),
+      @ApiResponse(responseCode = "400", description = "bad request",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @PatchMapping("/{courseId}/finish-study")
+  @ModeratorPermission
+  public ResponseEntity<CourseStudyResponseDto> finishCourseStudy(@PathVariable Long courseId,
+      @RequestBody @Valid CourseStudyUpdateDto courseStudyUpdateDto) {
+    log.info("Update course study for course id={} and user email={}",
+        courseId, courseStudyUpdateDto.userEmail());
+    courseService.finishCourseStudy(courseId, courseStudyUpdateDto);
+    return ResponseEntity.noContent().build();
+  }
 }
