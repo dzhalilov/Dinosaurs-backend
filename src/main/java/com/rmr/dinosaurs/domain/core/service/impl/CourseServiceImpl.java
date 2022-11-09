@@ -187,13 +187,13 @@ public class CourseServiceImpl implements CourseService {
     Review review = reviewEntityDtoMapper.toEntity(reviewDto);
     review.setCourse(course);
     review.setUserInfo(userInfo);
-    if (review.getRating() != null) {
-      long newQuantityOfVotes = course.getVotes() + 1L;
-      Double sumOfAllRatings = course.getVotes() * course.getAverageRating();
-      Double newAverageRating = (sumOfAllRatings + review.getRating()) / newQuantityOfVotes;
-      course.setVotes(newQuantityOfVotes);
-      course.setAverageRating(newAverageRating);
-    }
+    // count new average rating
+    long newQuantityOfVotes = course.getVotes() + 1L;
+    Double sumOfAllRatings = course.getVotes() * course.getAverageRating();
+    Double newAverageRating = (sumOfAllRatings + review.getRating()) / newQuantityOfVotes;
+    course.setVotes(newQuantityOfVotes);
+    course.setAverageRating(newAverageRating);
+
     Review createdReview = reviewRepository.saveAndFlush(review);
     return reviewEntityDtoMapper.toReviewResponseDto(createdReview);
   }
