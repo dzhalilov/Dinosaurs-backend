@@ -64,3 +64,11 @@ endpoints:
   health:
     id: healthcheck
     enabled: true
+
+notification:
+  email:
+    domainUrl: ${DOMAIN_URL:test}
+
+tempconfirmation:
+  code:
+    ttl: 120

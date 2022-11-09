@@ -1,41 +1,58 @@
 package com.rmr.dinosaurs.domain.core.service.impl;
 
 import static com.rmr.dinosaurs.domain.auth.exception.errorcode.UserErrorCode.USER_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_END_DATE_BEFORE_OR_EQUALS_START_DATE;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseErrorCode.COURSE_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseProviderErrorCode.COURSE_PROVIDER_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseStudyErrorCode.COURSE_WITH_USER_INFO_NOT_FOUND;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseStudyErrorCode.DUPLICATE_STUDY_ERROR;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseStudyErrorCode.END_DATE_TIME_ERROR;
+import static com.rmr.dinosaurs.domain.core.exception.errorcode.CourseStudyErrorCode.USER_ROLE_ERROR;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NEGATIVE_PAGE_NUMBER;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ReviewErrorCode.DOUBLE_VOTE_ERROR;
+import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.core.configuration.properties.CourseServiceProperties;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
+import com.rmr.dinosaurs.domain.core.model.Authority;
 import com.rmr.dinosaurs.domain.core.model.Course;
 import com.rmr.dinosaurs.domain.core.model.CourseAndProfession;
 import com.rmr.dinosaurs.domain.core.model.CourseAndTag;
 import com.rmr.dinosaurs.domain.core.model.CourseProvider;
+import com.rmr.dinosaurs.domain.core.model.CourseStudy;
 import com.rmr.dinosaurs.domain.core.model.Profession;
 import com.rmr.dinosaurs.domain.core.model.Review;
 import com.rmr.dinosaurs.domain.core.model.Tag;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseEntityDtoMapper;
+import com.rmr.dinosaurs.domain.core.utils.mapper.CourseStudyDtoMapper;
 import com.rmr.dinosaurs.domain.core.utils.mapper.ReviewEntityDtoMapper;
+import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseAndTagRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
+import com.rmr.dinosaurs.infrastucture.database.core.CourseStudyRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ReviewRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.TagRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,6 +64,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +76,8 @@ public class CourseServiceImpl implements CourseService {
   private final CourseServiceProperties props;
   private final CourseEntityDtoMapper courseMapper;
   private final ReviewEntityDtoMapper reviewEntityDtoMapper;
+  private final CourseStudyDtoMapper courseStudyDtoMapper;
+  private final NotificationClient notificationClient;
 
   private final CourseRepository courseRepo;
   private final CourseProviderRepository providerRepo;
@@ -68,6 +88,7 @@ public class CourseServiceImpl implements CourseService {
   private final UserRepository userRepository;
   private final UserInfoRepository userInfoRepository;
   private final ReviewRepository reviewRepository;
+  private final CourseStudyRepository courseStudyRepository;
 
   @Override
   @Transactional
@@ -79,6 +100,10 @@ public class CourseServiceImpl implements CourseService {
     Profession profession = professionRepo.findById(dto.getProfessionId())
         .orElseThrow(() -> new ServiceException(PROFESSION_NOT_FOUND));
     saveNewCapRef(course, profession);
+
+    if (!dto.getEndsAt().isAfter(dto.getStartsAt())) {
+      throw new ServiceException(COURSE_END_DATE_BEFORE_OR_EQUALS_START_DATE);
+    }
 
     saveNewTagsAndSaveNewCatRefs(course, dto.getTags());
 
@@ -104,6 +129,9 @@ public class CourseServiceImpl implements CourseService {
     Course course = courseRepo.findById(id)
         .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
     setCourseUpdates(dto, course, provider);
+    if (!dto.getEndsAt().isAfter(dto.getStartsAt())) {
+      throw new ServiceException(COURSE_END_DATE_BEFORE_OR_EQUALS_START_DATE);
+    }
     Course updatedCourse = courseRepo.saveAndFlush(course);
 
     Profession profession = professionRepo.findById(dto.getProfessionId())
@@ -172,13 +200,13 @@ public class CourseServiceImpl implements CourseService {
     Review review = reviewEntityDtoMapper.toEntity(reviewDto);
     review.setCourse(course);
     review.setUserInfo(userInfo);
-    if (review.getRating() != null) {
-      long newQuantityOfVotes = course.getVotes() + 1L;
-      Double sumOfAllRatings = course.getVotes() * course.getAverageRating();
-      Double newAverageRating = (sumOfAllRatings + review.getRating()) / newQuantityOfVotes;
-      course.setVotes(newQuantityOfVotes);
-      course.setAverageRating(newAverageRating);
-    }
+    // count new average rating
+    long newQuantityOfVotes = course.getVotes() + 1L;
+    Double sumOfAllRatings = course.getVotes() * course.getAverageRating();
+    Double newAverageRating = (sumOfAllRatings + review.getRating()) / newQuantityOfVotes;
+    course.setVotes(newQuantityOfVotes);
+    course.setAverageRating(newAverageRating);
+
     Review createdReview = reviewRepository.saveAndFlush(review);
     return reviewEntityDtoMapper.toReviewResponseDto(createdReview);
   }
@@ -190,6 +218,70 @@ public class CourseServiceImpl implements CourseService {
     return reviewList.stream()
         .map(reviewEntityDtoMapper::toReviewResponseDto)
         .toList();
+  }
+
+  @Override
+  @Transactional
+  public CourseStudyResponseDto createCourseStudy(Principal principal, Long courseId,
+      CourseStudyCreateDto courseStudyCreateDto) {
+    User user = userRepository.findByEmailIgnoreCase(principal.getName())
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    if (!user.getRole().equals(Authority.ROLE_REGULAR)) {
+      throw new ServiceException(USER_ROLE_ERROR);
+    }
+    UserInfo userInfo = userInfoRepository.findByUser(user)
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    Course course = courseRepo.findById(courseId)
+        .orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
+    List<String> professions = getProfessionsList(course);
+    Optional<CourseStudy> optionalCourseStudy = courseStudyRepository.findByCourseIdAndUserInfoId(
+        courseId, userInfo.getId());
+    if (optionalCourseStudy.isPresent()) {
+      throw new ServiceException(DUPLICATE_STUDY_ERROR);
+    }
+    CourseStudy courseStudy = courseStudyDtoMapper.toEntity(courseStudyCreateDto, userInfo,
+        course);
+    CourseStudy createdCourseStudy = courseStudyRepository.saveAndFlush(courseStudy);
+
+    return courseStudyDtoMapper.toCourseStudyResponseDto(createdCourseStudy, professions);
+  }
+
+  @Override
+  @Transactional
+  public List<CourseStudyResponseDto> getMyCourseStudy(Principal principal) {
+    User user = userRepository.findByEmailIgnoreCase(principal.getName())
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    if (!user.getRole().equals(Authority.ROLE_REGULAR)) {
+      throw new ServiceException(USER_ROLE_ERROR);
+    }
+    UserInfo userInfo = userInfoRepository.findByUser(user)
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    return courseStudyRepository.findByUserInfoId(userInfo.getId())
+        .stream()
+        .map(cs -> courseStudyDtoMapper.toCourseStudyResponseDto(cs,
+            getProfessionsList(cs.getCourse())))
+        .toList();
+  }
+
+  @Override
+  @Transactional
+  public void finishCourseStudy(Long courseId,
+      CourseStudyUpdateDto courseStudyUpdateDto) {
+    User user = userRepository.findByEmailIgnoreCase(courseStudyUpdateDto.userEmail())
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    if (!user.getRole().equals(Authority.ROLE_REGULAR)) {
+      throw new ServiceException(USER_ROLE_ERROR);
+    }
+    UserInfo userInfo = userInfoRepository.findByUser(user)
+        .orElseThrow(() -> new ServiceException(USER_NOT_FOUND));
+    CourseStudy courseStudy = courseStudyRepository.findByCourseIdAndUserInfoId(courseId,
+            userInfo.getId())
+        .orElseThrow(() -> new ServiceException(COURSE_WITH_USER_INFO_NOT_FOUND));
+    if (courseStudyUpdateDto.endsAt().isBefore(courseStudy.getStartsAt())) {
+      throw new ServiceException(END_DATE_TIME_ERROR);
+    }
+    courseStudy.setEndsAt(courseStudyUpdateDto.endsAt());
+    courseStudy.setScore(courseStudyUpdateDto.score());
   }
 
   private Course saveNewCourseAndFlush(Course course, CourseProvider provider) {
@@ -312,6 +404,62 @@ public class CourseServiceImpl implements CourseService {
     pageDto.setContent(page.getContent().stream()
         .map(this::toReadCourseDto).toList());
     return pageDto;
+  }
+
+  @SuppressWarnings("java:S3864")
+  @Scheduled(cron = "0 0 18 * * *")
+  void notifyModeratorsAboutEndingTodayCoursesAndSetCoursesAsArchived() {
+    int today = LocalDateTime.now().getDayOfMonth();
+    var expiringCourses = courseRepo.findAllByIsArchivedIsFalse()
+        .stream()
+        .filter(course -> today == course.getEndsAt().getDayOfMonth())
+        .peek(course -> course.setIsArchived(true))
+        .toList();
+    if (!expiringCourses.isEmpty()) {
+      courseRepo.saveAll(expiringCourses);
+      var moderatorsEmails = getAllModeratorsEmails();
+      notificationClient.endedTodayCoursesNotification(expiringCourses, moderatorsEmails);
+    }
+  }
+
+  @Scheduled(cron = "0 0 7 * * *")
+  void notifyModeratorsAboutCoursesWithInvalidLink() {
+    var unreachableCourses = courseRepo.findAllByIsArchivedIsFalse()
+        .parallelStream()
+        .filter(course -> !isLinkReachable(course.getUrl()))
+        .toList();
+    if (!unreachableCourses.isEmpty()) {
+      var moderatorsEmails = getAllModeratorsEmails();
+      notificationClient.invalidCoursesLinksNotification(unreachableCourses, moderatorsEmails);
+    }
+  }
+
+  private List<String> getAllModeratorsEmails() {
+    return userRepository.findAllByIsConfirmedTrue().stream()
+        .filter(user -> ROLE_MODERATOR.equals(user.getRole()))
+        .map(User::getEmail)
+        .toList();
+  }
+
+  private boolean isLinkReachable(String url) {
+    try {
+      URL link = new URL(url);
+      HttpURLConnection connection = (HttpURLConnection) link.openConnection();
+      connection.setRequestMethod("GET");
+      connection.setConnectTimeout(2000);
+      connection.connect();
+      return 200 == connection.getResponseCode();
+    } catch (IOException e) {
+      log.info("Something goes wrong with link checking: {}", e.getMessage());
+      throw new RuntimeException(e);
+    }
+  }
+
+  private List<String> getProfessionsList(Course course) {
+    return course.getCourseAndProfessionRefs()
+        .stream()
+        .map(c -> c.getProfession().getName())
+        .toList();
   }
 
 }

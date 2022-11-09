@@ -2,6 +2,7 @@ package com.rmr.dinosaurs.infrastucture.database.core;
 
 import com.rmr.dinosaurs.domain.core.model.Course;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,5 +35,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
       @Param("endsAt") LocalDateTime endsAt,
       @Param("currentDateTime") LocalDateTime currentDateTime,
       Pageable page);
+
+  List<Course> findAllByIsArchivedIsFalse();
 
 }

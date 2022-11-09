@@ -9,6 +9,7 @@ import com.rmr.dinosaurs.domain.auth.service.UserService;
 import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.Authority;
+import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,12 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final UserConverter userConverter;
+
+  private final NotificationClient notificationClient;
+
+  @Value("${tempconfirmation.code.ttl}")
+  private Long tempCodeTtl;
+
 
   @Override
   public UserDto getCurrentUserDto() {
@@ -59,6 +67,7 @@ public class UserServiceImpl implements UserService {
       } else {
         user.setRole(Authority.ROLE_REGULAR);
       }
+      notificationClient.roleChangedNotification(isModerator, user.getEmail());
     }
     user = userRepository.save(user);
     return userConverter.toUserDto(user);
@@ -71,10 +80,10 @@ public class UserServiceImpl implements UserService {
     return userConverter.toUserDto(user);
   }
 
-  @Scheduled(cron = "midnight")
-  private void deleteNotConfirmedEmailUsers() {
+  @Scheduled(cron = "@midnight")
+  void deleteNotConfirmedEmailUsers() {
     userRepository.deleteAllByIsConfirmedIsFalseAndRegisteredAtIsBefore(
-        LocalDateTime.now().minus(12, ChronoUnit.HOURS));
+        LocalDateTime.now().minus(tempCodeTtl, ChronoUnit.MINUTES));
   }
 
   private User getUserFromRepositoryById(Long id) {

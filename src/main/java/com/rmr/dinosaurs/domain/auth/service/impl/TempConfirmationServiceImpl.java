@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.function.BiPredicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +24,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TempConfirmationServiceImpl implements TempConfirmationService {
 
-  private static final Long TTL = 60L;
-
   private final TempConfirmationRepository tempConfirmationRepository;
+  @Value("${tempconfirmation.code.ttl}")
+  public Long tempCodeTtl;
   private final BiPredicate<LocalDateTime, LocalDateTime> isValidTempConfirmationPredicate =
-      (currentTime, issuedAt) -> currentTime.minus(TTL, ChronoUnit.MINUTES).isAfter(issuedAt);
+      (currentTime, issuedAt) -> currentTime.isBefore(
+          issuedAt.plus(tempCodeTtl, ChronoUnit.MINUTES));
 
 
   @Override
@@ -52,9 +54,9 @@ public class TempConfirmationServiceImpl implements TempConfirmationService {
   }
 
   @Scheduled(cron = "@midnight")
-  private void removeNonConfirmed() {
-    tempConfirmationRepository
-        .deleteAllByIssuedAtBefore(LocalDateTime.now().minus(TTL, ChronoUnit.MINUTES));
+  void removeNonConfirmed() {
+    tempConfirmationRepository.deleteAllByIssuedAtBefore(
+        LocalDateTime.now().minus(tempCodeTtl, ChronoUnit.MINUTES));
   }
 
 }

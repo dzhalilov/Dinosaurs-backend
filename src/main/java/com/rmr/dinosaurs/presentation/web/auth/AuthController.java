@@ -40,7 +40,7 @@ public class AuthController {
       @ApiResponse(responseCode = "404", description = "user not found",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))}),
-      @ApiResponse(responseCode = "403", description = "email not confirmed",
+      @ApiResponse(responseCode = "403", description = "email not confirmed or user is archived",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
   @PostMapping("/login")

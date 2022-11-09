@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum CourseErrorCode implements ErrorCode {
+public enum ApplicationErrorCode implements ErrorCode {
 
-  COURSE_NOT_FOUND("ITD_CEC_1", "No such course found", HttpStatus.NOT_FOUND),
-  COURSE_END_DATE_BEFORE_OR_EQUALS_START_DATE("ITD_CEC_2",
-      "Course end date have to be after start date", HttpStatus.BAD_REQUEST);
+  WRONG_DATA_FORMAT("ITD_AEC_1", "Wrong data format", HttpStatus.BAD_REQUEST),
+  INTERNAL_SERVER_ERROR("ITD_AEC_2", "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
+  UNSUPPORTED_MEDIA_TYPE("ITD_AEC_3", "Unsupported media type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
   private final String errorName;
   private final String message;
