@@ -23,7 +23,7 @@ public interface CourseStudyRepository extends JpaRepository<CourseStudy, Long> 
       + " WHERE ("
       + "(:courseTitle is null) or ((lower(cs.course.title) LIKE %:courseTitle%))"
       + ")"
-      + " and (:profession is null) or ((lower(p.name) LIKE %:profession%))"
+      + " and ((:profession is null) or ((lower(p.name) LIKE %:profession%)))"
       + " and ((:score is null) or (cs.score >= :score))"
       + " and ((:isFinished is null) or (:isFinished = false and cs.endsAt is null)"
       + " or (:isFinished = true and cs.endsAt is not null))"
