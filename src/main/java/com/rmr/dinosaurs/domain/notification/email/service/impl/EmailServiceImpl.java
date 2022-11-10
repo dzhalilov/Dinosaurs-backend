@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
 
   private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
+  private static final String COFFEE_SMILE = "&#9749;";
+  private static final String WEB_SITE_NAME = "Динозавры в IT";
 
   private final EmailSenderService emailSenderService;
 
@@ -35,8 +37,9 @@ public class EmailServiceImpl implements EmailService {
     try {
       MimeMessage message = emailSenderService.getMimeMessage();
       message.setSubject("Подтверждение адреса электронной почты");
-      message.setContent(String.format("<h2>Для подтверждения перейдите по ссылке: "
-              + "%s/%s </h2>", domainUrl + "/confirm", tempConfirmationId),
+      message.setContent(String.format("<h2>Для подтверждения перейдите по ссылке: %s/%s </h2>"
+                  + " <br><br>Если вы не регистрировались на сайте %s, то игнорируйте это письмо.",
+              domainUrl + "/confirm", tempConfirmationId, domainUrl),
           CONTENT_TYPE
       );
       emailSenderService.sendEmail(message, Collections.singletonList(recipient));
@@ -52,8 +55,8 @@ public class EmailServiceImpl implements EmailService {
       MimeMessage message = emailSenderService.getMimeMessage();
       message.setSubject("Добро пожаловать");
       message.setContent(String.format(
-              "<h2>Рады приветствовать Вас в нашем уютном %s дино-клубе! </h2> </br>"
-                  + "<h2> Будем всегда рады видеть Вас на %s </h2>", "&#9749;", domainUrl),
+              "<h2>Рады приветствовать Вас в нашем уютном %s дино-клубе!</h2>"
+                  + "<br><h2>Будем всегда рады видеть Вас на %s </h2>", COFFEE_SMILE, domainUrl),
           CONTENT_TYPE
       );
       emailSenderService.sendEmail(message, Collections.singletonList(recipient));
@@ -69,8 +72,9 @@ public class EmailServiceImpl implements EmailService {
       MimeMessage message = emailSenderService.getMimeMessage();
       message.setSubject("Уведомление: изменение роли");
       String role = Boolean.TRUE.equals(isModerator) ? "Модератор" : "Пользователь";
-      message.setContent("<h4>Ваша роль в IT Dinosaurs изменена.</br>"
-              + "Текущая роль: " + role + "</h4>",
+      message.setContent(String.format("<h4>Ваша роль на сайте %s изменена.</h4>"
+                  + "<br><h4>Текущая роль: %s </h4><br><br>%s %s",
+              WEB_SITE_NAME, role, getChangeRoleMessageByRole(isModerator), domainUrl),
           CONTENT_TYPE);
       emailSenderService.sendEmail(message, Collections.singletonList(recipient));
     } catch (MessagingException e) {
@@ -83,8 +87,9 @@ public class EmailServiceImpl implements EmailService {
   public void sendInvalidCoursesLinksEmail(List<Course> courses, List<String> recipients) {
     try {
       MimeMessage message = emailSenderService.getMimeMessage();
-      message.setSubject("Уведомление: Ссылки на курсы недоступны");
-      message.setContent("<h3>Список курсов, ссылки на которые недоступны</h3></br>"
+      message.setSubject("Уведомление: ссылки на курсы недоступны");
+      message.setContent("<h3>Уважаемый модератор! Обратите внимание на список курсов, "
+              + " ссылки на которые недоступны: </h3><br>"
               + getHtmlListOfCourses(courses),
           CONTENT_TYPE);
       emailSenderService.sendEmail(message, recipients);
@@ -98,8 +103,9 @@ public class EmailServiceImpl implements EmailService {
   public void sendEndedTodayCoursesEmail(List<Course> courses, List<String> recipients) {
     try {
       MimeMessage message = emailSenderService.getMimeMessage();
-      message.setSubject("Уведомление: Курсы заканчиваются сегодня");
-      message.setContent("<h3>Список курсов, которые закончились сегодня</h3></br>"
+      message.setSubject("Уведомление: сегодня закончились курсы");
+      message.setContent("<h3>Уважаемый модератор! Обратите внимание на список курсов, "
+              + "которые закончились сегодня: </h3><br>"
               + getHtmlListOfCourses(courses),
           CONTENT_TYPE);
       emailSenderService.sendEmail(message, recipients);
@@ -107,6 +113,13 @@ public class EmailServiceImpl implements EmailService {
       log.debug("Cant send ended today courses email", e);
       throw new ServiceException(FAILED_EMAIL_SEND);
     }
+  }
+
+  private String getChangeRoleMessageByRole(Boolean isModer) {
+    return Boolean.TRUE.equals(isModer)
+        ? "Теперь вам доступна административная панель для добавления и изменения профессий, "
+        + "провайдеров курсов и курсов на "
+        : "Вам более недоступна административная панель на ";
   }
 
   private String getHtmlListOfCourses(List<Course> courses) {
