@@ -2,8 +2,8 @@ package com.rmr.dinosaurs.domain.core.utils.mapper;
 
 import com.rmr.dinosaurs.domain.core.model.Course;
 import com.rmr.dinosaurs.domain.core.model.CourseStudy;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyCreateDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import java.util.List;
 import org.mapstruct.Mapper;

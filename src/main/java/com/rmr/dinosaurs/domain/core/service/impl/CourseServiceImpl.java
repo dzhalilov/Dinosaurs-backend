@@ -32,12 +32,12 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyCreateDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyInfoResponseDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyReadPageDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyResponseDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyUpdateDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.FilterCourseStudyParamsDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyInfoResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyUpdateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.FilterCourseStudyParamsDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseStudyDtoMapper;
@@ -477,7 +477,7 @@ public class CourseServiceImpl implements CourseService {
         .map(Profession::getName)
         .collect(Collectors.toSet());
     return CourseStudyInfoResponseDto.builder()
-        .userInfoNameAndSurname(courseStudy.getUserInfo().getName()
+        .userInfoNameAndSurname(courseStudy.getUserInfo().getName() + " "
             + courseStudy.getUserInfo().getSurname())
         .email(courseStudy.getUserInfo().getUser().getEmail())
         .courseTitle(courseStudy.getCourse().getTitle())

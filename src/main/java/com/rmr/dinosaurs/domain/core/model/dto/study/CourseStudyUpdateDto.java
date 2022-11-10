@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.domain.core.model.dto.course_study;
+package com.rmr.dinosaurs.domain.core.model.dto.study;
 
 import com.rmr.dinosaurs.domain.auth.utils.validator.EmailConstraintValidator;
 import java.time.LocalDateTime;

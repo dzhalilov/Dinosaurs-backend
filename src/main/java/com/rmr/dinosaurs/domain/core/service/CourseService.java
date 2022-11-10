@@ -6,11 +6,11 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyCreateDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyReadPageDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyResponseDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyUpdateDto;
-import com.rmr.dinosaurs.domain.core.model.dto.course_study.FilterCourseStudyParamsDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyUpdateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.FilterCourseStudyParamsDto;
 import java.security.Principal;
 import java.util.List;
 
