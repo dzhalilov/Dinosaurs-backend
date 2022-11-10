@@ -307,5 +307,42 @@ class AuthServiceTest {
     verifyNoMoreInteractions(refreshTokenRepositoryMock, userRepositoryMock, jwtTokenServiceMock);
     verifyNoInteractions(userInfoRepositoryMock, passwordEncoderMock);
   }
+  
+  @Test
+  @DisplayName("confirm email success")
+  void shouldConfirmEmail() {
+    // given
+    RefreshToken testRefreshToken = new RefreshToken(10L, "refreshToken", testUser.getId());
+    JwtTokenPair testJwtTokenPair = new JwtTokenPair("accessToken", testRefreshToken.getValue());
+    var tmpConfirmation = new TempConfirmation(UUID.randomUUID(),
+        LocalDateTime.now(ZoneOffset.UTC).minus(5, ChronoUnit.MINUTES), testUser);
+    given(tempConfirmationServiceMock.validateTempConfirmationByCodeAndDelete(any(UUID.class)))
+        .willReturn(Optional.of(tmpConfirmation));
+    given(userRepositoryMock.findById(anyLong())).willReturn(Optional.of(testUser));
+    given(userRepositoryMock.saveAndFlush(any(User.class))).willReturn(testUser);
+    given(jwtTokenServiceMock.generateJwtTokenPair(any(DinoAuthentication.class))).willReturn(
+        testJwtTokenPair);
+    given(refreshTokenRepositoryMock.findByUserId(testUser.getId()))
+        .willReturn(Optional.of(testRefreshToken));
+
+    // when
+    JwtTokenPair actual = authService.confirmEmail(tmpConfirmation.getId());
+
+    // then
+    assertThat(actual).isNotNull();
+    assertThat(actual.getAccessToken()).isNotNull().isNotEmpty();
+    assertThat(actual.getRefreshToken()).isNotNull().isNotEmpty();
+
+    verify(tempConfirmationServiceMock).validateTempConfirmationByCodeAndDelete(
+        tmpConfirmation.getId());
+    verify(userRepositoryMock).findById(anyLong());
+    verify(userRepositoryMock).saveAndFlush(any(User.class));
+    verify(notificationClientMock).registrationWelcomeNotification(testUser.getEmail());
+    verify(jwtTokenServiceMock).generateJwtTokenPair(any(DinoAuthentication.class));
+    verify(refreshTokenRepositoryMock).findByUserId(testUser.getId());
+
+    verifyNoMoreInteractions(userRepositoryMock, refreshTokenRepositoryMock, jwtTokenServiceMock);
+    verifyNoInteractions(userInfoRepositoryMock, passwordEncoderMock);
+  }
 
 }
