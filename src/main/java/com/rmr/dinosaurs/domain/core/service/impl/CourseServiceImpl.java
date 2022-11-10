@@ -15,6 +15,7 @@ import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
 
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.core.configuration.properties.CourseServiceProperties;
+import com.rmr.dinosaurs.domain.core.configuration.properties.CourseStudyServiceProperties;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.Authority;
 import com.rmr.dinosaurs.domain.core.model.Course;
@@ -28,12 +29,15 @@ import com.rmr.dinosaurs.domain.core.model.Tag;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyCreateDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyInfoResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyUpdateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.FilterCourseStudyParamsDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseStudyDtoMapper;
@@ -58,6 +62,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -74,6 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CourseServiceImpl implements CourseService {
 
   private final CourseServiceProperties props;
+  private final CourseStudyServiceProperties courseStudyServiceProp;
   private final CourseEntityDtoMapper courseMapper;
   private final ReviewEntityDtoMapper reviewEntityDtoMapper;
   private final CourseStudyDtoMapper courseStudyDtoMapper;
@@ -179,6 +186,30 @@ public class CourseServiceImpl implements CourseService {
     Pageable pageable = PageRequest.of(pageNum, props.getDefaultPageSize(), sort);
 
     return findPagedFilteredCourses(filter, pageable);
+  }
+
+  @Override
+  @Transactional
+  public CourseStudyReadPageDto getFilteredCourseInformationPage(int pageNum,
+      FilterCourseStudyParamsDto filter) {
+
+    --pageNum;
+    if (pageNum < 0) {
+      throw new ServiceException(NEGATIVE_PAGE_NUMBER);
+    }
+
+    Sort sort = Sort.by(Sort.Order.asc("course.title"), Sort.Order.desc("score"));
+
+    Pageable pageable = PageRequest.of(pageNum, courseStudyServiceProp.getDefaultPageSize(),
+        sort);
+    if (filter.getScore() == null) {
+      filter.setScore(courseStudyServiceProp.getDefaultScore());
+    }
+    if (filter.getEndsAt() == null) {
+      filter.setEndsAt(courseStudyServiceProp.getDefaultEndsAt());
+    }
+
+    return findPagedFilteredCourseStudy(filter, pageable);
   }
 
   @Override
@@ -378,6 +409,29 @@ public class CourseServiceImpl implements CourseService {
     return toReadCoursePageDto(page);
   }
 
+  private CourseStudyReadPageDto findPagedFilteredCourseStudy(FilterCourseStudyParamsDto filter,
+      Pageable pageable) {
+    String loweredCourseTitle = (filter.getCourseTitle() == null)
+        ? ""
+        : filter.getCourseTitle().toLowerCase();
+    filter.setCourseTitle(loweredCourseTitle);
+
+    String loweredProfession = (filter.getProfession() == null)
+        ? ""
+        : filter.getProfession().toLowerCase();
+    filter.setProfession(loweredProfession);
+
+    Page<CourseStudy> page = courseStudyRepository.findByFilter(
+        filter.getCourseTitle(),
+        filter.getProfession(),
+        filter.getScore(),
+        filter.getEndsAt(),
+        filter.getIsFinished(),
+        pageable);
+
+    return toCourseStudyReadPageDto(page);
+  }
+
   private CourseReadDto toReadCourseDto(Course course) {
     Profession courseProfession = course.getCourseAndProfessionRefs()
         .iterator().next()
@@ -404,6 +458,34 @@ public class CourseServiceImpl implements CourseService {
     pageDto.setContent(page.getContent().stream()
         .map(this::toReadCourseDto).toList());
     return pageDto;
+  }
+
+  private CourseStudyReadPageDto toCourseStudyReadPageDto(Page<CourseStudy> page) {
+    CourseStudyReadPageDto pageDto = new CourseStudyReadPageDto();
+    pageDto.setTotalElements(page.getTotalElements());
+    pageDto.setTotalPages(page.getTotalPages());
+    pageDto.setPageSize(page.getSize());
+    pageDto.setPageNumber(page.getNumber() + 1);
+    pageDto.setContent(page.getContent().stream()
+        .map(this::toCourseStudyInfoResponseDto).toList());
+    return pageDto;
+  }
+
+  private CourseStudyInfoResponseDto toCourseStudyInfoResponseDto(CourseStudy courseStudy) {
+    Set<String> professions = professionRepo.findByCourseId(courseStudy.getCourse().getId())
+        .stream()
+        .map(Profession::getName)
+        .collect(Collectors.toSet());
+    return CourseStudyInfoResponseDto.builder()
+        .userInfoNameAndSurname(courseStudy.getUserInfo().getName() + " "
+            + courseStudy.getUserInfo().getSurname())
+        .email(courseStudy.getUserInfo().getUser().getEmail())
+        .courseTitle(courseStudy.getCourse().getTitle())
+        .isCourseFinished(courseStudy.getEndsAt() != null)
+        .finishedAt(courseStudy.getEndsAt())
+        .score(courseStudy.getScore())
+        .professions(professions)
+        .build();
   }
 
   @SuppressWarnings("java:S3864")
