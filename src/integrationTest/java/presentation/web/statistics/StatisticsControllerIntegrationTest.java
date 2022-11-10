@@ -114,17 +114,17 @@ public class StatisticsControllerIntegrationTest {
 
   @AfterEach
   void cleanDb() {
+    courseLinkTransitionRepository.deleteAll();
     userRepository.deleteAll();
     courseAndProfessionRepository.deleteAll();
     courseRepository.deleteAll();
     courseProviderRepository.deleteAll();
     professionRepository.deleteAll();
-    courseLinkTransitionRepository.deleteAll();
   }
 
 
   @Test
-  @DisplayName("course link transition")
+  @DisplayName("course link transition add statistics")
   void whenCreateCourseLinkTransitionThenStatisticsSaved() {
     // given
     var currentUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
