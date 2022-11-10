@@ -3,12 +3,14 @@ package com.rmr.dinosaurs.domain.core.service;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyCreateDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyUpdateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.FilterCourseStudyParamsDto;
 import java.security.Principal;
 import java.util.List;
 
@@ -66,4 +68,7 @@ public interface CourseService {
   List<CourseStudyResponseDto> getMyCourseStudy(Principal principal);
 
   void finishCourseStudy(Long courseId, CourseStudyUpdateDto courseStudyUpdateDto);
+
+  CourseStudyReadPageDto getFilteredCourseInformationPage(int pageNum, String sortBy,
+      FilterCourseStudyParamsDto filter);
 }

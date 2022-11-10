@@ -1,4 +1,4 @@
-package com.rmr.dinosaurs.domain.core.model.dto;
+package com.rmr.dinosaurs.domain.core.model.dto.course_study;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;

@@ -5,12 +5,14 @@ import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseCreateUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyCreateDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyCreateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyReadPageDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.CourseStudyUpdateDto;
+import com.rmr.dinosaurs.domain.core.model.dto.course_study.FilterCourseStudyParamsDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -263,5 +265,32 @@ public class CourseController {
         courseId, courseStudyUpdateDto.userEmail());
     courseService.finishCourseStudy(courseId, courseStudyUpdateDto);
     return ResponseEntity.noContent().build();
+  }
+
+  @Operation(summary = "Get page of filtered course study information")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "got page of course study information",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseReadPageDto.class))}),
+      @ApiResponse(responseCode = "400", description = "not positive page number",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @GetMapping("/study-information")
+  public ResponseEntity<CourseStudyReadPageDto> getFilteredCourseInformationPage(
+      @RequestParam(name = "page", required = false, defaultValue = "1") int pageNum,
+      @RequestParam(name = "courseTitle", required = false) String courseTitle,
+      @RequestParam(name = "profession", required = false) String profession,
+      @RequestParam(name = "score", required = false) Long score,
+      @RequestParam(name = "endsAt", required = false)
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endsAt,
+      @RequestParam(name = "isFinished", required = false) Boolean isFinished,
+      @RequestParam(name = "sortBy", required = false) String sortBy) {
+
+    FilterCourseStudyParamsDto filter = new FilterCourseStudyParamsDto(
+        courseTitle, profession, score, endsAt, isFinished);
+    log.info("Get all course study information with filter={}", filter);
+    CourseStudyReadPageDto coursePage = courseService.getFilteredCourseInformationPage(pageNum,
+        sortBy, filter);
+    return ResponseEntity.ok().body(coursePage);
   }
 }
