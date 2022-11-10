@@ -29,14 +29,16 @@ import com.rmr.dinosaurs.domain.auth.service.TempConfirmationService;
 import com.rmr.dinosaurs.domain.auth.service.impl.AuthServiceImpl;
 import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
-import com.rmr.dinosaurs.domain.notification.email.service.EmailSenderService;
+import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.infrastucture.database.auth.RefreshTokenRepository;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +54,7 @@ class AuthServiceTest {
   private final User testUser = new User(1L, "super@email.com", "stR4nGeRp4Ssw0rDHaHa",
       ROLE_REGULAR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   @Mock
-  private EmailSenderService emailSenderServiceMock;
+  private NotificationClient notificationClientMock;
   @Mock
   private UserRepository userRepositoryMock;
   @Mock
@@ -158,7 +160,8 @@ class AuthServiceTest {
     given(passwordEncoderMock.encode(testUser.getPassword())).willReturn("p4sswOrD");
     given(userConverterMock.toUserDto(any(User.class))).willReturn(testUserDto);
     given(tempConfirmationServiceMock.createTempConfirmationFor(any(User.class)))
-        .willReturn(new TempConfirmation());
+        .willReturn(new TempConfirmation(
+            UUID.randomUUID(), LocalDateTime.now(ZoneOffset.UTC), testUser));
 
     // when
     var actual = authService.signup(
@@ -173,9 +176,10 @@ class AuthServiceTest {
     verify(userInfoRepositoryMock).saveAndFlush(any(UserInfo.class));
     verify(passwordEncoderMock).encode(anyString());
     verify(tempConfirmationServiceMock).createTempConfirmationFor(any(User.class));
+    verify(notificationClientMock).emailConfirmationNotification(any(UUID.class), anyString());
 
     verifyNoMoreInteractions(userRepositoryMock, userInfoRepositoryMock, refreshTokenRepositoryMock,
-        jwtTokenServiceMock, passwordEncoderMock, emailSenderServiceMock);
+        jwtTokenServiceMock, passwordEncoderMock, notificationClientMock);
   }
 
   @Test
