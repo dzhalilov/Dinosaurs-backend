@@ -42,15 +42,6 @@ public class ExceptionHandlerController {
         .body(new ServiceException(UNSUPPORTED_MEDIA_TYPE));
   }
 
-  @ExceptionHandler(value = Exception.class)
-  public ResponseEntity<Exception> exceptionResponseEntity(
-      Exception exception) {
-    log.error(exception.getMessage(), exception);
-    return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(new ServiceException(INTERNAL_SERVER_ERROR));
-  }
-
   @ExceptionHandler(value = {
       MethodArgumentTypeMismatchException.class,
       MethodArgumentNotValidException.class,
@@ -74,6 +65,15 @@ public class ExceptionHandlerController {
     return ResponseEntity
         .status(HttpStatus.FORBIDDEN)
         .body(new ServiceException(ACCESS_DENIED_EXCEPTION));
+  }
+
+  @ExceptionHandler(value = Exception.class)
+  public ResponseEntity<Exception> exceptionResponseEntity(
+      Exception exception) {
+    log.error(exception.getMessage(), exception);
+    return ResponseEntity
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new ServiceException(INTERNAL_SERVER_ERROR));
   }
 
 }
