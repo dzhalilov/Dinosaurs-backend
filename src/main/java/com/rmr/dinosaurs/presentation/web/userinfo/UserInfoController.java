@@ -2,7 +2,7 @@ package com.rmr.dinosaurs.presentation.web.userinfo;
 
 import com.rmr.dinosaurs.domain.auth.security.permission.ModeratorPermission;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
-import com.rmr.dinosaurs.domain.core.model.dto.CourseStudyResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
 import com.rmr.dinosaurs.domain.userinfo.model.dto.ShortUserInfoDto;
 import com.rmr.dinosaurs.domain.userinfo.model.dto.UserInfoDto;
