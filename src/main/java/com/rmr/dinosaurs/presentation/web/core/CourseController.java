@@ -250,7 +250,7 @@ public class CourseController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204", description = "Fished course study",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = CourseStudyResponseDto.class))}),
+              schema = @Schema(implementation = void.class))}),
       @ApiResponse(responseCode = "404", description = "course or user not found",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))}),
@@ -259,7 +259,7 @@ public class CourseController {
               schema = @Schema(implementation = ServiceException.class))})})
   @PatchMapping("/{courseId}/finish-study")
   @ModeratorPermission
-  public ResponseEntity<CourseStudyResponseDto> finishCourseStudy(@PathVariable Long courseId,
+  public ResponseEntity<?> finishCourseStudy(@PathVariable Long courseId,
       @RequestBody @Valid CourseStudyUpdateDto courseStudyUpdateDto) {
     log.info("Update course study for course id={} and user email={}",
         courseId, courseStudyUpdateDto.userEmail());
