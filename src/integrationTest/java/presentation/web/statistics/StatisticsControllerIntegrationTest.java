@@ -19,6 +19,7 @@ import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionReposito
 import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
+import com.rmr.dinosaurs.infrastucture.database.statistics.CourseLinkTransitionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -87,6 +88,8 @@ public class StatisticsControllerIntegrationTest {
   @Autowired
   private CourseAndProfessionRepository courseAndProfessionRepository;
   @Autowired
+  private CourseLinkTransitionRepository courseLinkTransitionRepository;
+  @Autowired
   private JwtTokenProvider jwtTokenProvider;
 
   @LocalServerPort
@@ -114,6 +117,7 @@ public class StatisticsControllerIntegrationTest {
     courseRepository.deleteAll();
     courseProviderRepository.deleteAll();
     professionRepository.deleteAll();
+    courseLinkTransitionRepository.deleteAll();
   }
 
 
@@ -126,6 +130,7 @@ public class StatisticsControllerIntegrationTest {
     requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/course/" + course.getId());
+    var startDbSize = courseLinkTransitionRepository.findAll().size();
 
     // when
     var responseEntity = testRestTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST,
@@ -133,6 +138,7 @@ public class StatisticsControllerIntegrationTest {
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CREATED);
+    assertThat(courseLinkTransitionRepository.findAll()).hasSize(startDbSize + 1);
   }
 
 
