@@ -3,7 +3,6 @@ package com.rmr.dinosaurs.domain.statistics.model;
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.core.model.Course;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -37,13 +35,13 @@ public class CourseLinkTransition {
   @Column(name = "id", nullable = false, unique = true)
   UUID id;
 
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.NO_ACTION)
-  List<Course> courses;
+  Course course;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.NO_ACTION)
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "ct_user_id")
   User user;
 
   @CreationTimestamp
