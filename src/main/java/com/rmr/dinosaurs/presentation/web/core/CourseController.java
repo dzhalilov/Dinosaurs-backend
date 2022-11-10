@@ -283,14 +283,13 @@ public class CourseController {
       @RequestParam(name = "score", required = false) Long score,
       @RequestParam(name = "endsAt", required = false)
       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endsAt,
-      @RequestParam(name = "isFinished", required = false) Boolean isFinished,
-      @RequestParam(name = "sortBy", required = false) String sortBy) {
+      @RequestParam(name = "isFinished", required = false) Boolean isFinished) {
 
     FilterCourseStudyParamsDto filter = new FilterCourseStudyParamsDto(
         courseTitle, profession, score, endsAt, isFinished);
     log.info("Get all course study information with filter={}", filter);
     CourseStudyReadPageDto coursePage = courseService.getFilteredCourseInformationPage(pageNum,
-        sortBy, filter);
+        filter);
     return ResponseEntity.ok().body(coursePage);
   }
 }

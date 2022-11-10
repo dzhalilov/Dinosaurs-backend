@@ -190,7 +190,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional
-  public CourseStudyReadPageDto getFilteredCourseInformationPage(int pageNum, String sortBy,
+  public CourseStudyReadPageDto getFilteredCourseInformationPage(int pageNum,
       FilterCourseStudyParamsDto filter) {
 
     --pageNum;
@@ -199,16 +199,6 @@ public class CourseServiceImpl implements CourseService {
     }
 
     Sort sort = Sort.by(Sort.Order.asc("course.title"), Sort.Order.desc("score"));
-//    Sort sort;
-//    if (sortBy == null) {
-//      sort = Sort.by(Sort.Order.asc("courseTitle").ignoreCase());
-//    } else if (sortBy.equals("score")) {
-//      sort = Sort.by(Sort.Order.desc("score"));
-//    } else if (sortBy.equals("profession")) {
-//      sort = Sort.by(Sort.Order.asc("profession"));
-//    } else {
-//      sort = Sort.by(Sort.Order.desc("endsAt"));
-//    }
 
     Pageable pageable = PageRequest.of(pageNum, courseStudyServiceProp.getDefaultPageSize(),
         sort);

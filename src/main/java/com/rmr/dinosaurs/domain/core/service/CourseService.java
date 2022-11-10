@@ -69,6 +69,6 @@ public interface CourseService {
 
   void finishCourseStudy(Long courseId, CourseStudyUpdateDto courseStudyUpdateDto);
 
-  CourseStudyReadPageDto getFilteredCourseInformationPage(int pageNum, String sortBy,
+  CourseStudyReadPageDto getFilteredCourseInformationPage(int pageNum,
       FilterCourseStudyParamsDto filter);
 }
