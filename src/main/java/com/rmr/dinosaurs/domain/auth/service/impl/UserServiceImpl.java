@@ -12,6 +12,7 @@ import com.rmr.dinosaurs.domain.core.model.Authority;
 import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.function.Supplier;
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
   @Scheduled(cron = "@midnight")
   void deleteNotConfirmedEmailUsers() {
     userRepository.deleteAllByIsConfirmedIsFalseAndRegisteredAtIsBefore(
-        LocalDateTime.now().minus(tempCodeTtl, ChronoUnit.MINUTES));
+        LocalDateTime.now(ZoneOffset.UTC).minus(tempCodeTtl, ChronoUnit.MINUTES));
   }
 
   private User getUserFromRepositoryById(Long id) {

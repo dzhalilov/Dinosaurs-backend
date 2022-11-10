@@ -22,6 +22,7 @@ import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import com.rmr.dinosaurs.presentation.web.userinfo.UserInfoController;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -63,9 +64,9 @@ public class UserInfoControllerIntegrationTest {
   private final HttpHeaders requestHeaders = new HttpHeaders();
   // Using encrypted 'pAssw0rd' as password value
   private final User regularUser = new User(null, "regular@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_REGULAR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   private final User moderatorUser = new User(null, "moder@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_MODERATOR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_MODERATOR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
 
   private final UserInfo testUserInfo1 = new UserInfo(null, "Name1", "Surname1", null, null);
   private final UserInfo testUserInfo2 = new UserInfo(null, "Name2", "Surname2", null, null);
@@ -177,11 +178,13 @@ public class UserInfoControllerIntegrationTest {
     assertNotNull(actual);
     assertThat(actual.getIsArchived()).isNotNull().isEqualTo(Boolean.TRUE);
     assertThat(actual.getArchivedAt()).isNotNull()
-        .isBetween(LocalDateTime.now().minus(2, ChronoUnit.MINUTES), LocalDateTime.now());
+        .isBetween(LocalDateTime.now(ZoneOffset.UTC).minus(2, ChronoUnit.MINUTES),
+            LocalDateTime.now(ZoneOffset.UTC));
     User updatedUser = userRepository.findByEmailIgnoreCase(currentUser.getEmail()).orElseThrow();
     assertTrue(updatedUser.getIsArchived());
     assertThat(updatedUser.getArchivedAt())
-        .isBetween(LocalDateTime.now().minus(2, ChronoUnit.MINUTES), LocalDateTime.now());
+        .isBetween(LocalDateTime.now(ZoneOffset.UTC).minus(2, ChronoUnit.MINUTES),
+            LocalDateTime.now(ZoneOffset.UTC));
   }
 
   @Test

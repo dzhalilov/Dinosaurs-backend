@@ -13,6 +13,7 @@ import com.rmr.dinosaurs.domain.auth.service.impl.UserServiceImpl;
 import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,7 @@ import org.springframework.security.core.context.SecurityContext;
 class UserServiceTest {
 
   private final User testUser = new User(1L, "correct@email.com", "stR4nGeRp4Ssw0rDHaHa",
-      ROLE_ADMIN, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_ADMIN, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
 
   private final UserDto testUserDto = new UserDto(testUser.getId(), testUser.getEmail(),
       testUser.getRole(), testUser.getIsConfirmed(), testUser.getRegisteredAt(),

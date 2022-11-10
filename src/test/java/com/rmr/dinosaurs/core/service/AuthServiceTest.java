@@ -29,13 +29,13 @@ import com.rmr.dinosaurs.domain.auth.service.TempConfirmationService;
 import com.rmr.dinosaurs.domain.auth.service.impl.AuthServiceImpl;
 import com.rmr.dinosaurs.domain.auth.utils.converter.UserConverter;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
-import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.domain.notification.email.service.EmailSenderService;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
 import com.rmr.dinosaurs.infrastucture.database.auth.RefreshTokenRepository;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class AuthServiceTest {
 
   private final UserInfo testUserInfo = new UserInfo(2L, "Test", "Usersky", null, null);
   private final User testUser = new User(1L, "super@email.com", "stR4nGeRp4Ssw0rDHaHa",
-      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_REGULAR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   @Mock
   private EmailSenderService emailSenderServiceMock;
   @Mock
@@ -61,8 +61,6 @@ class AuthServiceTest {
   private RefreshTokenRepository refreshTokenRepositoryMock;
   @Mock
   private TempConfirmationService tempConfirmationServiceMock;
-  @Mock
-  private NotificationClient notificationClientMock;
   @Mock
   private UserConverter userConverterMock;
   @Mock
@@ -150,7 +148,7 @@ class AuthServiceTest {
         .email(testUser.getEmail())
         .role(ROLE_REGULAR)
         .isConfirmed(true)
-        .registeredAt(LocalDateTime.now())
+        .registeredAt(LocalDateTime.now(ZoneOffset.UTC))
         .isArchived(false)
         .archivedAt(null)
         .build();

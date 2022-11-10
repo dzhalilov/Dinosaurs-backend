@@ -13,6 +13,7 @@ import com.rmr.dinosaurs.domain.core.model.Authority;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.presentation.web.auth.AuthController;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +54,7 @@ class AuthControllerIntegrationTest {
   // Using encrypted 'pAssw0rd' as password value
   private final User testUser = new User(123L, "test@email.com",
       "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO", Authority.ROLE_REGULAR,
-      true, LocalDateTime.now(), false, null, null, null);
+      true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
 
   @Autowired
   private AuthController authController;

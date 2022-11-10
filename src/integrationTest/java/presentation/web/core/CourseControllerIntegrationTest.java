@@ -32,6 +32,7 @@ import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ReviewRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,14 +70,14 @@ class CourseControllerIntegrationTest {
   private static final CustomPostgresContainer container = CustomPostgresContainer.getInstance();
 
   private static final String BASE_URL = "http://localhost";
-  private static final LocalDateTime NOW_TIME = LocalDateTime.now();
+  private static final LocalDateTime NOW_TIME = LocalDateTime.now(ZoneOffset.UTC);
   private static final String TEST_PASSWORD_ENCRYPTED =
       "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO";
 
   private final User regularUser = new User(null, "regular@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_REGULAR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   private final User moderatorUser = new User(null, "moder@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_MODERATOR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_MODERATOR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   private final UserInfo userInfo = UserInfo.builder()
       .name("Hero")
       .id(null)
