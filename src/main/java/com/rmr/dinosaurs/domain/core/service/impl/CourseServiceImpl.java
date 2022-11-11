@@ -39,6 +39,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.FilterCourseStudyParamsDto;
 import com.rmr.dinosaurs.domain.core.service.CourseService;
+import com.rmr.dinosaurs.domain.core.utils.converter.CourseStudyPdfExporter;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseEntityDtoMapper;
 import com.rmr.dinosaurs.domain.core.utils.mapper.CourseStudyDtoMapper;
 import com.rmr.dinosaurs.domain.core.utils.mapper.ReviewEntityDtoMapper;
@@ -64,6 +65,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -96,6 +98,8 @@ public class CourseServiceImpl implements CourseService {
   private final UserInfoRepository userInfoRepository;
   private final ReviewRepository reviewRepository;
   private final CourseStudyRepository courseStudyRepository;
+
+  private final CourseStudyPdfExporter courseStudyPdfExporter;
 
   @Override
   @Transactional
@@ -199,17 +203,24 @@ public class CourseServiceImpl implements CourseService {
     }
 
     Sort sort = Sort.by(Sort.Order.asc("course.title"), Sort.Order.desc("score"));
-
     Pageable pageable = PageRequest.of(pageNum, courseStudyServiceProp.getDefaultPageSize(),
         sort);
-    if (filter.getScore() == null) {
-      filter.setScore(courseStudyServiceProp.getDefaultScore());
-    }
-    if (filter.getEndsAt() == null) {
-      filter.setEndsAt(courseStudyServiceProp.getDefaultEndsAt());
-    }
-
+    setDefaultFilterPropsForCourseStudy(filter);
     return findPagedFilteredCourseStudy(filter, pageable);
+  }
+
+  @Override
+  @Transactional
+  public void exportFilteredCourseInformationToPdf(FilterCourseStudyParamsDto filter,
+      HttpServletResponse response) {
+    Sort sort = Sort.by(Sort.Order.asc("course.title"), Sort.Order.desc("score"));
+    Pageable pageable = PageRequest.of(0, courseStudyServiceProp.getMaxCourseStudyRowsInPdf(),
+        sort);
+    setDefaultFilterPropsForCourseStudy(filter);
+    List<CourseStudyInfoResponseDto> studyInfoResponseDtoList = findPagedFilteredCourseStudy(filter,
+        pageable).getContent();
+    courseStudyPdfExporter.export(response, studyInfoResponseDtoList);
+
   }
 
   @Override
@@ -542,6 +553,15 @@ public class CourseServiceImpl implements CourseService {
         .stream()
         .map(c -> c.getProfession().getName())
         .toList();
+  }
+
+  private void setDefaultFilterPropsForCourseStudy(FilterCourseStudyParamsDto filter) {
+    if (filter.getScore() == null) {
+      filter.setScore(courseStudyServiceProp.getDefaultScore());
+    }
+    if (filter.getEndsAt() == null) {
+      filter.setEndsAt(courseStudyServiceProp.getDefaultEndsAt());
+    }
   }
 
 }
