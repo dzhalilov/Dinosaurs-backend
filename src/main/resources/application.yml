@@ -32,7 +32,10 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   flyway:
-    enabled: false
+    enabled: true
+    create-schemas: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true
   mail:
     host: smtp.yandex.com
     port: 465
