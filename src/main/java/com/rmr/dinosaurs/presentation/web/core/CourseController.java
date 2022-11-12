@@ -304,6 +304,7 @@ public class CourseController {
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
   @GetMapping("/study-information/export/pdf")
+  @ModeratorPermission
   public void exportFilteredCourseInformationToPdf(
       @RequestParam(name = "courseTitle", required = false) String courseTitle,
       @RequestParam(name = "profession", required = false) String profession,
