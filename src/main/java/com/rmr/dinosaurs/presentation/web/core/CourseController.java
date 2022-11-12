@@ -273,7 +273,7 @@ public class CourseController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got page of course study information",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = CourseReadPageDto.class))}),
+              schema = @Schema(implementation = CourseStudyReadPageDto.class))}),
       @ApiResponse(responseCode = "400", description = "not positive page number",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
@@ -298,8 +298,8 @@ public class CourseController {
   @Operation(summary = "Export course study information to pdf file")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "export data to pdf file",
-          content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = CourseReadPageDto.class))}),
+          content = {@Content(mediaType = "application/pdf",
+              schema = @Schema(implementation = void.class))}),
       @ApiResponse(responseCode = "400", description = "wrong request format",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
