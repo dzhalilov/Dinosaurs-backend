@@ -15,9 +15,9 @@ public class CourseLinkTransitionDto {
 
   String userEmail;
 
-  String courseName;
+  Long courseId;
 
-  String courseProvider;
+  String courseName;
 
   LocalDateTime transitionedAt;
 
