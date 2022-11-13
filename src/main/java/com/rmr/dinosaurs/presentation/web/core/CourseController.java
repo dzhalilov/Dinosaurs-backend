@@ -23,7 +23,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -250,7 +252,7 @@ public class CourseController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204", description = "Fished course study",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = CourseStudyResponseDto.class))}),
+              schema = @Schema(implementation = void.class))}),
       @ApiResponse(responseCode = "404", description = "course or user not found",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))}),
@@ -259,7 +261,7 @@ public class CourseController {
               schema = @Schema(implementation = ServiceException.class))})})
   @PatchMapping("/{courseId}/finish-study")
   @ModeratorPermission
-  public ResponseEntity<CourseStudyResponseDto> finishCourseStudy(@PathVariable Long courseId,
+  public ResponseEntity<?> finishCourseStudy(@PathVariable Long courseId,
       @RequestBody @Valid CourseStudyUpdateDto courseStudyUpdateDto) {
     log.info("Update course study for course id={} and user email={}",
         courseId, courseStudyUpdateDto.userEmail());
@@ -271,7 +273,7 @@ public class CourseController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "got page of course study information",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = CourseReadPageDto.class))}),
+              schema = @Schema(implementation = CourseStudyReadPageDto.class))}),
       @ApiResponse(responseCode = "400", description = "not positive page number",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ServiceException.class))})})
@@ -291,5 +293,36 @@ public class CourseController {
     CourseStudyReadPageDto coursePage = courseService.getFilteredCourseInformationPage(pageNum,
         filter);
     return ResponseEntity.ok().body(coursePage);
+  }
+
+  @Operation(summary = "Export course study information to pdf file")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "export data to pdf file",
+          content = {@Content(mediaType = "application/pdf",
+              schema = @Schema(implementation = void.class))}),
+      @ApiResponse(responseCode = "400", description = "wrong request format",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @GetMapping("/study-information/export/pdf")
+  @ModeratorPermission
+  public void exportFilteredCourseInformationToPdf(
+      @RequestParam(name = "courseTitle", required = false) String courseTitle,
+      @RequestParam(name = "profession", required = false) String profession,
+      @RequestParam(name = "score", required = false) Long score,
+      @RequestParam(name = "endsAt", required = false)
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endsAt,
+      @RequestParam(name = "isFinished", required = false) Boolean isFinished,
+      HttpServletResponse response) {
+
+    FilterCourseStudyParamsDto filter = new FilterCourseStudyParamsDto(
+        courseTitle, profession, score, endsAt, isFinished);
+    log.info("Export course study information with filter={}", filter);
+
+    response.setContentType("application/pdf");
+    String currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+    String headerKey = "Content-Disposition";
+    String headerValue = "attachment; filename=course_study_" + currentDateTime + ".pdf";
+    response.setHeader(headerKey, headerValue);
+    courseService.exportFilteredCourseInformationToPdf(filter, response);
   }
 }
