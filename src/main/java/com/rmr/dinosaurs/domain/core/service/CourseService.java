@@ -13,6 +13,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyUpdateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.FilterCourseStudyParamsDto;
 import java.security.Principal;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 
 public interface CourseService {
 
@@ -71,4 +72,7 @@ public interface CourseService {
 
   CourseStudyReadPageDto getFilteredCourseInformationPage(int pageNum,
       FilterCourseStudyParamsDto filter);
+
+  void exportFilteredCourseInformationToPdf(FilterCourseStudyParamsDto filter,
+      HttpServletResponse response);
 }
