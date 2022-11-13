@@ -52,7 +52,7 @@ class AuthControllerIntegrationTest {
   private final TestRestTemplate testRestTemplate = new TestRestTemplate();
   private final HttpHeaders requestHeaders = new HttpHeaders();
   // Using encrypted 'pAssw0rd' as password value
-  private final User testUser = new User(123L, "test@email.com",
+  private final User testUser = new User(null, "test@email.com",
       "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO", Authority.ROLE_REGULAR,
       true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
 
