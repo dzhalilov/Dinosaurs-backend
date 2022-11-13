@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -35,17 +34,17 @@ public class CourseLinkTransition {
   @Column(name = "id", nullable = false, unique = true)
   UUID id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @OnDelete(action = OnDeleteAction.NO_ACTION)
+  @JoinColumn(name = "ct_course_id")
   Course course;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @OnDelete(action = OnDeleteAction.NO_ACTION)
   @JoinColumn(name = "ct_user_id")
   User user;
 
-  @CreationTimestamp
-  @Column(name = "transitionedAt", nullable = false)
+  @Column(name = "transitioned_at", nullable = false)
   LocalDateTime transitionedAt;
 
 }
