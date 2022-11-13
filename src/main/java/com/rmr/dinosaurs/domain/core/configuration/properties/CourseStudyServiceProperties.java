@@ -15,4 +15,5 @@ public class CourseStudyServiceProperties {
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private LocalDateTime defaultEndsAt;
   private Integer defaultPageSize;
+  private Integer maxCourseStudyRowsInPdf;
 }
