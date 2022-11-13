@@ -20,6 +20,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ShortCourseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
@@ -157,6 +158,12 @@ class CourseControllerIntegrationTest {
       .votes(0L)
       .averageRating(5.0)
       .build();
+  private final CourseStudy courseStudy = CourseStudy.builder()
+      .id(null)
+      .startsAt(NOW_TIME)
+      .course(course2)
+      .userInfo(userInfo)
+      .build();
   private final Course startedCourse = Course.builder()
       .id(null)
       .coverUrl(
@@ -174,13 +181,6 @@ class CourseControllerIntegrationTest {
       .provider(provider)
       .votes(0L)
       .averageRating(5.0)
-      .build();
-
-  private final CourseStudy courseStudy = CourseStudy.builder()
-      .id(null)
-      .startsAt(NOW_TIME)
-      .course(course2)
-      .userInfo(userInfo)
       .build();
   @LocalServerPort
   private int port;
@@ -266,6 +266,33 @@ class CourseControllerIntegrationTest {
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/all");
     ParameterizedTypeReference<List<CourseReadDto>> parameterizedTypeReference =
+        new ParameterizedTypeReference<>() {
+        };
+
+    // when
+    var responseEntity = testRestTemplate.exchange(
+        uriBuilder.toUriString(), HttpMethod.GET,
+        requestEntity, parameterizedTypeReference
+    );
+
+    // then
+    var result = responseEntity.getBody();
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    assert result != null;
+    assertThat(result.size()).isEqualTo(3L);
+  }
+
+  @Test
+  void getAllCoursesByProviderId_200() {
+    // given
+    var currentUser = userRepository.findByEmailIgnoreCase(moderatorUser.getEmail()).orElseThrow();
+    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
+    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+
+    var requestEntity = new HttpEntity<>(requestHeaders);
+    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/search/"
+        + course1.getProvider().getId());
+    ParameterizedTypeReference<List<ShortCourseDto>> parameterizedTypeReference =
         new ParameterizedTypeReference<>() {
         };
 
