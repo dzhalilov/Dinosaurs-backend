@@ -98,4 +98,6 @@ services:
     default-score: 0
     default-ends-at: 2022-01-01T00:00:00.000Z
     default-page-size: 25
-
+  statistics:
+    course:
+      default-page-size: 50
