@@ -32,6 +32,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ShortCourseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyInfoResponseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyReadPageDto;
@@ -222,6 +223,14 @@ public class CourseServiceImpl implements CourseService {
         pageable).getContent();
     courseStudyPdfExporter.export(response, studyInfoResponseDtoList);
 
+  }
+
+  @Override
+  public List<ShortCourseDto> getAllCoursesByProviderId(Long providerId) {
+    return courseRepo.findAllByProviderId(providerId)
+        .stream()
+        .map(courseMapper::toShortCourseDto)
+        .toList();
   }
 
   @Override

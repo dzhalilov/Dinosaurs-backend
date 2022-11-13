@@ -38,4 +38,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
   List<Course> findAllByIsArchivedIsFalse();
 
+  List<Course> findAllByProviderId(Long providerId);
+
 }
