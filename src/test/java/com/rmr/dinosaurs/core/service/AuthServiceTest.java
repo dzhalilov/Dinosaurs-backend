@@ -307,7 +307,7 @@ class AuthServiceTest {
     verifyNoMoreInteractions(refreshTokenRepositoryMock, userRepositoryMock, jwtTokenServiceMock);
     verifyNoInteractions(userInfoRepositoryMock, passwordEncoderMock);
   }
-  
+
   @Test
   @DisplayName("confirm email success")
   void shouldConfirmEmail() {
