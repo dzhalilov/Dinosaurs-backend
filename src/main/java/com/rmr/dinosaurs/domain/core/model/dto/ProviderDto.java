@@ -19,6 +19,7 @@ public class ProviderDto {
 
   String description;
 
+  @UrlConstraintValidator
   String coverUrl;
 
 }
