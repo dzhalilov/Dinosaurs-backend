@@ -9,6 +9,8 @@ import com.rmr.dinosaurs.domain.statistics.configuration.properties.CourseStatis
 import com.rmr.dinosaurs.domain.statistics.model.CourseLinkTransition;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionFilterDto;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionPageDto;
+import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionSearchCriteria;
+import com.rmr.dinosaurs.domain.statistics.service.CourseStatisticsExporterService;
 import com.rmr.dinosaurs.domain.statistics.service.CourseStatisticsService;
 import com.rmr.dinosaurs.domain.statistics.utils.converter.CourseLinkTransitionConverter;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +32,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CourseStatisticsServiceImpl implements CourseStatisticsService {
 
+  private static final String APPLICATION_OCTET = "application/octet-stream";
+
   private final CourseStatisticsProperties properties;
   private final CourseLinkTransitionConverter courseLinkTransitionConverter;
+  private final CourseStatisticsExporterService courseStatisticsExporterService;
 
   private final CourseLinkTransitionRepository courseLinkTransitionRepository;
   private final CourseRepository courseRepository;
@@ -73,6 +79,23 @@ public class CourseStatisticsServiceImpl implements CourseStatisticsService {
         courseLinkTransitionPage.getSize(),
         courseLinkTransitionPage.getNumber(),
         courseLinkTransitionDtos);
+  }
+
+  @Override
+  public void getFilteredCourseLinkTransitionsAsXlsx(
+      CourseLinkTransitionSearchCriteria searchCriteria, HttpServletResponse response) {
+    var courseLinkTransitions = courseLinkTransitionRepository.getAllByFilterAsList(
+        searchCriteria.getCoursesIds(),
+        searchCriteria.getUserEmail(),
+        searchCriteria.getTransitionedFrom(),
+        searchCriteria.getTransitionedTo()
+    );
+    response.setContentType(APPLICATION_OCTET);
+    LocalDateTime today = LocalDateTime.now();
+    String fileName = String.format("course_transitions_stats-%s-%s-%s.xlsx",
+        today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+    response.setHeader("Content-Disposition", "attachment; filename =" + fileName);
+    courseStatisticsExporterService.exportToExcel(courseLinkTransitions, response);
   }
 
   private Optional<DinoPrincipal> getCurrentUserPrincipal() {

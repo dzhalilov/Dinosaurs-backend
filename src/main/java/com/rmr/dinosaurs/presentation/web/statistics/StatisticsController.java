@@ -4,12 +4,14 @@ import com.rmr.dinosaurs.domain.auth.security.permission.ModeratorPermission;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionFilterDto;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionPageDto;
+import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionSearchCriteria;
 import com.rmr.dinosaurs.domain.statistics.service.CourseStatisticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StatisticsController {
 
   private final CourseStatisticsService courseStatisticsService;
+
 
   @Operation(summary = "register course link transition")
   @ApiResponses(value = {
@@ -52,10 +55,26 @@ public class StatisticsController {
   @PostMapping("/course/search")
   @ModeratorPermission
   public CourseLinkTransitionPageDto getAllCourseLinkTransitionsByPagesAndFilters(
-      @RequestBody @Valid
-      CourseLinkTransitionFilterDto courseLinkTransitionFilterDto) {
+      @RequestBody @Valid CourseLinkTransitionFilterDto courseLinkTransitionFilterDto) {
     return courseStatisticsService.getAllCourseLinkTransitionsByFilter(
         courseLinkTransitionFilterDto);
+  }
+
+  @Operation(summary = "Get filtered list of course link transition dto exported to excel")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "filtered excel of course link transitions",
+          content = {@Content(mediaType = "application/octet-stream",
+              schema = @Schema(implementation = void.class))}),
+      @ApiResponse(responseCode = "400", description = "wrong request format or export error",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @PostMapping("/course/search/export/excel")
+  @ModeratorPermission
+  public void exportCourseStatistics(
+      @RequestBody @Valid CourseLinkTransitionSearchCriteria cltSearchCriteria,
+      HttpServletResponse response) {
+    courseStatisticsService.getFilteredCourseLinkTransitionsAsXlsx(
+        cltSearchCriteria, response);
   }
 
 }
