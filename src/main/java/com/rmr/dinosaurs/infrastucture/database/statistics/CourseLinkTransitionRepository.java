@@ -22,7 +22,7 @@ public interface CourseLinkTransitionRepository extends JpaRepository<CourseLink
       + " and ((:userEmail is null) or ((lower(u.email) LIKE lower(:userEmail))))"
       + " and (cast(:transitionedFrom as timestamp) <= ctl.transitionedAt)"
       + " and (cast(:transitionedTo as timestamp) >= ctl.transitionedAt)"
-      + ")")
+      + ") ORDER BY ctl.transitionedAt ASC ")
   Page<CourseLinkTransition> findAllByFilter(Set<Long> coursesIds, String userEmail,
       LocalDateTime transitionedFrom, LocalDateTime transitionedTo,
       Pageable pageable);
@@ -35,7 +35,7 @@ public interface CourseLinkTransitionRepository extends JpaRepository<CourseLink
       + " and ((:userEmail is null) or ((lower(u.email) LIKE lower(:userEmail))))"
       + " and (cast(:transitionedFrom as timestamp) <= ctl.transitionedAt)"
       + " and (cast(:transitionedTo as timestamp) >= ctl.transitionedAt)"
-      + ")")
+      + ") ORDER BY ctl.transitionedAt ASC ")
   List<CourseLinkTransition> getAllByFilterAsList(Set<Long> coursesIds, String userEmail,
       LocalDateTime transitionedFrom, LocalDateTime transitionedTo);
 
