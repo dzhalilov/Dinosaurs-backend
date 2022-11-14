@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -82,8 +83,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Scheduled(cron = "@midnight")
-  void deleteNotConfirmedEmailUsers() {
-    userRepository.deleteAllByIsConfirmedIsFalseAndRegisteredAtIsBefore(
+  @Transactional
+  public void deleteNotConfirmedEmailUsers() {
+    log.info("Deleting all users with not confirmed emails");
+    userRepository.deleteAllNotConfirmedEmailBefore(
         LocalDateTime.now(ZoneOffset.UTC).minus(tempCodeTtl, ChronoUnit.MINUTES));
   }
 

@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -55,8 +56,10 @@ public class TempConfirmationServiceImpl implements TempConfirmationService {
   }
 
   @Scheduled(cron = "@midnight")
-  void removeNonConfirmed() {
-    tempConfirmationRepository.deleteAllByIssuedAtBefore(
+  @Transactional
+  public void removeNonConfirmed() {
+    log.info("Deleting all expired temp confirmations");
+    tempConfirmationRepository.deleteAllIssuedBefore(
         LocalDateTime.now(ZoneOffset.UTC).minus(tempCodeTtl, ChronoUnit.MINUTES));
   }
 
