@@ -2,6 +2,7 @@ package com.rmr.dinosaurs.infrastucture.database.statistics;
 
 import com.rmr.dinosaurs.domain.statistics.model.CourseLinkTransition;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -25,5 +26,17 @@ public interface CourseLinkTransitionRepository extends JpaRepository<CourseLink
   Page<CourseLinkTransition> findAllByFilter(Set<Long> coursesIds, String userEmail,
       LocalDateTime transitionedFrom, LocalDateTime transitionedTo,
       Pageable pageable);
+
+  @Query("SELECT ctl FROM CourseLinkTransition ctl"
+      + " INNER JOIN Course c on ctl.course.id = c.id"
+      + " INNER JOIN User u on ctl.user.id = u.id"
+      + " WHERE ("
+      + " (((:coursesIds) is null) or (c.id IN (:coursesIds)))"
+      + " and ((:userEmail is null) or ((lower(u.email) LIKE lower(:userEmail))))"
+      + " and (cast(:transitionedFrom as timestamp) <= ctl.transitionedAt)"
+      + " and (cast(:transitionedTo as timestamp) >= ctl.transitionedAt)"
+      + ")")
+  List<CourseLinkTransition> getAllByFilterAsList(Set<Long> coursesIds, String userEmail,
+      LocalDateTime transitionedFrom, LocalDateTime transitionedTo);
 
 }
