@@ -32,7 +32,10 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   flyway:
-    enabled: false
+    enabled: true
+    create-schemas: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true
   mail:
     host: smtp.yandex.com
     port: 465
@@ -98,3 +101,6 @@ services:
     default-ends-at: 2022-01-01T00:00:00.000Z
     default-page-size: 25
     max-course-study-rows-in-pdf: 200
+  statistics:
+    course:
+      default-page-size: 50

@@ -12,6 +12,7 @@ import com.rmr.dinosaurs.domain.core.model.Authority;
 import com.rmr.dinosaurs.domain.notification.client.NotificationClient;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.function.Supplier;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -81,9 +83,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Scheduled(cron = "@midnight")
-  void deleteNotConfirmedEmailUsers() {
-    userRepository.deleteAllByIsConfirmedIsFalseAndRegisteredAtIsBefore(
-        LocalDateTime.now().minus(tempCodeTtl, ChronoUnit.MINUTES));
+  @Transactional
+  public void deleteNotConfirmedEmailUsers() {
+    log.info("Deleting all users with not confirmed emails");
+    userRepository.deleteAllNotConfirmedEmailBefore(
+        LocalDateTime.now(ZoneOffset.UTC).minus(tempCodeTtl, ChronoUnit.MINUTES));
   }
 
   private User getUserFromRepositoryById(Long id) {

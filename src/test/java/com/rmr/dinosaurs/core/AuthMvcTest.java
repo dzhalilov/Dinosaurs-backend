@@ -19,6 +19,7 @@ import com.rmr.dinosaurs.domain.auth.security.JwtTokenPair;
 import com.rmr.dinosaurs.domain.auth.service.AuthService;
 import com.rmr.dinosaurs.presentation.web.auth.AuthController;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,7 +86,7 @@ class AuthMvcTest {
         "Name"
     );
     UserDto userDto = new UserDto(1L, signupRequest.email(), ROLE_REGULAR,
-        false, LocalDateTime.now(), false, null);
+        false, LocalDateTime.now(ZoneOffset.UTC), false, null);
     var signupRequestAsString = objectMapper.writeValueAsString(signupRequest);
     given(authServiceMock.signup(signupRequest))
         .willReturn(userDto);

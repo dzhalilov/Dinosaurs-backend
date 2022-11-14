@@ -32,6 +32,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ShortCourseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyInfoResponseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyReadPageDto;
@@ -60,6 +61,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -221,6 +223,14 @@ public class CourseServiceImpl implements CourseService {
         pageable).getContent();
     courseStudyPdfExporter.export(response, studyInfoResponseDtoList);
 
+  }
+
+  @Override
+  public List<ShortCourseDto> getAllCoursesByProviderId(Long providerId) {
+    return courseRepo.findAllByProviderId(providerId)
+        .stream()
+        .map(courseMapper::toShortCourseDto)
+        .toList();
   }
 
   @Override
@@ -414,7 +424,7 @@ public class CourseServiceImpl implements CourseService {
         filter.getProfessionId(),
         filter.getStartsAt(),
         filter.getEndsAt(),
-        LocalDateTime.now(),
+        LocalDateTime.now(ZoneOffset.UTC),
         pageable);
 
     return toReadCoursePageDto(page);
@@ -502,7 +512,7 @@ public class CourseServiceImpl implements CourseService {
   @SuppressWarnings("java:S3864")
   @Scheduled(cron = "0 0 18 * * *")
   void notifyModeratorsAboutEndingTodayCoursesAndSetCoursesAsArchived() {
-    int today = LocalDateTime.now().getDayOfMonth();
+    int today = LocalDateTime.now(ZoneOffset.UTC).getDayOfMonth();
     var expiringCourses = courseRepo.findAllByIsArchivedIsFalse()
         .stream()
         .filter(course -> today == course.getEndsAt().getDayOfMonth())
