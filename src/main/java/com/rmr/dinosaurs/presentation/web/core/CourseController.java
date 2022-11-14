@@ -149,6 +149,7 @@ public class CourseController {
               schema = @Schema(implementation = ShortCourseDto.class))})
   })
   @GetMapping("/search/{providerId}")
+  @ModeratorPermission
   public ResponseEntity<List<ShortCourseDto>> getAllCoursesByProviderId(
       @PathVariable Long providerId) {
     return ResponseEntity
