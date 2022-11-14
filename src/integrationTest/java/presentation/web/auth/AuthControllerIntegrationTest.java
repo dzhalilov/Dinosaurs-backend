@@ -104,8 +104,8 @@ class AuthControllerIntegrationTest {
   @DisplayName("sign up as a new valid user")
   void testSignup() {
     // given
-    var signupRequest = new SignupRequest("newuser@email.com", TEST_PASSWORD, "TestName",
-        "TestSurname");
+    var signupRequest = new SignupRequest("newuser@email.com", TEST_PASSWORD, "Test Name",
+        "Test Surname");
     final var usersInDbBefore = userRepository.findAll().size();
     var requestEntity = new HttpEntity<>(signupRequest, requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/signup");
