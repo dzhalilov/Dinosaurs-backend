@@ -69,16 +69,18 @@ tempconfirmation:
   code:
     ttl: 120
 
-
 management:
-  endpoint:
-    info:
-      enabled: true
-    health:
-      enabled: true
-      show-details: when_authorized
-    loggers:
-      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
 
 
 services:
