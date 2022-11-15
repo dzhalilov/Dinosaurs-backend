@@ -16,7 +16,7 @@ public class PasswordValidator implements
   private static final Pattern passwordPattern =
       Pattern.compile(
           "^(?=.*[a-zа-я])(?=.*[A-ZА-Я])(?=.*[0-9])"
-              + "[A-ZА-Яa-zа-я0-9~!?@#$%^&*_\\-+(){}></\\\\|\"'.,:;]{8,20}$");
+              + "[A-ZА-Яa-zа-я0-9~!?@#$%^&*_\\-+()\\[\\]{}></\\\\|\"'.,:;]{8,20}$");
 
   @Override
   public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
