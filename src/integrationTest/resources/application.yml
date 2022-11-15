@@ -81,6 +81,11 @@ services:
     default-page-size: 9
   provider:
     default-page-size: 9
+  study:
+    default-score: 0
+    default-ends-at: 2022-01-01T00:00:00.000Z
+    default-page-size: 25
+    max-course-study-rows-in-pdf: 200
   statistics:
     course:
       default-page-size: 50
