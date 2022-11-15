@@ -8,6 +8,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ShortCourseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
@@ -139,6 +140,21 @@ public class CourseController {
     return ResponseEntity
         .ok()
         .body(courses);
+  }
+
+  @Operation(summary = "Get all courses ids by provider id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "get list of short courses dtos",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ShortCourseDto.class))})
+  })
+  @GetMapping("/search/{providerId}")
+  @ModeratorPermission
+  public ResponseEntity<List<ShortCourseDto>> getAllCoursesByProviderId(
+      @PathVariable Long providerId) {
+    return ResponseEntity
+        .ok()
+        .body(courseService.getAllCoursesByProviderId(providerId));
   }
 
   @Operation(summary = "Get page of filtered course profiles")

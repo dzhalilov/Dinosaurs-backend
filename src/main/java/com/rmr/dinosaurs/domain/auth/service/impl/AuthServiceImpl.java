@@ -29,9 +29,9 @@ import com.rmr.dinosaurs.infrastucture.database.auth.RefreshTokenRepository;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -133,7 +133,7 @@ public class AuthServiceImpl implements AuthService {
   private User createAndSaveUserFromSignupRequest(SignupRequest signupRequest) {
     var user = new User(null, signupRequest.email().toLowerCase().trim(),
         passwordEncoder.encode(signupRequest.password()), Authority.ROLE_REGULAR,
-        false, LocalDateTime.now(), false, null, null, null);
+        false, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
     var savedUser = userRepository.saveAndFlush(user);
     UserInfo userInfo = new UserInfo(null, signupRequest.name(), signupRequest.surname(),
         savedUser, null);

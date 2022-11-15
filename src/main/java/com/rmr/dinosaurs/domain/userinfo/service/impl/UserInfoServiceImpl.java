@@ -17,6 +17,7 @@ import com.rmr.dinosaurs.domain.userinfo.utils.converter.UserInfoConverter;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -82,7 +83,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     currentUser.setIsArchived(true);
-    currentUser.setArchivedAt(LocalDateTime.now());
+    currentUser.setArchivedAt(LocalDateTime.now(ZoneOffset.UTC));
     userRepository.saveAndFlush(currentUser);
 
     var currentUserInfo = userInfoRepository.findByUser(currentUser)

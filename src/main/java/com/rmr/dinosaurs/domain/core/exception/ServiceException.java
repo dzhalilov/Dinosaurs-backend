@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,7 +39,7 @@ public class ServiceException extends RuntimeException {
   }
 
   private String getFormattedCurrentTime() {
-    return LocalDateTime.now()
+    return LocalDateTime.now(ZoneOffset.UTC)
         .format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
   }
 

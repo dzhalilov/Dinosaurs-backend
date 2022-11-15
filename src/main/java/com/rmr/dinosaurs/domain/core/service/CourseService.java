@@ -6,6 +6,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.FilterParamsDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ShortCourseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
@@ -75,4 +76,13 @@ public interface CourseService {
 
   void exportFilteredCourseInformationToPdf(FilterCourseStudyParamsDto filter,
       HttpServletResponse response);
+
+  /**
+   * get list of courses in a short representation by provider id
+   *
+   * @param providerId id of the course provider
+   * @return list of short courses dtos
+   */
+  List<ShortCourseDto> getAllCoursesByProviderId(Long providerId);
+
 }

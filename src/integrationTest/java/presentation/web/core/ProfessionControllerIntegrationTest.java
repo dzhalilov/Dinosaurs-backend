@@ -16,6 +16,7 @@ import com.rmr.dinosaurs.domain.core.utils.mapper.ProfessionEntityDtoMapper;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,9 +52,9 @@ public class ProfessionControllerIntegrationTest {
   private final String baseUrl = "http://localhost";
   private final String professionApiUrl = "/api/v1/professions";
   private final User regularUser = new User(null, "regular@email.com", ENCRYPTED_PASSWORD,
-      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_REGULAR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   private final User moderatorUser = new User(null, "moder@email.com", ENCRYPTED_PASSWORD,
-      ROLE_MODERATOR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_MODERATOR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
 
   private final TestRestTemplate testRestTemplate = new TestRestTemplate();
   private final HttpHeaders requestHeaders = new HttpHeaders();

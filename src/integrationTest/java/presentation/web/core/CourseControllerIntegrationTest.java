@@ -20,6 +20,7 @@ import com.rmr.dinosaurs.domain.core.model.dto.CourseReadDto;
 import com.rmr.dinosaurs.domain.core.model.dto.CourseReadPageDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.ReviewResponseDto;
+import com.rmr.dinosaurs.domain.core.model.dto.ShortCourseDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyCreateDto;
 import com.rmr.dinosaurs.domain.core.model.dto.study.CourseStudyResponseDto;
 import com.rmr.dinosaurs.domain.userinfo.model.UserInfo;
@@ -32,6 +33,7 @@ import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ReviewRepository;
 import com.rmr.dinosaurs.infrastucture.database.userinfo.UserInfoRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,14 +71,14 @@ class CourseControllerIntegrationTest {
   private static final CustomPostgresContainer container = CustomPostgresContainer.getInstance();
 
   private static final String BASE_URL = "http://localhost";
-  private static final LocalDateTime NOW_TIME = LocalDateTime.now();
+  private static final LocalDateTime NOW_TIME = LocalDateTime.now(ZoneOffset.UTC);
   private static final String TEST_PASSWORD_ENCRYPTED =
       "$2y$12$SHUzyNYC1vT57bbJLe/ub./N5z/Z2U6ENkWk9c2qkw5fjdKUJ25WO";
 
   private final User regularUser = new User(null, "regular@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_REGULAR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   private final User moderatorUser = new User(null, "moder@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_MODERATOR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_MODERATOR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   private final UserInfo userInfo = UserInfo.builder()
       .name("Hero")
       .id(null)
@@ -156,6 +158,12 @@ class CourseControllerIntegrationTest {
       .votes(0L)
       .averageRating(5.0)
       .build();
+  private final CourseStudy courseStudy = CourseStudy.builder()
+      .id(null)
+      .startsAt(NOW_TIME)
+      .course(course2)
+      .userInfo(userInfo)
+      .build();
   private final Course startedCourse = Course.builder()
       .id(null)
       .coverUrl(
@@ -173,13 +181,6 @@ class CourseControllerIntegrationTest {
       .provider(provider)
       .votes(0L)
       .averageRating(5.0)
-      .build();
-
-  private final CourseStudy courseStudy = CourseStudy.builder()
-      .id(null)
-      .startsAt(NOW_TIME)
-      .course(course2)
-      .userInfo(userInfo)
       .build();
   @LocalServerPort
   private int port;
@@ -265,6 +266,33 @@ class CourseControllerIntegrationTest {
     var requestEntity = new HttpEntity<>(requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/all");
     ParameterizedTypeReference<List<CourseReadDto>> parameterizedTypeReference =
+        new ParameterizedTypeReference<>() {
+        };
+
+    // when
+    var responseEntity = testRestTemplate.exchange(
+        uriBuilder.toUriString(), HttpMethod.GET,
+        requestEntity, parameterizedTypeReference
+    );
+
+    // then
+    var result = responseEntity.getBody();
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    assert result != null;
+    assertThat(result.size()).isEqualTo(3L);
+  }
+
+  @Test
+  void getAllCoursesByProviderId_200() {
+    // given
+    var currentUser = userRepository.findByEmailIgnoreCase(moderatorUser.getEmail()).orElseThrow();
+    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
+    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+
+    var requestEntity = new HttpEntity<>(requestHeaders);
+    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/search/"
+        + course1.getProvider().getId());
+    ParameterizedTypeReference<List<ShortCourseDto>> parameterizedTypeReference =
         new ParameterizedTypeReference<>() {
         };
 

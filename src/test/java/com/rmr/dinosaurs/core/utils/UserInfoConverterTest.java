@@ -9,6 +9,7 @@ import com.rmr.dinosaurs.domain.userinfo.model.dto.ShortUserInfoDto;
 import com.rmr.dinosaurs.domain.userinfo.model.dto.UserInfoDto;
 import com.rmr.dinosaurs.domain.userinfo.utils.converter.impl.UserInfoConverterImpl;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UserInfoConverterTest {
 
   private final User testUser = new User(1L, "super@email.com", "stR4nGeRp4Ssw0rDHaHa",
-      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_REGULAR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
 
   @InjectMocks
   private UserInfoConverterImpl userInfoConverter;

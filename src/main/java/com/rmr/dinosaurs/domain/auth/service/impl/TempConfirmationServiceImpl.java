@@ -9,6 +9,7 @@ import com.rmr.dinosaurs.domain.auth.service.TempConfirmationService;
 import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.infrastucture.database.auth.TempConfirmationRepository;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -34,7 +36,7 @@ public class TempConfirmationServiceImpl implements TempConfirmationService {
 
   @Override
   public TempConfirmation createTempConfirmationFor(User user) {
-    var tmpConfirmation = new TempConfirmation(null, LocalDateTime.now(), user);
+    var tmpConfirmation = new TempConfirmation(null, LocalDateTime.now(ZoneOffset.UTC), user);
     return tempConfirmationRepository.saveAndFlush(tmpConfirmation);
   }
 
@@ -45,7 +47,7 @@ public class TempConfirmationServiceImpl implements TempConfirmationService {
           log.info("Temp confirmation was not found");
           throw new ServiceException(CONFIRMATION_CODE_NOT_FOUND);
         });
-    if (!isValidTempConfirmationPredicate.test(LocalDateTime.now(),
+    if (!isValidTempConfirmationPredicate.test(LocalDateTime.now(ZoneOffset.UTC),
         tempConfirmation.getIssuedAt())) {
       throw new ServiceException(CONFIRMATION_CODE_EXPIRED);
     }
@@ -54,9 +56,11 @@ public class TempConfirmationServiceImpl implements TempConfirmationService {
   }
 
   @Scheduled(cron = "@midnight")
-  void removeNonConfirmed() {
-    tempConfirmationRepository.deleteAllByIssuedAtBefore(
-        LocalDateTime.now().minus(tempCodeTtl, ChronoUnit.MINUTES));
+  @Transactional
+  public void removeNonConfirmed() {
+    log.info("Deleting all expired temp confirmations");
+    tempConfirmationRepository.deleteAllIssuedBefore(
+        LocalDateTime.now(ZoneOffset.UTC).minus(tempCodeTtl, ChronoUnit.MINUTES));
   }
 
 }

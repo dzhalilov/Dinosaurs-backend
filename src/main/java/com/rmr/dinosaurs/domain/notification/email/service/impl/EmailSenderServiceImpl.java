@@ -37,14 +37,14 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
     executorService.submit(() ->
         recipients.forEach(recipient -> {
-          try {
-            log.info("Sending email to: {}", recipient);
-            message.setFrom(SENDER_ADDRESS);
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
-            javaMailSender.send(message);
-          } catch (Exception e) {
-            log.debug("Failed to send an email", e);
-            throw new ServiceException(FAILED_EMAIL_SEND);
+              try {
+                log.info("Sending email to: {}", recipient);
+                message.setFrom(SENDER_ADDRESS);
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
+                javaMailSender.send(message);
+              } catch (Exception e) {
+                log.debug("Failed to send an email", e);
+                throw new ServiceException(FAILED_EMAIL_SEND);
               }
             }
         )

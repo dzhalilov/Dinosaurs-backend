@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 @Target({PARAMETER, CONSTRUCTOR, METHOD, FIELD, RECORD_COMPONENT})
 @Retention(RUNTIME)
 @NotNull
-@Size(min = 3, max = 255)
+@Size(min = 6, max = 255)
 @Constraint(validatedBy = EmailValidator.class)
 @Documented
 public @interface EmailConstraintValidator {

@@ -19,6 +19,7 @@ import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.presentation.web.auth.UserController;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,11 +59,11 @@ class UserControllerIntegrationTest {
   private final HttpHeaders requestHeaders = new HttpHeaders();
   // Using encrypted 'pAssw0rd' as password value
   private final User regularUser = new User(null, "regular@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_REGULAR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_REGULAR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   private final User moderatorUser = new User(null, "moder@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_MODERATOR, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_MODERATOR, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
   private final User adminUser = new User(null, "admin@email.com", TEST_PASSWORD_ENCRYPTED,
-      ROLE_ADMIN, true, LocalDateTime.now(), false, null, null, null);
+      ROLE_ADMIN, true, LocalDateTime.now(ZoneOffset.UTC), false, null, null, null);
 
   @Autowired
   private UserController userController;

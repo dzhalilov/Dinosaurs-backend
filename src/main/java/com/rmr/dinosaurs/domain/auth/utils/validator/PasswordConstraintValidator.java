@@ -14,10 +14,12 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Target({PARAMETER, CONSTRUCTOR, METHOD, FIELD, RECORD_COMPONENT})
 @Retention(RUNTIME)
 @NotNull
+@Size(min = 8, max = 20)
 @Documented
 @Constraint(validatedBy = PasswordValidator.class)
 public @interface PasswordConstraintValidator {
