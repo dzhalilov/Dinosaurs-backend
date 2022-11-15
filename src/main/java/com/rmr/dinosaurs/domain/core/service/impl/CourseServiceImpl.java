@@ -512,6 +512,7 @@ public class CourseServiceImpl implements CourseService {
   @SuppressWarnings("java:S3864")
   @Scheduled(cron = "0 0 18 * * *")
   void notifyModeratorsAboutEndingTodayCoursesAndSetCoursesAsArchived() {
+    log.info("Started scheduled: notify moderators about ending today courses and set archived");
     int today = LocalDateTime.now(ZoneOffset.UTC).getDayOfMonth();
     var expiringCourses = courseRepo.findAllByIsArchivedIsFalse()
         .stream()
@@ -527,8 +528,9 @@ public class CourseServiceImpl implements CourseService {
 
   @Scheduled(cron = "0 0 7 * * *")
   void notifyModeratorsAboutCoursesWithInvalidLink() {
+    log.info("Started scheduled: notify moderators about courses with invalid links");
     var unreachableCourses = courseRepo.findAllByIsArchivedIsFalse()
-        .parallelStream()
+        .stream()
         .filter(course -> !isLinkReachable(course.getUrl()))
         .toList();
     if (!unreachableCourses.isEmpty()) {
@@ -553,8 +555,8 @@ public class CourseServiceImpl implements CourseService {
       connection.connect();
       return 200 == connection.getResponseCode();
     } catch (IOException e) {
-      log.info("Something goes wrong with link checking: {}", e.getMessage());
-      throw new RuntimeException(e);
+      log.info("Unreachable link address: {}", e.getMessage());
+      return false;
     }
   }
 
