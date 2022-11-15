@@ -12,7 +12,6 @@ import static com.rmr.dinosaurs.domain.core.exception.errorcode.PageErrorCode.NE
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ProfessionErrorCode.PROFESSION_NOT_FOUND;
 import static com.rmr.dinosaurs.domain.core.exception.errorcode.ReviewErrorCode.DOUBLE_VOTE_ERROR;
 import static com.rmr.dinosaurs.domain.core.model.Authority.ROLE_MODERATOR;
-import static org.apache.logging.log4j.util.Strings.EMPTY;
 
 import com.rmr.dinosaurs.domain.auth.model.User;
 import com.rmr.dinosaurs.domain.core.configuration.properties.CourseServiceProperties;
@@ -65,7 +64,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -181,7 +179,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     Sort sort;
-    if (Objects.nonNull(sortBy) && "endsAt".equals(sortBy)) {
+    if (sortBy == null) {
+      sort = Sort.by(Sort.Order.asc("startsAt"));
+    } else if (sortBy.equals("startsAt")) {
+      sort = Sort.by(Sort.Order.asc("startsAt"));
+    } else if (sortBy.equals("endsAt")) {
       sort = Sort.by(Sort.Order.asc("endsAt"));
     } else {
       sort = Sort.by(Sort.Order.asc("startsAt"));
@@ -263,9 +265,7 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   public List<ReviewResponseDto> getReviewsByCourseId(Long courseId) {
-    if (courseRepo.findById(courseId).isEmpty()) {
-      throw new ServiceException(COURSE_NOT_FOUND);
-    }
+    courseRepo.findById(courseId).orElseThrow(() -> new ServiceException(COURSE_NOT_FOUND));
     List<Review> reviewList = reviewRepository.findByCourseId(courseId);
     return reviewList.stream()
         .map(reviewEntityDtoMapper::toReviewResponseDto)
@@ -413,8 +413,10 @@ public class CourseServiceImpl implements CourseService {
   }
 
   private CourseReadPageDto findPagedFilteredCourses(FilterParamsDto filter, Pageable pageable) {
-    filter.setSearch(Objects.isNull(filter.getSearch()) ? EMPTY
-        : filter.getSearch().toLowerCase());
+    String loweredSearch = (filter.getSearch() == null)
+        ? ""
+        : filter.getSearch().toLowerCase();
+    filter.setSearch(loweredSearch);
 
     Page<Course> page = courseRepo.findByFilter(
         filter.getSearch(),
@@ -430,11 +432,15 @@ public class CourseServiceImpl implements CourseService {
 
   private CourseStudyReadPageDto findPagedFilteredCourseStudy(FilterCourseStudyParamsDto filter,
       Pageable pageable) {
-    filter.setCourseTitle(Objects.isNull(filter.getCourseTitle()) ? EMPTY
-        : filter.getCourseTitle().toLowerCase());
+    String loweredCourseTitle = (filter.getCourseTitle() == null)
+        ? ""
+        : filter.getCourseTitle().toLowerCase();
+    filter.setCourseTitle(loweredCourseTitle);
 
-    filter.setProfession(Objects.isNull(filter.getProfession()) ? EMPTY
-        : filter.getProfession().toLowerCase());
+    String loweredProfession = (filter.getProfession() == null)
+        ? ""
+        : filter.getProfession().toLowerCase();
+    filter.setProfession(loweredProfession);
 
     Page<CourseStudy> page = courseStudyRepository.findByFilter(
         filter.getCourseTitle(),

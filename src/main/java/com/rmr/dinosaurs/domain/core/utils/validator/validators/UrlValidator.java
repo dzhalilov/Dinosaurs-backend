@@ -10,8 +10,8 @@ public class UrlValidator implements
     ConstraintValidator<UrlConstraintValidator, String> {
 
   private static final Pattern URL_PATTERN =
-      Pattern.compile("https?:\\/\\/(www\\.)?[-a-zA-Zа-яА-Я0-9@:%._\\+~#=]{1,235}\\."
-          + "[a-zA-Zа-яА-Я0-9()]{1,6}\\b([-a-zA-Zа-яА-Я0-9()@:%_\\+.~#?&//=]*)");
+      Pattern.compile("https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,235}\\.[a-zA-Z0-9()]{1,6}"
+          + "\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)");
 
   @Override
   public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
