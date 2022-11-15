@@ -14,7 +14,9 @@ public class PasswordValidator implements
    * Password must contain a length of at least 8 characters and a maximum of 20 characters.
    */
   private static final Pattern passwordPattern =
-      Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$");
+      Pattern.compile(
+          "^(?=.*[a-zа-я])(?=.*[A-ZА-Я])(?=.*[0-9])"
+              + "[A-ZА-Яa-zа-я0-9~!?@#$%^&*_\\-+(){}></\\\\|\"'.,:;]{8,20}$");
 
   @Override
   public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
