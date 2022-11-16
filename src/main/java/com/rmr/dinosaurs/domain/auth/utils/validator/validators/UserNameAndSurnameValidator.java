@@ -10,7 +10,7 @@ public class UserNameAndSurnameValidator implements
 
   private static final Pattern nameAndSurnamePattern =
       Pattern.compile(
-          "(^[A-Z][a-z]{0,255})|(^[А-Я][а-я]{0,255})");
+          "(^[A-Z][A-Za-z]{0,255})|(^[А-Я][А-Яа-я]{0,255})");
 
   @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {
