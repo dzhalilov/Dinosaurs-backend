@@ -78,7 +78,7 @@ public class StatisticsController {
   @ModeratorPermission
   public List<CourseLinkTransitionsUniqueStatisticsDto> getUniqueCourseLinkTransitionsStats(
       @RequestBody @Valid CourseLinkTransitionsUniqueSearchCriteria searchCriteria) {
-    return courseStatisticsService.getCourseLinkTransitionsUniqueStatisticsByFilter(
+    return courseStatisticsService.getUniqueTransitionsStatisticsByFilter(
         searchCriteria);
   }
 

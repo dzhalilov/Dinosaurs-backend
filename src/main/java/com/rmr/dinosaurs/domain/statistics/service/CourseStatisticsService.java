@@ -32,7 +32,7 @@ public interface CourseStatisticsService {
    * @param searchCriteria search criteria
    * @return unique pairs of course id and link transitions
    */
-  List<CourseLinkTransitionsUniqueStatisticsDto> getCourseLinkTransitionsUniqueStatisticsByFilter(
+  List<CourseLinkTransitionsUniqueStatisticsDto> getUniqueTransitionsStatisticsByFilter(
       CourseLinkTransitionsUniqueSearchCriteria searchCriteria);
 
   /**

@@ -85,8 +85,7 @@ public class CourseStatisticsServiceImpl implements CourseStatisticsService {
   }
 
   @Override
-  public List<CourseLinkTransitionsUniqueStatisticsDto>
-  getCourseLinkTransitionsUniqueStatisticsByFilter(
+  public List<CourseLinkTransitionsUniqueStatisticsDto> getUniqueTransitionsStatisticsByFilter(
       CourseLinkTransitionsUniqueSearchCriteria searchCriteria) {
     return courseLinkTransitionRepository.getUniqueStatisticsByFilter(
         searchCriteria.getCoursesIds(),
