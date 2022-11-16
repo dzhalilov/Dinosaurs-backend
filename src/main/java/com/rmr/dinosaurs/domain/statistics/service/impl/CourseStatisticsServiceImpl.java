@@ -10,6 +10,8 @@ import com.rmr.dinosaurs.domain.statistics.model.CourseLinkTransition;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionFilterDto;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionPageDto;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionSearchCriteria;
+import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionsUniqueSearchCriteria;
+import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionsUniqueStatisticsDto;
 import com.rmr.dinosaurs.domain.statistics.service.CourseStatisticsExporterService;
 import com.rmr.dinosaurs.domain.statistics.service.CourseStatisticsService;
 import com.rmr.dinosaurs.domain.statistics.utils.converter.CourseLinkTransitionConverter;
@@ -18,6 +20,7 @@ import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.statistics.CourseLinkTransitionRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
@@ -79,6 +82,15 @@ public class CourseStatisticsServiceImpl implements CourseStatisticsService {
         courseLinkTransitionPage.getSize(),
         courseLinkTransitionPage.getNumber(),
         courseLinkTransitionDtos);
+  }
+
+  @Override
+  public List<CourseLinkTransitionsUniqueStatisticsDto>
+  getCourseLinkTransitionsUniqueStatisticsByFilter(
+      CourseLinkTransitionsUniqueSearchCriteria searchCriteria) {
+    return courseLinkTransitionRepository.getUniqueStatisticsByFilter(
+        searchCriteria.getCoursesIds(),
+        searchCriteria.getTransitionedFrom(), searchCriteria.getTransitionedTo());
   }
 
   @Override
