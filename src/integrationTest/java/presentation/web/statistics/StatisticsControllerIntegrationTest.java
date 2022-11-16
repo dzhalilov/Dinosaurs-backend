@@ -218,9 +218,9 @@ public class StatisticsControllerIntegrationTest {
         );
     var requestEntity = new HttpEntity<>(searchCriteria, requestHeaders);
     var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/course/search/unique");
-    ParameterizedTypeReference<List<CourseLinkTransitionsUniqueStatisticsDtoProjectionClass>>
-        parameterizedTypeReference = new ParameterizedTypeReference<>() {
-    };
+    ParameterizedTypeReference<List<UniqueStatsProjection>> parameterizedTypeReference =
+        new ParameterizedTypeReference<>() {
+        };
 
     // when
     var responseEntity = testRestTemplate.exchange(
@@ -231,7 +231,7 @@ public class StatisticsControllerIntegrationTest {
 
     // then
     assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
-    List<CourseLinkTransitionsUniqueStatisticsDtoProjectionClass> actual = responseEntity.getBody();
+    List<UniqueStatsProjection> actual = responseEntity.getBody();
     assertThat(actual).isNotNull().isNotEmpty().hasSize(1);
   }
 
@@ -244,19 +244,18 @@ public class StatisticsControllerIntegrationTest {
     return jwtTokenProvider.generateJwtTokenPair(getDinoAuthentication(user));
   }
 
-  private static class CourseLinkTransitionsUniqueStatisticsDtoProjectionClass implements
-      Serializable {
+  private static class UniqueStatsProjection implements Serializable {
 
     private Long courseId;
     private Long transitionsCount;
 
-    private CourseLinkTransitionsUniqueStatisticsDtoProjectionClass(Long courseId,
+    private UniqueStatsProjection(Long courseId,
         Long transitionsCount) {
       this.courseId = courseId;
       this.transitionsCount = transitionsCount;
     }
 
-    private CourseLinkTransitionsUniqueStatisticsDtoProjectionClass() {
+    private UniqueStatsProjection() {
     }
 
     private Long getCourseId() {
