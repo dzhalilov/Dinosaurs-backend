@@ -37,8 +37,8 @@ public interface CourseEntityDtoMapper {
   @Mapping(target = "providerCoverUrl", source = "provider.coverUrl")
   CourseReadDto toReadCourseDto(Course entity);
 
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "title", ignore = true)
+  @Mapping(target = "id")
+  @Mapping(target = "title")
   @Mapping(target = "providerId", source = "provider.id")
   ShortCourseDto toShortCourseDto(Course entity);
 
