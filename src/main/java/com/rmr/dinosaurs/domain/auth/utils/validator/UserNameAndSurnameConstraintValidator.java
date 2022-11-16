@@ -7,7 +7,6 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.RECORD_COMPONENT;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import com.rmr.dinosaurs.domain.auth.utils.validator.validators.EmailValidator;
 import com.rmr.dinosaurs.domain.auth.utils.validator.validators.UserNameAndSurnameValidator;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
