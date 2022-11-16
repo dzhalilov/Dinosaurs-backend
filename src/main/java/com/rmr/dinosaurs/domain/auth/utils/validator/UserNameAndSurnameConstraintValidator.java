@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 @Target({PARAMETER, CONSTRUCTOR, METHOD, FIELD, RECORD_COMPONENT})
 @Retention(RUNTIME)
 @NotNull
-@Size(min = 2, max = 50)
+@Size(min = 1, max = 256)
 @Constraint(validatedBy = UserNameAndSurnameValidator.class)
 @Documented
 public @interface UserNameAndSurnameConstraintValidator {
