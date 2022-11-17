@@ -10,8 +10,7 @@ public class UserNameAndSurnameValidator implements
 
   private static final Pattern nameAndSurnamePattern =
       Pattern.compile(
-          "((^[A-Z]([a-z]{1,48}([- ]{1}[A-Z]{1})?([a-z]{1,45})?))|"
-              + "(^[А-Я]([а-я]{1,48}([- ]{1}[А-Я]{1})?([а-я]{1,45})?))){1,49}");
+          "(^[A-Z][A-Za-z]{0,255})|(^[А-Я][А-Яа-я]{0,255})");
 
   @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {
