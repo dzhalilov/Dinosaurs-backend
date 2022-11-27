@@ -19,12 +19,18 @@ import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConfigurationProperties("services.pdf")
+@Data
 public class CourseStudyPdfExporter {
 
   private final Color greenColor = new Color(0, 125, 92);
+  private String fontDefault;
+  private String fontEncoding;
 
   private void writeTableHeader(PdfPTable table, List<CourseStudyInfoResponseDto> listCourseStudy) {
     PdfPCell cell = new PdfPCell();
@@ -59,8 +65,7 @@ public class CourseStudyPdfExporter {
   }
 
   private void writeTableData(PdfPTable table, List<CourseStudyInfoResponseDto> listCourseStudy) {
-    Font font = FontFactory.getFont("/font/arialmt.ttf", "cp1251",
-        BaseFont.EMBEDDED, 9);
+    Font font = FontFactory.getFont(fontDefault, fontEncoding, BaseFont.EMBEDDED, 9);
 
     for (CourseStudyInfoResponseDto dto : listCourseStudy) {
       final String professions = dto.getProfessions()

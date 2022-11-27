@@ -104,3 +104,6 @@ services:
   statistics:
     course:
       default-page-size: 50
+  pdf:
+    font-default: /font/arialmt.ttf
+    font-encoding: cp1251
