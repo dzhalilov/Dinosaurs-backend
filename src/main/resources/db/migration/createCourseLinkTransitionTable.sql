@@ -16,6 +16,3 @@ create table if not exists course_transition
             on delete no action,
     transitioned_at timestamp not null
 );
-
-alter table course_transition
-    owner to postgres;

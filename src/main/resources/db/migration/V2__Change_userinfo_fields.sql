@@ -1,0 +1,5 @@
+ALTER TABLE user_info
+    ALTER COLUMN name TYPE VARCHAR(256);
+
+ALTER TABLE user_info
+    ALTER COLUMN surname TYPE VARCHAR(256);

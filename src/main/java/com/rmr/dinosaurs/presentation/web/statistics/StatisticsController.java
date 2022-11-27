@@ -5,6 +5,8 @@ import com.rmr.dinosaurs.domain.core.exception.ServiceException;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionFilterDto;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionPageDto;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionSearchCriteria;
+import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionsUniqueSearchCriteria;
+import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionsUniqueStatisticsDto;
 import com.rmr.dinosaurs.domain.statistics.service.CourseStatisticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +63,23 @@ public class StatisticsController {
       @RequestBody @Valid CourseLinkTransitionFilterDto courseLinkTransitionFilterDto) {
     return courseStatisticsService.getAllCourseLinkTransitionsByFilter(
         courseLinkTransitionFilterDto);
+  }
+
+  @Operation(summary = "Get filtered list of unique course link transitions")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "filtered list of unique course link transitions",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = CourseLinkTransitionsUniqueStatisticsDto.class))}),
+      @ApiResponse(responseCode = "400", description = "wrong request format",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ServiceException.class))})})
+  @PostMapping("/course/search/unique")
+  @ModeratorPermission
+  public List<CourseLinkTransitionsUniqueStatisticsDto> getUniqueCourseLinkTransitionsStats(
+      @RequestBody @Valid CourseLinkTransitionsUniqueSearchCriteria searchCriteria) {
+    return courseStatisticsService.getUniqueTransitionsStatisticsByFilter(
+        searchCriteria);
   }
 
   @Operation(summary = "Get filtered list of course link transition dto exported to excel")

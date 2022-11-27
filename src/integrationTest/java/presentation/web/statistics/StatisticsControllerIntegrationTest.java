@@ -18,12 +18,14 @@ import com.rmr.dinosaurs.domain.statistics.model.CourseLinkTransition;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionDto;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionFilterDto;
 import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionPageDto;
+import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionsUniqueSearchCriteria;
 import com.rmr.dinosaurs.infrastucture.database.auth.UserRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseAndProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseProviderRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.CourseRepository;
 import com.rmr.dinosaurs.infrastucture.database.core.ProfessionRepository;
 import com.rmr.dinosaurs.infrastucture.database.statistics.CourseLinkTransitionRepository;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -39,6 +41,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -190,6 +193,48 @@ public class StatisticsControllerIntegrationTest {
     assertThat(actual.getCourseLinkTransitionDtos()).isNotNull().isNotEmpty().hasSize(2);
   }
 
+  @Test
+  @DisplayName("get course link transitions unique statistics")
+  void whenGetUniqueCourseLinkTransitionsStatsThenListOfUniquePairsReturned() {
+    // given
+    var testUser = userRepository.findByEmailIgnoreCase(regularUser.getEmail()).orElseThrow();
+    var savedCourse = courseRepository.findAll().stream().findFirst().orElseThrow();
+    var testCourseLinkTransition1 = new CourseLinkTransition(null, savedCourse, testUser,
+        LocalDateTime.now(ZoneOffset.UTC)
+    );
+    var testCourseLinkTransition2 = new CourseLinkTransition(null, savedCourse, testUser,
+        LocalDateTime.now(ZoneOffset.UTC)
+    );
+    courseLinkTransitionRepository.saveAllAndFlush(List.of(
+        testCourseLinkTransition1, testCourseLinkTransition2));
+    var currentUser = userRepository.findByEmailIgnoreCase(moderatorUser.getEmail()).orElseThrow();
+    var jwtTokenPairFor = getJwtTokenPairForUser(currentUser);
+    requestHeaders.add("X-USER-TOKEN", jwtTokenPairFor.getAccessToken());
+    CourseLinkTransitionsUniqueSearchCriteria searchCriteria =
+        new CourseLinkTransitionsUniqueSearchCriteria(
+            Set.of(course.getId()),
+            LocalDateTime.now(ZoneOffset.UTC).minus(1, ChronoUnit.HOURS),
+            LocalDateTime.now(ZoneOffset.UTC)
+        );
+    var requestEntity = new HttpEntity<>(searchCriteria, requestHeaders);
+    var uriBuilder = UriComponentsBuilder.fromHttpUrl(endpointUrl + "/course/search/unique");
+    ParameterizedTypeReference<List<UniqueStatsProjection>> parameterizedTypeReference =
+        new ParameterizedTypeReference<>() {
+        };
+
+    // when
+    var responseEntity = testRestTemplate.exchange(
+        uriBuilder.toUriString(),
+        HttpMethod.POST,
+        requestEntity,
+        parameterizedTypeReference);
+
+    // then
+    assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    List<UniqueStatsProjection> actual = responseEntity.getBody();
+    assertThat(actual).isNotNull().isNotEmpty().hasSize(1);
+  }
+
 
   private DinoAuthentication getDinoAuthentication(User user) {
     return new DinoAuthentication(new DinoPrincipal(user.getId(), user.getEmail(), user.getRole()));
@@ -197,6 +242,29 @@ public class StatisticsControllerIntegrationTest {
 
   private JwtTokenPair getJwtTokenPairForUser(User user) {
     return jwtTokenProvider.generateJwtTokenPair(getDinoAuthentication(user));
+  }
+
+  private static class UniqueStatsProjection implements Serializable {
+
+    private Long courseId;
+    private Long transitionsCount;
+
+    private UniqueStatsProjection(Long courseId,
+        Long transitionsCount) {
+      this.courseId = courseId;
+      this.transitionsCount = transitionsCount;
+    }
+
+    private UniqueStatsProjection() {
+    }
+
+    private Long getCourseId() {
+      return this.courseId;
+    }
+
+    private Long getTransitionsCount() {
+      return this.transitionsCount;
+    }
   }
 
 }

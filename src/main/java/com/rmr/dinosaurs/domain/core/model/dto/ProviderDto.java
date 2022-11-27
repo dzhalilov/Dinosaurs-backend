@@ -1,9 +1,7 @@
 package com.rmr.dinosaurs.domain.core.model.dto;
 
 import com.rmr.dinosaurs.domain.core.utils.validator.UrlConstraintValidator;
-import javax.annotation.RegEx;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

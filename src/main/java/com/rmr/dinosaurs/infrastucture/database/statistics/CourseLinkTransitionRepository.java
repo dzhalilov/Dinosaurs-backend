@@ -1,6 +1,7 @@
 package com.rmr.dinosaurs.infrastucture.database.statistics;
 
 import com.rmr.dinosaurs.domain.statistics.model.CourseLinkTransition;
+import com.rmr.dinosaurs.domain.statistics.model.dto.CourseLinkTransitionsUniqueStatisticsDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,19 @@ public interface CourseLinkTransitionRepository extends JpaRepository<CourseLink
       + " and (cast(:transitionedTo as timestamp) >= ctl.transitionedAt)"
       + ") ORDER BY ctl.transitionedAt ASC ")
   List<CourseLinkTransition> getAllByFilterAsList(Set<Long> coursesIds, String userEmail,
+      LocalDateTime transitionedFrom, LocalDateTime transitionedTo);
+
+  @Query("SELECT ct.course.id as courseId,"
+      + " count(distinct ct.user.id) as transitionsCount"
+      + " FROM CourseLinkTransition ct"
+      + " INNER JOIN Course c on c.id = ct.course.id"
+      + " INNER JOIN User u on ct.user.id= u.id"
+      + " WHERE ("
+      + " (((:coursesIds) is null) or (c.id IN (:coursesIds)))"
+      + " and (cast(:transitionedFrom as timestamp) <= ct.transitionedAt)"
+      + " and (cast(:transitionedTo as timestamp) >= ct.transitionedAt))"
+      + " GROUP BY courseId")
+  List<CourseLinkTransitionsUniqueStatisticsDto> getUniqueStatisticsByFilter(Set<Long> coursesIds,
       LocalDateTime transitionedFrom, LocalDateTime transitionedTo);
 
 }
